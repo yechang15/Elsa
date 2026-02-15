@@ -1,0 +1,7 @@
+function helloWorld() {
+  return 'hello world';
+}
+git add .
+git commit -m "Initial commit: add helloWorld function"
+//测试一下提交
+123
