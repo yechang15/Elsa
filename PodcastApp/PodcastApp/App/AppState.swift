@@ -58,7 +58,7 @@ enum NavigationItem: String, CaseIterable {
 }
 
 /// 用户配置
-struct UserConfig: Codable {
+struct UserConfig: Codable, Equatable {
     // LLM配置
     var llmProvider: String = "OpenAI"
     var llmApiKey: String = ""

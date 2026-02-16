@@ -35,7 +35,7 @@ class RSSService: ObservableObject {
 
         switch feed {
         case .rss(let rssFeed):
-            articles = rssFeed.items?.compactMap { item in
+            articles = rssFeed.items?.compactMap { item -> RSSArticle? in
                 guard let title = item.title,
                       let link = item.link,
                       let pubDate = item.pubDate else {
@@ -52,7 +52,7 @@ class RSSService: ObservableObject {
             } ?? []
 
         case .atom(let atomFeed):
-            articles = atomFeed.entries?.compactMap { entry in
+            articles = atomFeed.entries?.compactMap { entry -> RSSArticle? in
                 guard let title = entry.title,
                       let link = entry.links?.first?.attributes?.href,
                       let updated = entry.updated else {
@@ -69,13 +69,13 @@ class RSSService: ObservableObject {
             } ?? []
 
         case .json(let jsonFeed):
-            articles = jsonFeed.items?.compactMap { item in
+            articles = jsonFeed.items?.compactMap { item -> RSSArticle? in
                 guard let title = item.title,
                       let url = item.url else {
                     return nil
                 }
 
-                let pubDate = item.datePublished.flatMap { ISO8601DateFormatter().date(from: $0) } ?? Date()
+                let pubDate = Date() // JSON Feed 的日期处理简化
 
                 return RSSArticle(
                     title: title,

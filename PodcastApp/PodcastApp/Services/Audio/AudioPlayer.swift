@@ -15,17 +15,7 @@ class AudioPlayer: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        setupAudioSession()
-    }
-
-    /// 设置音频会话
-    private func setupAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print("Failed to setup audio session: \(error)")
-        }
+        // macOS 不需要设置 AVAudioSession
     }
 
     /// 加载并播放播客
