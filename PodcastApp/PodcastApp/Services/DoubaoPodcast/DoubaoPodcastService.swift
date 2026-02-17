@@ -60,10 +60,11 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         var request = URLRequest(url: url)
 
         // 设置请求头 - 使用正确的请求头名称
-        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Key")  // 注意：是Access-Key不是Access-Token
+        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Key")
         request.setValue(resourceId, forHTTPHeaderField: "X-Api-Resource-Id")
         request.setValue(appKey, forHTTPHeaderField: "X-Api-App-Key")
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
+        request.setValue("0", forHTTPHeaderField: "X-Api-Sequence")  // 添加序列号
 
         // 打印请求头用于调试
         NSLog("🔍 WebSocket请求头:")
