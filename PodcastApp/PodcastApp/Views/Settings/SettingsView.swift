@@ -10,10 +10,18 @@ struct SettingsView: View {
                     Text("豆包").tag("豆包")
                     Text("OpenAI").tag("OpenAI")
                 }
-                
+
                 SecureField("API Key", text: $appState.userConfig.llmApiKey)
-                
+                    .help("豆包: 从火山引擎控制台获取\nOpenAI: 从 platform.openai.com 获取")
+
                 TextField("模型", text: $appState.userConfig.llmModel)
+                    .help("豆包推荐: doubao-seed-2-0-pro-260215\nOpenAI推荐: gpt-4")
+
+                if appState.userConfig.llmProvider == "豆包" {
+                    Text("豆包模型示例：doubao-seed-2-0-pro-260215")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             
             Section("TTS 配置") {

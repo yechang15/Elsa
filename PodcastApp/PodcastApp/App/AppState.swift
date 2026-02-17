@@ -60,9 +60,9 @@ enum NavigationItem: String, CaseIterable {
 /// 用户配置
 struct UserConfig: Codable, Equatable {
     // LLM配置
-    var llmProvider: String = "OpenAI"
+    var llmProvider: String = "豆包"
     var llmApiKey: String = ""
-    var llmModel: String = "gpt-4"
+    var llmModel: String = "doubao-seed-2-0-pro-260215"
 
     // TTS配置
     var ttsEngine: TTSEngine = .system

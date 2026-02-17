@@ -62,7 +62,7 @@ class LLMService {
 
     /// 调用豆包API
     private func callDoubaoAPI(prompt: String) async throws -> String {
-        let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/chat/completions")!
+        let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/responses")!
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -71,8 +71,16 @@ class LLMService {
 
         let body: [String: Any] = [
             "model": model,
-            "messages": [
-                ["role": "user", "content": prompt]
+            "input": [
+                [
+                    "role": "user",
+                    "content": [
+                        [
+                            "type": "input_text",
+                            "text": prompt
+                        ]
+                    ]
+                ]
             ]
         ]
 
@@ -82,11 +90,23 @@ class LLMService {
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-            throw LLMError.apiError("API请求失败")
+            // 打印错误信息以便调试
+            if let errorString = String(data: data, encoding: .utf8) {
+                print("豆包API错误: \(errorString)")
+            }
+            throw LLMError.apiError("API请求失败，状态码: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
         }
 
         let result = try JSONDecoder().decode(DoubaoResponse.self, from: data)
-        return result.choices.first?.message.content ?? ""
+
+        // 从 output 数组中找到 type 为 "message" 的项
+        guard let messageOutput = result.output?.first(where: { $0.type == "message" }),
+              let textContent = messageOutput.content?.first(where: { $0.type == "output_text" }),
+              let text = textContent.text else {
+            throw LLMError.invalidResponse
+        }
+
+        return text
     }
 
     /// 调用OpenAI API
@@ -127,15 +147,18 @@ enum LLMProvider: String, Codable {
 
 /// 豆包API响应
 struct DoubaoResponse: Codable {
-    let choices: [DoubaoChoice]
+    let output: [DoubaoOutputItem]?
 }
 
-struct DoubaoChoice: Codable {
-    let message: DoubaoMessage
+struct DoubaoOutputItem: Codable {
+    let type: String
+    let role: String?
+    let content: [DoubaoContent]?
 }
 
-struct DoubaoMessage: Codable {
-    let content: String
+struct DoubaoContent: Codable {
+    let type: String
+    let text: String?
 }
 
 /// OpenAI API响应
