@@ -23,6 +23,8 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                     TextField("输入 API Key", text: $appState.userConfig.llmApiKey)
                         .textFieldStyle(.roundedBorder)
+                        .disabled(false)
+                        .frame(height: 30)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -31,6 +33,8 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                     TextField("输入模型名称", text: $appState.userConfig.llmModel)
                         .textFieldStyle(.roundedBorder)
+                        .disabled(false)
+                        .frame(height: 30)
                 }
 
                 if appState.userConfig.llmProvider == "豆包" {
