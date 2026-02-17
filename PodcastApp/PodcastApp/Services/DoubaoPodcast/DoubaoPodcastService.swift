@@ -134,15 +134,29 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         let payloadData = try JSONSerialization.data(withJSONObject: payload)
         NSLog("📝 Payload大小: \(payloadData.count) bytes")
 
-        // 构建二进制帧
-        let frame = buildFrame(
-            messageType: 0b1001,
-            flags: 0b0100,
-            serialization: 0b0001,
-            eventCode: 150, // StartSession
-            sessionId: sessionId,
-            payload: payloadData
-        )
+        // 构建二进制帧 - 不使用event code（根据文档，客户端不发送event帧）
+        var frame = Data()
+
+        // Header (4 bytes)
+        frame.append(0b00010001) // Byte 0: version=1, header_size=1
+        frame.append(0b10010100) // Byte 1: message_type=1001, flags=0100
+        frame.append(0b00010000) // Byte 2: serialization=JSON(0001), compression=none(0000)
+        frame.append(0b00000000) // Byte 3: reserved
+
+        // Session ID length (4 bytes, big-endian)
+        let sessionIdData = sessionId.data(using: .utf8)!
+        let sessionIdLength = UInt32(sessionIdData.count)
+        frame.append(contentsOf: withUnsafeBytes(of: sessionIdLength.bigEndian) { Data($0) })
+
+        // Session ID
+        frame.append(sessionIdData)
+
+        // Payload length (4 bytes, big-endian)
+        let payloadLength = UInt32(payloadData.count)
+        frame.append(contentsOf: withUnsafeBytes(of: payloadLength.bigEndian) { Data($0) })
+
+        // Payload
+        frame.append(payloadData)
 
         NSLog("📝 Frame大小: \(frame.count) bytes")
 
