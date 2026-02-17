@@ -114,13 +114,89 @@ struct SettingsView: View {
             }
             
             Section("TTS 配置") {
-                Picker("TTS 引擎", selection: asyncBinding(
-                    get: { appState.userConfig.ttsEngine },
-                    set: { appState.userConfig.ttsEngine = $0 }
-                )) {
-                    ForEach([TTSEngine.system, .openai, .elevenlabs], id: \.self) { engine in
-                        Text(engine.rawValue).tag(engine)
+                VStack(alignment: .leading, spacing: 8) {
+                    Picker("TTS 引擎", selection: asyncBinding(
+                        get: { appState.userConfig.ttsEngine },
+                        set: { appState.userConfig.ttsEngine = $0 }
+                    )) {
+                        ForEach([TTSEngine.system, .openai, .elevenlabs, .doubaoPodcast], id: \.self) { engine in
+                            Text(engine.rawValue).tag(engine)
+                        }
                     }
+
+                    // 引擎说明
+                    Group {
+                        switch appState.userConfig.ttsEngine {
+                        case .system:
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("📱 纯TTS引擎")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+                                Text("• 使用 macOS 系统自带的语音合成")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 需要配合上方的 LLM 先生成对话脚本")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 流程：原文 → LLM生成脚本 → 系统TTS转语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        case .openai:
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("📱 纯TTS引擎")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+                                Text("• 使用 OpenAI 的高质量语音合成")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 需要配合上方的 LLM 先生成对话脚本")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 流程：原文 → LLM生成脚本 → OpenAI TTS转语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        case .elevenlabs:
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("📱 纯TTS引擎")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+                                Text("• 使用 ElevenLabs 的超自然语音合成")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 需要配合上方的 LLM 先生成对话脚本")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 流程：原文 → LLM生成脚本 → ElevenLabs转语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        case .doubaoPodcast:
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("🎙️ 一体化播客引擎")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.green)
+                                Text("• 豆包播客API自动完成脚本生成和语音合成")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 不需要单独配置 LLM，一步到位")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 流程：原文 → 豆包播客API → 播客音频（一步完成）")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
                 }
 
                 if appState.userConfig.ttsEngine == .system {
@@ -366,8 +442,53 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 8)
                 }
+
+                // 豆包播客API配置
+                if appState.userConfig.ttsEngine == .doubaoPodcast {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("豆包播客API配置")
+                            .font(.headline)
+
+                        TextField("API Key", text: asyncBinding(
+                            get: { appState.userConfig.doubaoPodcastApiKey },
+                            set: { appState.userConfig.doubaoPodcastApiKey = $0 }
+                        ))
+                        .textFieldStyle(.roundedBorder)
+
+                        HStack(spacing: 20) {
+                            VStack(alignment: .leading) {
+                                Text("主播A语音ID")
+                                    .font(.caption)
+                                TextField("", text: asyncBinding(
+                                    get: { appState.userConfig.doubaoPodcastVoiceA },
+                                    set: { appState.userConfig.doubaoPodcastVoiceA = $0 }
+                                ))
+                                .textFieldStyle(.roundedBorder)
+                            }
+
+                            VStack(alignment: .leading) {
+                                Text("主播B语音ID")
+                                    .font(.caption)
+                                TextField("", text: asyncBinding(
+                                    get: { appState.userConfig.doubaoPodcastVoiceB },
+                                    set: { appState.userConfig.doubaoPodcastVoiceB = $0 }
+                                ))
+                                .textFieldStyle(.roundedBorder)
+                            }
+                        }
+
+                        Text("⚠️ 豆包播客API功能尚未实现，敬请期待")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+
+                        Text("提示：使用此模式时，将直接调用豆包播客API，不使用上方的LLM配置")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
             }
-            
+
             Section("播客生成") {
                 Picker("默认长度", selection: asyncBinding(
                     get: { appState.userConfig.defaultLength },
@@ -546,7 +667,7 @@ struct SettingsView: View {
             set: { newValue in
                 DispatchQueue.main.async {
                     set(newValue)
-                    appState.saveConfig()
+                    self.appState.saveConfig()
                 }
             }
         )

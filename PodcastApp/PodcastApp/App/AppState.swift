@@ -59,7 +59,7 @@ enum NavigationItem: String, CaseIterable {
 
 /// 用户配置
 struct UserConfig: Codable, Equatable {
-    // LLM配置
+    // LLM配置（用于脚本生成等功能）
     var llmProvider: String = "豆包"
     var llmApiKey: String = ""
     var llmModel: String = "doubao-seed-2-0-pro-260215"
@@ -86,6 +86,11 @@ struct UserConfig: Codable, Equatable {
     var elevenlabsVoiceA: String = ""
     var elevenlabsVoiceB: String = ""
 
+    // 豆包播客API配置（一体化模式）
+    var doubaoPodcastApiKey: String = ""
+    var doubaoPodcastVoiceA: String = "zh_female_shuangkuaisisi_moon_bigtts"
+    var doubaoPodcastVoiceB: String = "zh_male_wennuanahu_moon_bigtts"
+
     // 播客生成配置
     var defaultLength: Int = 15 // 分钟
     var contentDepth: ContentDepth = .quick
@@ -105,6 +110,7 @@ enum TTSEngine: String, Codable {
     case system = "macOS系统TTS"
     case openai = "OpenAI TTS"
     case elevenlabs = "ElevenLabs"
+    case doubaoPodcast = "豆包播客API（一体化）"
 }
 
 enum ContentDepth: String, Codable {
