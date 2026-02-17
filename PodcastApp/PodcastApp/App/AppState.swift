@@ -16,9 +16,87 @@ class AppState: ObservableObject {
         self.isFirstLaunch = UserDefaults.standard.bool(forKey: "isFirstLaunch") == false
 
         // 加载用户配置
-        if let data = UserDefaults.standard.data(forKey: "userConfig"),
-           let config = try? JSONDecoder().decode(UserConfig.self, from: data) {
-            self.userConfig = config
+        if let data = UserDefaults.standard.data(forKey: "userConfig") {
+            do {
+                self.userConfig = try JSONDecoder().decode(UserConfig.self, from: data)
+
+                // 强制检查并修复音色配置
+                var needsSave = false
+                if self.userConfig.doubaoTTSVoiceA == "zh_female_tianmeixiaoyuan" {
+                    print("⚠️ 修复主播A音色配置")
+                    self.userConfig.doubaoTTSVoiceA = "zh_female_xiaohe_uranus_bigtts"
+                    needsSave = true
+                }
+                if self.userConfig.doubaoTTSVoiceB == "zh_male_aojiaobazong" {
+                    print("⚠️ 修复主播B音色配置")
+                    self.userConfig.doubaoTTSVoiceB = "zh_male_taocheng_uranus_bigtts"
+                    needsSave = true
+                }
+
+                if needsSave {
+                    // 立即保存修复后的配置
+                    if let fixedData = try? JSONEncoder().encode(self.userConfig) {
+                        UserDefaults.standard.set(fixedData, forKey: "userConfig")
+                        print("✅ 音色配置已自动修复并保存")
+                    }
+                }
+            } catch {
+                print("⚠️ 配置解码失败: \(error)")
+                print("⚠️ 尝试迁移旧配置...")
+
+                // 尝试保留旧的API Key等重要信息
+                if let oldDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    var newConfig = UserConfig()
+
+                    // 迁移重要字段
+                    if let llmApiKey = oldDict["llmApiKey"] as? String {
+                        newConfig.llmApiKey = llmApiKey
+                    }
+                    if let llmProvider = oldDict["llmProvider"] as? String {
+                        newConfig.llmProvider = llmProvider
+                    }
+                    if let llmModel = oldDict["llmModel"] as? String {
+                        newConfig.llmModel = llmModel
+                    }
+                    if let doubaoTTSApiKey = oldDict["doubaoTTSApiKey"] as? String {
+                        newConfig.doubaoTTSApiKey = doubaoTTSApiKey
+                    }
+                    if let doubaoTTSAccessToken = oldDict["doubaoTTSAccessToken"] as? String {
+                        newConfig.doubaoTTSAccessToken = doubaoTTSAccessToken
+                    }
+                    if let doubaoTTSResourceId = oldDict["doubaoTTSResourceId"] as? String {
+                        newConfig.doubaoTTSResourceId = doubaoTTSResourceId
+                    }
+
+                    // 迁移音色配置，但要检查兼容性
+                    if let voiceA = oldDict["doubaoTTSVoiceA"] as? String {
+                        // 检查是否是旧的不兼容音色
+                        if voiceA == "zh_female_tianmeixiaoyuan" || voiceA == "zh_male_aojiaobazong" {
+                            print("⚠️ 检测到旧的音色配置，使用新的默认值")
+                            // 使用新的默认值（已在UserConfig中定义）
+                        } else {
+                            newConfig.doubaoTTSVoiceA = voiceA
+                        }
+                    }
+
+                    if let voiceB = oldDict["doubaoTTSVoiceB"] as? String {
+                        if voiceB == "zh_female_tianmeixiaoyuan" || voiceB == "zh_male_aojiaobazong" {
+                            print("⚠️ 检测到旧的音色配置，使用新的默认值")
+                        } else {
+                            newConfig.doubaoTTSVoiceB = voiceB
+                        }
+                    }
+                    if let openaiTTSApiKey = oldDict["openaiTTSApiKey"] as? String {
+                        newConfig.openaiTTSApiKey = openaiTTSApiKey
+                    }
+
+                    print("✅ 已迁移部分配置")
+                    self.userConfig = newConfig
+                } else {
+                    print("❌ 无法迁移旧配置，使用默认配置")
+                    self.userConfig = UserConfig()
+                }
+            }
         } else {
             self.userConfig = UserConfig()
         }
@@ -85,8 +163,8 @@ struct UserConfig: Codable, Equatable {
     var doubaoTTSApiKey: String = "" // 新版API Key (UUID格式) 或 旧版App ID
     var doubaoTTSAccessToken: String = "" // 仅旧版需要
     var doubaoTTSResourceId: String = "seed-tts-2.0"
-    var doubaoTTSVoiceA: String = "zh_female_tianmeixiaoyuan"
-    var doubaoTTSVoiceB: String = "zh_male_aojiaobazong"
+    var doubaoTTSVoiceA: String = "zh_female_xiaohe_uranus_bigtts"  // 小何 2.0 - 通用女声
+    var doubaoTTSVoiceB: String = "zh_male_taocheng_uranus_bigtts"  // 小天 2.0 - 通用男声
 
     // ElevenLabs TTS配置
     var elevenlabsApiKey: String = ""

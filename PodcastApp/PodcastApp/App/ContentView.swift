@@ -168,10 +168,18 @@ struct GeneratePodcastSheet: View {
                         Text(currentStep.title)
                             .font(.headline)
 
-                        Text(currentStep.description)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
+                        // 显示详细状态
+                        if !podcastService.currentStatus.isEmpty {
+                            Text(podcastService.currentStatus)
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text(currentStep.description)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
                     }
 
                     // 步骤列表

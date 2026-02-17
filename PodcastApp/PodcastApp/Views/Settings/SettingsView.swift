@@ -700,6 +700,25 @@ struct SettingsView: View {
 
                         Divider()
 
+                        // 重置音色配置按钮
+                        Button(action: {
+                            // 重置为默认的兼容音色
+                            localDoubaoTTSVoiceA = "zh_female_xiaohe_uranus_bigtts"
+                            localDoubaoTTSVoiceB = "zh_male_taocheng_uranus_bigtts"
+                            appState.userConfig.doubaoTTSVoiceA = "zh_female_xiaohe_uranus_bigtts"
+                            appState.userConfig.doubaoTTSVoiceB = "zh_male_taocheng_uranus_bigtts"
+                            appState.saveConfig()
+                            print("✅ 音色已重置为默认值")
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.counterclockwise")
+                                Text("重置为默认音色")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+
+                        Divider()
+
                         // Resource ID
                         VStack(alignment: .leading, spacing: 4) {
                             Text("模型版本")

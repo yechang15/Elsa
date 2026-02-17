@@ -26,15 +26,16 @@ class LLMService {
         topics: [String],
         length: Int,
         style: String,
-        depth: String
+        depth: String,
+        progressHandler: ((String) -> Void)? = nil
     ) async throws -> String {
         let prompt = buildPrompt(articles: articles, topics: topics, length: length, style: style, depth: depth)
 
         switch provider {
         case .doubao:
-            return try await callDoubaoAPI(prompt: prompt)
+            return try await callDoubaoAPIStreaming(prompt: prompt, progressHandler: progressHandler)
         case .openai:
-            return try await callOpenAIAPI(prompt: prompt)
+            return try await callOpenAIAPIStreaming(prompt: prompt, progressHandler: progressHandler)
         }
     }
 
@@ -142,6 +143,129 @@ class LLMService {
         }
 
         return text
+    }
+
+    /// 调用豆包API（流式）
+    private func callDoubaoAPIStreaming(prompt: String, progressHandler: ((String) -> Void)?) async throws -> String {
+        print("开始调用豆包API（流式）...")
+        print("API Key 长度: \(apiKey.count)")
+        print("模型: \(model)")
+
+        let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "user", "content": prompt]
+            ],
+            "stream": true
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        print("发送流式请求到豆包API...")
+        let startTime = Date()
+
+        var fullText = ""
+        var lastUpdateTime = Date()
+
+        let (bytes, response) = try await urlSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            throw LLMError.apiError("API 请求失败，状态码: \(statusCode)")
+        }
+
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let data = line.dropFirst(6)
+
+            if data == "[DONE]" { break }
+
+            guard let jsonData = data.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                  let choices = json["choices"] as? [[String: Any]],
+                  let delta = choices.first?["delta"] as? [String: Any],
+                  let content = delta["content"] as? String else {
+                continue
+            }
+
+            fullText += content
+
+            // 每0.5秒更新一次进度
+            if Date().timeIntervalSince(lastUpdateTime) > 0.5 {
+                progressHandler?("已生成 \(fullText.count) 字符...")
+                lastUpdateTime = Date()
+            }
+        }
+
+        let duration = Date().timeIntervalSince(startTime)
+        print("豆包API流式响应完成，耗时: \(duration)秒")
+        progressHandler?("脚本生成完成！")
+
+        return fullText
+    }
+
+    /// 调用OpenAI API（流式）
+    private func callOpenAIAPIStreaming(prompt: String, progressHandler: ((String) -> Void)?) async throws -> String {
+        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "user", "content": prompt]
+            ],
+            "stream": true
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        var fullText = ""
+        var lastUpdateTime = Date()
+
+        let (bytes, response) = try await urlSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            throw LLMError.apiError("OpenAI API 请求失败，状态码: \(statusCode)")
+        }
+
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let data = line.dropFirst(6)
+
+            if data == "[DONE]" { break }
+
+            guard let jsonData = data.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                  let choices = json["choices"] as? [[String: Any]],
+                  let delta = choices.first?["delta"] as? [String: Any],
+                  let content = delta["content"] as? String else {
+                continue
+            }
+
+            fullText += content
+
+            if Date().timeIntervalSince(lastUpdateTime) > 0.5 {
+                progressHandler?("已生成 \(fullText.count) 字符...")
+                lastUpdateTime = Date()
+            }
+        }
+
+        progressHandler?("脚本生成完成！")
+        return fullText
     }
 
     /// 调用OpenAI API

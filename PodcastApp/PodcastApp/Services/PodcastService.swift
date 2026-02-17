@@ -6,6 +6,7 @@ class PodcastService: ObservableObject {
     @Published var isGenerating = false
     @Published var generationProgress: Double = 0
     @Published var errorMessage: String?
+    @Published var currentStatus: String = "" // 新增：当前状态描述
 
     private let rssService = RSSService()
     private var llmService: LLMService?
@@ -35,12 +36,18 @@ class PodcastService: ObservableObject {
         }
 
         // 1. 获取RSS内容 (30%)
-        await MainActor.run { generationProgress = 0.1 }
+        await MainActor.run {
+            generationProgress = 0.1
+            currentStatus = "正在获取RSS内容..."
+        }
         let rssFeeds = topics.flatMap { $0.rssFeeds }
         let feedURLs = rssFeeds.map { $0.url }
 
         let articles = await rssService.fetchMultipleFeeds(urls: feedURLs)
-        await MainActor.run { generationProgress = 0.3 }
+        await MainActor.run {
+            generationProgress = 0.3
+            currentStatus = "已获取 \(articles.count) 篇文章"
+        }
 
         guard !articles.isEmpty else {
             throw PodcastError.noContent
@@ -80,16 +87,26 @@ class PodcastService: ObservableObject {
         }
 
         // 2. 生成播客脚本 (60%)
+        await MainActor.run { currentStatus = "正在生成播客脚本..." }
         let script = try await llmService.generatePodcastScript(
             articles: articles,
             topics: topics,
             length: config.defaultLength,
             style: config.hostStyle.rawValue,
             depth: config.contentDepth.rawValue
-        )
-        await MainActor.run { generationProgress = 0.6 }
+        ) { progress in
+            // 实时显示脚本生成进度
+            Task { @MainActor in
+                self.currentStatus = progress
+            }
+        }
+        await MainActor.run {
+            generationProgress = 0.6
+            currentStatus = "脚本生成完成，共 \(script.count) 字符"
+        }
 
         // 3. 生成音频 (90%)
+        await MainActor.run { currentStatus = "正在合成音频..." }
         let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
 
         // 根据 TTS 引擎选择 API Key
