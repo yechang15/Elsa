@@ -1,9 +1,13 @@
 import SwiftUI
+import AVFoundation
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
     @State private var testResult: String = ""
     @State private var isTesting: Bool = false
+    @State private var ttsTestResult: String = ""
+    @State private var isTestingTTS: Bool = false
+    @State private var availableVoices: [AVSpeechSynthesisVoice] = []
 
     var body: some View {
         Form {
@@ -62,9 +66,55 @@ struct SettingsView: View {
                         Text(engine.rawValue).tag(engine)
                     }
                 }
-                
+
+                if appState.userConfig.ttsEngine == .system {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("主播A语音")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Picker("", selection: $appState.userConfig.ttsVoiceA) {
+                            ForEach(availableVoices, id: \.identifier) { voice in
+                                Text(voice.name).tag(voice.identifier)
+                            }
+                        }
+                        .labelsHidden()
+
+                        Text("主播B语音")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Picker("", selection: $appState.userConfig.ttsVoiceB) {
+                            ForEach(availableVoices, id: \.identifier) { voice in
+                                Text(voice.name).tag(voice.identifier)
+                            }
+                        }
+                        .labelsHidden()
+                    }
+                }
+
                 Slider(value: $appState.userConfig.ttsSpeed, in: 0.5...2.0, step: 0.1) {
                     Text("语速: \(appState.userConfig.ttsSpeed, specifier: "%.1f")x")
+                }
+
+                // TTS 测试按钮
+                HStack {
+                    Button(action: testTTS) {
+                        HStack {
+                            if isTestingTTS {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            }
+                            Text(isTestingTTS ? "播放中..." : "测试语音")
+                        }
+                    }
+                    .disabled(isTestingTTS)
+
+                    if !ttsTestResult.isEmpty {
+                        Text(ttsTestResult)
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
                 }
             }
             
@@ -97,8 +147,54 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(width: 500, height: 600)
+        .onAppear {
+            loadAvailableVoices()
+        }
         .onChange(of: appState.userConfig) { _, _ in
             appState.saveConfig()
+        }
+    }
+
+    // 加载可用语音
+    private func loadAvailableVoices() {
+        availableVoices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix("zh") }
+
+        // 如果当前配置的语音不在列表中，使用第一个
+        if !availableVoices.contains(where: { $0.identifier == appState.userConfig.ttsVoiceA }),
+           let firstVoice = availableVoices.first {
+            appState.userConfig.ttsVoiceA = firstVoice.identifier
+        }
+
+        if !availableVoices.contains(where: { $0.identifier == appState.userConfig.ttsVoiceB }),
+           let secondVoice = availableVoices.dropFirst().first ?? availableVoices.first {
+            appState.userConfig.ttsVoiceB = secondVoice.identifier
+        }
+    }
+
+    // 测试 TTS
+    private func testTTS() {
+        isTestingTTS = true
+        ttsTestResult = ""
+
+        Task {
+            let ttsService = TTSService()
+            let testText = "哈喽各位码友，今天咱们聊聊Swift的异步编程特性呀？"
+
+            await MainActor.run {
+                ttsService.speak(
+                    text: testText,
+                    voice: appState.userConfig.ttsVoiceA,
+                    speed: Float(appState.userConfig.ttsSpeed)
+                )
+            }
+
+            // 等待播放完成
+            try? await Task.sleep(nanoseconds: 5_000_000_000) // 5秒
+
+            await MainActor.run {
+                ttsTestResult = "✅ 播放完成"
+                isTestingTTS = false
+            }
         }
     }
 
