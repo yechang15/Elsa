@@ -59,15 +59,15 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         let url = URL(string: "wss://openspeech.bytedance.com/api/v3/sami/podcasttts")!
         var request = URLRequest(url: url)
 
-        // 设置请求头 - 使用API Key作为Access Token
-        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Token")
+        // 设置请求头 - 使用正确的请求头名称
+        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Key")  // 注意：是Access-Key不是Access-Token
         request.setValue(resourceId, forHTTPHeaderField: "X-Api-Resource-Id")
         request.setValue(appKey, forHTTPHeaderField: "X-Api-App-Key")
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
 
         // 打印请求头用于调试
         NSLog("🔍 WebSocket请求头:")
-        NSLog("  X-Api-Access-Token: \(apiKey)")
+        NSLog("  X-Api-Access-Key: \(apiKey)")
         NSLog("  X-Api-Resource-Id: \(resourceId)")
         NSLog("  X-Api-App-Key: \(appKey)")
 
