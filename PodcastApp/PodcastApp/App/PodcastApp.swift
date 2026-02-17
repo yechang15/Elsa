@@ -1,8 +1,16 @@
 import SwiftUI
 import SwiftData
 
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSWindow.allowsAutomaticWindowTabbing = false
+    }
+}
+
 @main
 struct PodcastApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     // SwiftData模型容器
     let modelContainer: ModelContainer
 

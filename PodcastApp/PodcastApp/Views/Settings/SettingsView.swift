@@ -15,12 +15,47 @@ struct SettingsView: View {
     @State private var doubaoPodcastTestResult: String = ""
     @State private var doubaoPodcastTestProgress: String = ""
 
-    // 本地状态，避免焦点丢失
+    // 本地状态，避免焦点丢失和并发问题
     @State private var localApiKey: String = ""
     @State private var localModel: String = ""
     @State private var localTestTextA: String = ""
     @State private var localTestTextB: String = ""
+    @State private var localLLMProvider: String = ""
+    @State private var localTTSEngine: TTSEngine = .system
+    @State private var localTTSVoiceA: String = ""
+    @State private var localTTSVoiceB: String = ""
+    @State private var localTTSSpeedA: Double = 1.0
+    @State private var localTTSSpeedB: Double = 1.0
+
+    // OpenAI TTS 配置
+    @State private var localOpenAITTSApiKey: String = ""
+    @State private var localOpenAITTSModel: String = ""
+    @State private var localOpenAITTSVoiceA: String = ""
+    @State private var localOpenAITTSVoiceB: String = ""
+
+    // ElevenLabs 配置
+    @State private var localElevenLabsApiKey: String = ""
+    @State private var localElevenLabsVoiceA: String = ""
+    @State private var localElevenLabsVoiceB: String = ""
+
+    // 豆包播客配置
+    @State private var localDoubaoPodcastAppId: String = ""
+    @State private var localDoubaoPodcastAccessToken: String = ""
+    @State private var localDoubaoPodcastVoiceA: String = ""
+    @State private var localDoubaoPodcastVoiceB: String = ""
+
+    // 播客生成配置
+    @State private var localDefaultLength: Int = 15
+    @State private var localContentDepth: ContentDepth = .quick
+    @State private var localHostStyle: HostStyle = .casual
+    @State private var localAutoGenerate: Bool = true
+
+    // 通知配置
+    @State private var localNotifyNewPodcast: Bool = true
+    @State private var localNotifyRSSUpdate: Bool = true
+
     @State private var isInitializing: Bool = true
+    @State private var isLoaded: Bool = false
 
     // 焦点管理
     @FocusState private var focusedField: Field?
@@ -31,20 +66,89 @@ struct SettingsView: View {
     }
 
     var body: some View {
+        Group {
+            if isLoaded {
+                settingsForm
+            } else {
+                ProgressView("加载设置...")
+                    .frame(width: 500, height: 600)
+            }
+        }
+        .task {
+            // 先标记为初始化中，阻止所有更新
+            isInitializing = true
+
+            // 延迟一下，确保视图完全加载
+            try? await Task.sleep(nanoseconds: 100_000_000)
+
+            // 初始化所有本地状态（从 appState 读取）
+            await MainActor.run {
+                localApiKey = appState.userConfig.llmApiKey
+                localModel = appState.userConfig.llmModel
+                localTestTextA = appState.userConfig.ttsTestTextA
+                localTestTextB = appState.userConfig.ttsTestTextB
+                localLLMProvider = appState.userConfig.llmProvider
+                localTTSEngine = appState.userConfig.ttsEngine
+                localTTSVoiceA = appState.userConfig.ttsVoiceA
+                localTTSVoiceB = appState.userConfig.ttsVoiceB
+                localTTSSpeedA = appState.userConfig.ttsSpeedA
+                localTTSSpeedB = appState.userConfig.ttsSpeedB
+
+                localOpenAITTSApiKey = appState.userConfig.openaiTTSApiKey
+                localOpenAITTSModel = appState.userConfig.openaiTTSModel
+                localOpenAITTSVoiceA = appState.userConfig.openaiTTSVoiceA
+                localOpenAITTSVoiceB = appState.userConfig.openaiTTSVoiceB
+
+                localElevenLabsApiKey = appState.userConfig.elevenlabsApiKey
+                localElevenLabsVoiceA = appState.userConfig.elevenlabsVoiceA
+                localElevenLabsVoiceB = appState.userConfig.elevenlabsVoiceB
+
+                localDoubaoPodcastAppId = appState.userConfig.doubaoPodcastAppId
+                localDoubaoPodcastAccessToken = appState.userConfig.doubaoPodcastAccessToken
+                localDoubaoPodcastVoiceA = appState.userConfig.doubaoPodcastVoiceA
+                localDoubaoPodcastVoiceB = appState.userConfig.doubaoPodcastVoiceB
+
+                localDefaultLength = appState.userConfig.defaultLength
+                localContentDepth = appState.userConfig.contentDepth
+                localHostStyle = appState.userConfig.hostStyle
+                localAutoGenerate = appState.userConfig.autoGenerate
+
+                localNotifyNewPodcast = appState.userConfig.notifyNewPodcast
+                localNotifyRSSUpdate = appState.userConfig.notifyRSSUpdate
+
+                // 加载语音列表
+                loadAvailableVoices()
+            }
+
+            // 再等待一下
+            try? await Task.sleep(nanoseconds: 100_000_000)
+
+            // 标记为已加载，触发视图渲染
+            await MainActor.run {
+                isLoaded = true
+            }
+
+            // 等待更长时间后才允许保存
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            await MainActor.run {
+                isInitializing = false
+            }
+        }
+    }
+
+    private var settingsForm: some View {
         Form {
             Section("LLM 配置") {
-                Picker("API 提供商", selection: Binding(
-                    get: { appState.userConfig.llmProvider },
-                    set: { newValue in
-                        // 使用 DispatchQueue 异步更新
-                        DispatchQueue.main.async {
-                            appState.userConfig.llmProvider = newValue
-                            appState.saveConfig()
-                        }
-                    }
-                )) {
+                Picker("API 提供商", selection: $localLLMProvider) {
                     Text("豆包").tag("豆包")
                     Text("OpenAI").tag("OpenAI")
+                }
+                .onChange(of: localLLMProvider) { oldValue, newValue in
+                    guard !isInitializing else { return }
+                    Task { @MainActor in
+                        appState.userConfig.llmProvider = newValue
+                        appState.saveConfig()
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -57,13 +161,13 @@ struct SettingsView: View {
                         .focused($focusedField, equals: .apiKey)
                         .onChange(of: localApiKey) { oldValue, newValue in
                             guard !isInitializing else { return }
-                            DispatchQueue.main.async {
+                            Task { @MainActor in
                                 appState.userConfig.llmApiKey = newValue
                                 appState.saveConfig()
                             }
                         }
 
-                    Text("当前: \(appState.userConfig.llmApiKey.isEmpty ? "未设置" : "已设置 (\(appState.userConfig.llmApiKey.count) 字符)")")
+                    Text("当前: \(localApiKey.isEmpty ? "未设置" : "已设置 (\(localApiKey.count) 字符)")")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -78,18 +182,18 @@ struct SettingsView: View {
                         .focused($focusedField, equals: .model)
                         .onChange(of: localModel) { oldValue, newValue in
                             guard !isInitializing else { return }
-                            DispatchQueue.main.async {
+                            Task { @MainActor in
                                 appState.userConfig.llmModel = newValue
                                 appState.saveConfig()
                             }
                         }
 
-                    Text("当前: \(appState.userConfig.llmModel)")
+                    Text("当前: \(localModel)")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
 
-                if appState.userConfig.llmProvider == "豆包" {
+                if localLLMProvider == "豆包" {
                     Text("豆包模型示例：doubao-seed-2-0-pro-260215")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -106,7 +210,7 @@ struct SettingsView: View {
                             Text(isTesting ? "测试中..." : "测试连接")
                         }
                     }
-                    .disabled(appState.userConfig.llmApiKey.isEmpty || isTesting)
+                    .disabled(localApiKey.isEmpty || isTesting)
 
                     if !testResult.isEmpty {
                         Text(testResult)
@@ -118,18 +222,22 @@ struct SettingsView: View {
             
             Section("TTS 配置") {
                 VStack(alignment: .leading, spacing: 8) {
-                    Picker("TTS 引擎", selection: asyncBinding(
-                        get: { appState.userConfig.ttsEngine },
-                        set: { appState.userConfig.ttsEngine = $0 }
-                    )) {
+                    Picker("TTS 引擎", selection: $localTTSEngine) {
                         ForEach([TTSEngine.system, .openai, .elevenlabs, .doubaoPodcast], id: \.self) { engine in
                             Text(engine.rawValue).tag(engine)
+                        }
+                    }
+                    .onChange(of: localTTSEngine) { oldValue, newValue in
+                        guard !isInitializing else { return }
+                        Task { @MainActor in
+                            appState.userConfig.ttsEngine = newValue
+                            appState.saveConfig()
                         }
                     }
 
                     // 引擎说明
                     Group {
-                        switch appState.userConfig.ttsEngine {
+                        switch localTTSEngine {
                         case .system:
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("📱 纯TTS引擎")
@@ -202,7 +310,7 @@ struct SettingsView: View {
                     .cornerRadius(8)
                 }
 
-                if appState.userConfig.ttsEngine == .system {
+                if localTTSEngine == .system {
                     // 主播A配置
                     GroupBox(label: Text("主播A配置").font(.headline)) {
                         VStack(alignment: .leading, spacing: 12) {
@@ -211,26 +319,34 @@ struct SettingsView: View {
                                 Text("语音")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Picker("", selection: asyncBinding(
-                                    get: { appState.userConfig.ttsVoiceA },
-                                    set: { appState.userConfig.ttsVoiceA = $0 }
-                                )) {
+                                Picker("", selection: $localTTSVoiceA) {
                                     ForEach(availableVoices, id: \.identifier) { voice in
                                         Text(voice.name).tag(voice.identifier)
                                     }
                                 }
                                 .labelsHidden()
+                                .onChange(of: localTTSVoiceA) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.ttsVoiceA = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
 
                             // 语速控制
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("语速: \(appState.userConfig.ttsSpeedA, specifier: "%.1f")x")
+                                Text("语速: \(localTTSSpeedA, specifier: "%.1f")x")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Slider(value: asyncBinding(
-                                    get: { appState.userConfig.ttsSpeedA },
-                                    set: { appState.userConfig.ttsSpeedA = $0 }
-                                ), in: 0.5...2.0, step: 0.1)
+                                Slider(value: $localTTSSpeedA, in: 0.5...2.0, step: 0.1)
+                                    .onChange(of: localTTSSpeedA) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        Task { @MainActor in
+                                            appState.userConfig.ttsSpeedA = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
                             }
 
                             // 测试文案
@@ -245,7 +361,7 @@ struct SettingsView: View {
                                     .cornerRadius(4)
                                     .onChange(of: localTestTextA) { oldValue, newValue in
                                         guard !isInitializing else { return }
-                                        DispatchQueue.main.async {
+                                        Task { @MainActor in
                                             appState.userConfig.ttsTestTextA = newValue
                                             appState.saveConfig()
                                         }
@@ -254,7 +370,7 @@ struct SettingsView: View {
 
                             // 测试按钮
                             HStack {
-                                Button(action: { testTTS(voice: appState.userConfig.ttsVoiceA, speed: appState.userConfig.ttsSpeedA, text: appState.userConfig.ttsTestTextA, isHostA: true) }) {
+                                Button(action: { testTTS(voice: localTTSVoiceA, speed: localTTSSpeedA, text: localTestTextA, isHostA: true) }) {
                                     HStack {
                                         if isTestingTTSA {
                                             ProgressView()
@@ -283,26 +399,34 @@ struct SettingsView: View {
                                 Text("语音")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Picker("", selection: asyncBinding(
-                                    get: { appState.userConfig.ttsVoiceB },
-                                    set: { appState.userConfig.ttsVoiceB = $0 }
-                                )) {
+                                Picker("", selection: $localTTSVoiceB) {
                                     ForEach(availableVoices, id: \.identifier) { voice in
                                         Text(voice.name).tag(voice.identifier)
                                     }
                                 }
                                 .labelsHidden()
+                                .onChange(of: localTTSVoiceB) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.ttsVoiceB = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
 
                             // 语速控制
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("语速: \(appState.userConfig.ttsSpeedB, specifier: "%.1f")x")
+                                Text("语速: \(localTTSSpeedB, specifier: "%.1f")x")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                Slider(value: asyncBinding(
-                                    get: { appState.userConfig.ttsSpeedB },
-                                    set: { appState.userConfig.ttsSpeedB = $0 }
-                                ), in: 0.5...2.0, step: 0.1)
+                                Slider(value: $localTTSSpeedB, in: 0.5...2.0, step: 0.1)
+                                    .onChange(of: localTTSSpeedB) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        Task { @MainActor in
+                                            appState.userConfig.ttsSpeedB = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
                             }
 
                             // 测试文案
@@ -317,7 +441,7 @@ struct SettingsView: View {
                                     .cornerRadius(4)
                                     .onChange(of: localTestTextB) { oldValue, newValue in
                                         guard !isInitializing else { return }
-                                        DispatchQueue.main.async {
+                                        Task { @MainActor in
                                             appState.userConfig.ttsTestTextB = newValue
                                             appState.saveConfig()
                                         }
@@ -326,7 +450,7 @@ struct SettingsView: View {
 
                             // 测试按钮
                             HStack {
-                                Button(action: { testTTS(voice: appState.userConfig.ttsVoiceB, speed: appState.userConfig.ttsSpeedB, text: appState.userConfig.ttsTestTextB, isHostA: false) }) {
+                                Button(action: { testTTS(voice: localTTSVoiceB, speed: localTTSSpeedB, text: localTestTextB, isHostA: false) }) {
                                     HStack {
                                         if isTestingTTSB {
                                             ProgressView()
@@ -349,33 +473,38 @@ struct SettingsView: View {
                 }
 
                 // OpenAI TTS 配置
-                if appState.userConfig.ttsEngine == .openai {
+                if localTTSEngine == .openai {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("OpenAI TTS 配置")
                             .font(.headline)
 
-                        TextField("API Key", text: asyncBinding(
-                            get: { appState.userConfig.openaiTTSApiKey },
-                            set: { appState.userConfig.openaiTTSApiKey = $0 }
-                        ))
+                        TextField("API Key", text: $localOpenAITTSApiKey)
                         .textFieldStyle(.roundedBorder)
+                        .onChange(of: localOpenAITTSApiKey) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.openaiTTSApiKey = newValue
+                                appState.saveConfig()
+                            }
+                        }
 
-                        Picker("模型", selection: asyncBinding(
-                            get: { appState.userConfig.openaiTTSModel },
-                            set: { appState.userConfig.openaiTTSModel = $0 }
-                        )) {
+                        Picker("模型", selection: $localOpenAITTSModel) {
                             Text("tts-1 (标准)").tag("tts-1")
                             Text("tts-1-hd (高清)").tag("tts-1-hd")
+                        }
+                        .onChange(of: localOpenAITTSModel) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.openaiTTSModel = newValue
+                                appState.saveConfig()
+                            }
                         }
 
                         HStack(spacing: 20) {
                             VStack(alignment: .leading) {
                                 Text("主播A语音")
                                     .font(.caption)
-                                Picker("", selection: asyncBinding(
-                                    get: { appState.userConfig.openaiTTSVoiceA },
-                                    set: { appState.userConfig.openaiTTSVoiceA = $0 }
-                                )) {
+                                Picker("", selection: $localOpenAITTSVoiceA) {
                                     Text("Alloy").tag("alloy")
                                     Text("Echo").tag("echo")
                                     Text("Fable").tag("fable")
@@ -384,15 +513,19 @@ struct SettingsView: View {
                                     Text("Shimmer").tag("shimmer")
                                 }
                                 .labelsHidden()
+                                .onChange(of: localOpenAITTSVoiceA) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.openaiTTSVoiceA = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
 
                             VStack(alignment: .leading) {
                                 Text("主播B语音")
                                     .font(.caption)
-                                Picker("", selection: asyncBinding(
-                                    get: { appState.userConfig.openaiTTSVoiceB },
-                                    set: { appState.userConfig.openaiTTSVoiceB = $0 }
-                                )) {
+                                Picker("", selection: $localOpenAITTSVoiceB) {
                                     Text("Alloy").tag("alloy")
                                     Text("Echo").tag("echo")
                                     Text("Fable").tag("fable")
@@ -401,6 +534,13 @@ struct SettingsView: View {
                                     Text("Shimmer").tag("shimmer")
                                 }
                                 .labelsHidden()
+                                .onChange(of: localOpenAITTSVoiceB) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.openaiTTSVoiceB = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
                         }
 
@@ -412,28 +552,40 @@ struct SettingsView: View {
                 }
 
                 // ElevenLabs TTS 配置
-                if appState.userConfig.ttsEngine == .elevenlabs {
+                if localTTSEngine == .elevenlabs {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("ElevenLabs TTS 配置")
                             .font(.headline)
 
-                        TextField("API Key", text: asyncBinding(
-                            get: { appState.userConfig.elevenlabsApiKey },
-                            set: { appState.userConfig.elevenlabsApiKey = $0 }
-                        ))
+                        TextField("API Key", text: $localElevenLabsApiKey)
                         .textFieldStyle(.roundedBorder)
+                        .onChange(of: localElevenLabsApiKey) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.elevenlabsApiKey = newValue
+                                appState.saveConfig()
+                            }
+                        }
 
-                        TextField("主播A Voice ID", text: asyncBinding(
-                            get: { appState.userConfig.elevenlabsVoiceA },
-                            set: { appState.userConfig.elevenlabsVoiceA = $0 }
-                        ))
+                        TextField("主播A Voice ID", text: $localElevenLabsVoiceA)
                         .textFieldStyle(.roundedBorder)
+                        .onChange(of: localElevenLabsVoiceA) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.elevenlabsVoiceA = newValue
+                                appState.saveConfig()
+                            }
+                        }
 
-                        TextField("主播B Voice ID", text: asyncBinding(
-                            get: { appState.userConfig.elevenlabsVoiceB },
-                            set: { appState.userConfig.elevenlabsVoiceB = $0 }
-                        ))
+                        TextField("主播B Voice ID", text: $localElevenLabsVoiceB)
                         .textFieldStyle(.roundedBorder)
+                        .onChange(of: localElevenLabsVoiceB) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.elevenlabsVoiceB = newValue
+                                appState.saveConfig()
+                            }
+                        }
 
                         Text("⚠️ ElevenLabs TTS 功能尚未实现，敬请期待")
                             .font(.caption)
@@ -447,7 +599,7 @@ struct SettingsView: View {
                 }
 
                 // 豆包播客API配置
-                if appState.userConfig.ttsEngine == .doubaoPodcast {
+                if localTTSEngine == .doubaoPodcast {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("豆包播客API配置")
                             .font(.headline)
@@ -456,43 +608,59 @@ struct SettingsView: View {
                             Text("APP ID")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            TextField("输入 APP ID", text: asyncBinding(
-                                get: { appState.userConfig.doubaoPodcastAppId },
-                                set: { appState.userConfig.doubaoPodcastAppId = $0 }
-                            ))
+                            TextField("输入 APP ID", text: $localDoubaoPodcastAppId)
                             .textFieldStyle(.roundedBorder)
+                            .onChange(of: localDoubaoPodcastAppId) { oldValue, newValue in
+                                guard !isInitializing else { return }
+                                Task { @MainActor in
+                                    appState.userConfig.doubaoPodcastAppId = newValue
+                                    appState.saveConfig()
+                                }
+                            }
                         }
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Access Token")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            TextField("输入 Access Token", text: asyncBinding(
-                                get: { appState.userConfig.doubaoPodcastAccessToken },
-                                set: { appState.userConfig.doubaoPodcastAccessToken = $0 }
-                            ))
+                            TextField("输入 Access Token", text: $localDoubaoPodcastAccessToken)
                             .textFieldStyle(.roundedBorder)
+                            .onChange(of: localDoubaoPodcastAccessToken) { oldValue, newValue in
+                                guard !isInitializing else { return }
+                                Task { @MainActor in
+                                    appState.userConfig.doubaoPodcastAccessToken = newValue
+                                    appState.saveConfig()
+                                }
+                            }
                         }
 
                         HStack(spacing: 20) {
                             VStack(alignment: .leading) {
                                 Text("主播A语音ID")
                                     .font(.caption)
-                                TextField("", text: asyncBinding(
-                                    get: { appState.userConfig.doubaoPodcastVoiceA },
-                                    set: { appState.userConfig.doubaoPodcastVoiceA = $0 }
-                                ))
+                                TextField("", text: $localDoubaoPodcastVoiceA)
                                 .textFieldStyle(.roundedBorder)
+                                .onChange(of: localDoubaoPodcastVoiceA) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.doubaoPodcastVoiceA = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
 
                             VStack(alignment: .leading) {
                                 Text("主播B语音ID")
                                     .font(.caption)
-                                TextField("", text: asyncBinding(
-                                    get: { appState.userConfig.doubaoPodcastVoiceB },
-                                    set: { appState.userConfig.doubaoPodcastVoiceB = $0 }
-                                ))
+                                TextField("", text: $localDoubaoPodcastVoiceB)
                                 .textFieldStyle(.roundedBorder)
+                                .onChange(of: localDoubaoPodcastVoiceB) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.doubaoPodcastVoiceB = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
                             }
                         }
 
@@ -531,87 +699,84 @@ struct SettingsView: View {
             }
 
             Section("播客生成") {
-                Picker("默认长度", selection: asyncBinding(
-                    get: { appState.userConfig.defaultLength },
-                    set: { appState.userConfig.defaultLength = $0 }
-                )) {
+                Picker("默认长度", selection: $localDefaultLength) {
                     Text("5分钟").tag(5)
                     Text("15分钟").tag(15)
                     Text("30分钟").tag(30)
                 }
+                .onChange(of: localDefaultLength) { oldValue, newValue in
+                    guard !isInitializing else { return }
+                    Task { @MainActor in
+                        appState.userConfig.defaultLength = newValue
+                        appState.saveConfig()
+                    }
+                }
 
-                Picker("内容深度", selection: asyncBinding(
-                    get: { appState.userConfig.contentDepth },
-                    set: { appState.userConfig.contentDepth = $0 }
-                )) {
+                Picker("内容深度", selection: $localContentDepth) {
                     ForEach([ContentDepth.quick, .detailed], id: \.self) { depth in
                         Text(depth.rawValue).tag(depth)
                     }
                 }
+                .onChange(of: localContentDepth) { oldValue, newValue in
+                    guard !isInitializing else { return }
+                    Task { @MainActor in
+                        appState.userConfig.contentDepth = newValue
+                        appState.saveConfig()
+                    }
+                }
 
-                Picker("主播风格", selection: asyncBinding(
-                    get: { appState.userConfig.hostStyle },
-                    set: { appState.userConfig.hostStyle = $0 }
-                )) {
+                Picker("主播风格", selection: $localHostStyle) {
                     ForEach([HostStyle.casual, .serious, .humorous], id: \.self) { style in
                         Text(style.rawValue).tag(style)
                     }
                 }
+                .onChange(of: localHostStyle) { oldValue, newValue in
+                    guard !isInitializing else { return }
+                    Task { @MainActor in
+                        appState.userConfig.hostStyle = newValue
+                        appState.saveConfig()
+                    }
+                }
 
-                Toggle("自动生成", isOn: asyncBinding(
-                    get: { appState.userConfig.autoGenerate },
-                    set: { appState.userConfig.autoGenerate = $0 }
-                ))
+                Toggle("自动生成", isOn: $localAutoGenerate)
+                    .onChange(of: localAutoGenerate) { oldValue, newValue in
+                        guard !isInitializing else { return }
+                        Task { @MainActor in
+                            appState.userConfig.autoGenerate = newValue
+                            appState.saveConfig()
+                        }
+                    }
             }
 
             Section("通知") {
-                Toggle("新播客生成时通知", isOn: asyncBinding(
-                    get: { appState.userConfig.notifyNewPodcast },
-                    set: { appState.userConfig.notifyNewPodcast = $0 }
-                ))
-                Toggle("RSS源更新时通知", isOn: asyncBinding(
-                    get: { appState.userConfig.notifyRSSUpdate },
-                    set: { appState.userConfig.notifyRSSUpdate = $0 }
-                ))
+                Toggle("新播客生成时通知", isOn: $localNotifyNewPodcast)
+                    .onChange(of: localNotifyNewPodcast) { oldValue, newValue in
+                        guard !isInitializing else { return }
+                        Task { @MainActor in
+                            appState.userConfig.notifyNewPodcast = newValue
+                            appState.saveConfig()
+                        }
+                    }
+                Toggle("RSS源更新时通知", isOn: $localNotifyRSSUpdate)
+                    .onChange(of: localNotifyRSSUpdate) { oldValue, newValue in
+                        guard !isInitializing else { return }
+                        Task { @MainActor in
+                            appState.userConfig.notifyRSSUpdate = newValue
+                            appState.saveConfig()
+                        }
+                    }
             }
         }
         .formStyle(.grouped)
         .frame(width: 500, height: 600)
-        .task {
-            // 使用 .task 而不是 .onAppear
-            // 初始化本地状态
-            localApiKey = appState.userConfig.llmApiKey
-            localModel = appState.userConfig.llmModel
-            localTestTextA = appState.userConfig.ttsTestTextA
-            localTestTextB = appState.userConfig.ttsTestTextB
-
-            // 加载语音列表
-            loadAvailableVoices()
-
-            // 等待一小段时间后允许保存
-            try? await Task.sleep(nanoseconds: 100_000_000)
-            isInitializing = false
-        }
     }
 
     // 加载可用语音
     private func loadAvailableVoices() {
         availableVoices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix("zh") }
 
-        DispatchQueue.main.async {
-            // 如果当前配置的语音不在列表中，使用第一个
-            if !self.availableVoices.contains(where: { $0.identifier == self.appState.userConfig.ttsVoiceA }),
-               let firstVoice = self.availableVoices.first {
-                self.appState.userConfig.ttsVoiceA = firstVoice.identifier
-            }
-
-            if !self.availableVoices.contains(where: { $0.identifier == self.appState.userConfig.ttsVoiceB }),
-               let secondVoice = self.availableVoices.dropFirst().first ?? self.availableVoices.first {
-                self.appState.userConfig.ttsVoiceB = secondVoice.identifier
-            }
-
-            self.appState.saveConfig()
-        }
+        // 不要在初始化时自动修改配置，避免并发问题
+        // 只在用户主动选择时才保存
     }
 
     // 测试 TTS
@@ -755,21 +920,6 @@ struct SettingsView: View {
         }
     }
 
-    // 创建异步 Binding 的辅助函数，避免在视图更新期间修改 @Published
-    private func asyncBinding<T>(
-        get: @escaping () -> T,
-        set: @escaping (T) -> Void
-    ) -> Binding<T> {
-        Binding(
-            get: { get() },
-            set: { newValue in
-                DispatchQueue.main.async {
-                    set(newValue)
-                    self.appState.saveConfig()
-                }
-            }
-        )
-    }
 }
 
 #Preview {
