@@ -11,6 +11,9 @@ struct SettingsView: View {
     @State private var ttsTestResultB: String = ""
     @State private var isTestingTTSB: Bool = false
     @State private var availableVoices: [AVSpeechSynthesisVoice] = []
+    @State private var isTestingDoubaoPodcast: Bool = false
+    @State private var doubaoPodcastTestResult: String = ""
+    @State private var doubaoPodcastTestProgress: String = ""
 
     // 本地状态，避免焦点丢失
     @State private var localApiKey: String = ""
@@ -484,6 +487,32 @@ struct SettingsView: View {
                         Text("使用此模式时，将直接调用豆包播客API，不使用上方的LLM配置")
                             .font(.caption)
                             .foregroundColor(.secondary)
+
+                        // 测试按钮
+                        VStack(alignment: .leading, spacing: 8) {
+                            Button(action: testDoubaoPodcast) {
+                                HStack {
+                                    if isTestingDoubaoPodcast {
+                                        ProgressView()
+                                            .scaleEffect(0.7)
+                                    }
+                                    Text(isTestingDoubaoPodcast ? "生成中..." : "测试生成播客")
+                                }
+                            }
+                            .disabled(isTestingDoubaoPodcast || appState.userConfig.doubaoPodcastApiKey.isEmpty)
+
+                            if !doubaoPodcastTestProgress.isEmpty {
+                                Text(doubaoPodcastTestProgress)
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+
+                            if !doubaoPodcastTestResult.isEmpty {
+                                Text(doubaoPodcastTestResult)
+                                    .font(.caption)
+                                    .foregroundColor(doubaoPodcastTestResult.hasPrefix("✅") ? .green : .red)
+                            }
+                        }
                     }
                     .padding(.vertical, 8)
                 }
@@ -652,6 +681,73 @@ struct SettingsView: View {
                 await MainActor.run {
                     testResult = "❌ 连接失败：\(error.localizedDescription)"
                     isTesting = false
+                }
+            }
+        }
+    }
+
+    // 测试豆包播客API
+    private func testDoubaoPodcast() {
+        isTestingDoubaoPodcast = true
+        doubaoPodcastTestResult = ""
+        doubaoPodcastTestProgress = ""
+
+        Task {
+            do {
+                // 解析API Key
+                let components = appState.userConfig.doubaoPodcastApiKey.split(separator: ":")
+                guard components.count == 2 else {
+                    await MainActor.run {
+                        doubaoPodcastTestResult = "❌ API Key格式错误，应为: appId:accessToken"
+                        isTestingDoubaoPodcast = false
+                    }
+                    return
+                }
+
+                let appId = String(components[0])
+                let accessToken = String(components[1])
+
+                // 创建测试输入
+                let testInput = """
+                # 播客主题
+                测试主题
+
+                # 内容要求
+                - 时长: 1分钟
+                - 风格: 轻松闲聊
+                - 深度: 快速浏览
+
+                # 参考内容
+                1. 测试文章
+                   这是一个测试文章，用于验证豆包播客API的功能。
+                """
+
+                // 创建临时输出文件
+                let tempDir = FileManager.default.temporaryDirectory
+                let audioFileName = "test_podcast_\(UUID().uuidString).mp3"
+                let audioURL = tempDir.appendingPathComponent(audioFileName)
+
+                // 调用API
+                let service = DoubaoPodcastService(appId: appId, accessToken: accessToken)
+                try await service.generatePodcast(
+                    inputText: testInput,
+                    voiceA: appState.userConfig.doubaoPodcastVoiceA,
+                    voiceB: appState.userConfig.doubaoPodcastVoiceB,
+                    outputURL: audioURL
+                ) { progress in
+                    Task { @MainActor in
+                        doubaoPodcastTestProgress = progress
+                    }
+                }
+
+                await MainActor.run {
+                    doubaoPodcastTestResult = "✅ 测试成功！音频已生成到: \(audioURL.lastPathComponent)"
+                    isTestingDoubaoPodcast = false
+                }
+            } catch {
+                await MainActor.run {
+                    doubaoPodcastTestResult = "❌ 测试失败：\(error.localizedDescription)"
+                    isTestingDoubaoPodcast = false
                 }
             }
         }
