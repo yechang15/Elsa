@@ -3,6 +3,12 @@ import AVFoundation
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
+
+    // 使用本地状态
+    @State private var apiKey: String = ""
+    @State private var model: String = ""
+    @State private var provider: String = "豆包"
+
     @State private var testResult: String = ""
     @State private var isTesting: Bool = false
     @State private var ttsTestResult: String = ""
@@ -12,7 +18,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("LLM 配置") {
-                Picker("API 提供商", selection: $appState.userConfig.llmProvider) {
+                Picker("API 提供商", selection: $provider) {
                     Text("豆包").tag("豆包")
                     Text("OpenAI").tag("OpenAI")
                 }
@@ -21,9 +27,8 @@ struct SettingsView: View {
                     Text("API Key")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    TextField("输入 API Key", text: $appState.userConfig.llmApiKey)
+                    TextField("输入 API Key", text: $apiKey)
                         .textFieldStyle(.roundedBorder)
-                        .disabled(false)
                         .frame(height: 30)
                 }
 
@@ -31,13 +36,12 @@ struct SettingsView: View {
                     Text("模型")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    TextField("输入模型名称", text: $appState.userConfig.llmModel)
+                    TextField("输入模型名称", text: $model)
                         .textFieldStyle(.roundedBorder)
-                        .disabled(false)
                         .frame(height: 30)
                 }
 
-                if appState.userConfig.llmProvider == "豆包" {
+                if provider == "豆包" {
                     Text("豆包模型示例：doubao-seed-2-0-pro-260215")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -54,7 +58,7 @@ struct SettingsView: View {
                             Text(isTesting ? "测试中..." : "测试连接")
                         }
                     }
-                    .disabled(appState.userConfig.llmApiKey.isEmpty || isTesting)
+                    .disabled(apiKey.isEmpty || isTesting)
 
                     if !testResult.isEmpty {
                         Text(testResult)
@@ -153,6 +157,22 @@ struct SettingsView: View {
         .frame(width: 500, height: 600)
         .onAppear {
             loadAvailableVoices()
+            // 从 appState 加载到本地状态
+            apiKey = appState.userConfig.llmApiKey
+            model = appState.userConfig.llmModel
+            provider = appState.userConfig.llmProvider
+        }
+        .onChange(of: apiKey) { _, newValue in
+            appState.userConfig.llmApiKey = newValue
+            appState.saveConfig()
+        }
+        .onChange(of: model) { _, newValue in
+            appState.userConfig.llmModel = newValue
+            appState.saveConfig()
+        }
+        .onChange(of: provider) { _, newValue in
+            appState.userConfig.llmProvider = newValue
+            appState.saveConfig()
         }
         .onChange(of: appState.userConfig) { _, _ in
             appState.saveConfig()
@@ -209,11 +229,11 @@ struct SettingsView: View {
 
         Task {
             do {
-                let provider: LLMProvider = appState.userConfig.llmProvider == "豆包" ? .doubao : .openai
+                let llmProvider: LLMProvider = provider == "豆包" ? .doubao : .openai
                 let llmService = LLMService(
-                    apiKey: appState.userConfig.llmApiKey,
-                    provider: provider,
-                    model: appState.userConfig.llmModel
+                    apiKey: apiKey,
+                    provider: llmProvider,
+                    model: model
                 )
 
                 // 创建测试文章
