@@ -477,11 +477,11 @@ struct SettingsView: View {
                             }
                         }
 
-                        Text("⚠️ 豆包播客API功能尚未实现，敬请期待")
+                        Text("提示：API Key格式为 appId:accessToken")
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.secondary)
 
-                        Text("提示：使用此模式时，将直接调用豆包播客API，不使用上方的LLM配置")
+                        Text("使用此模式时，将直接调用豆包播客API，不使用上方的LLM配置")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
