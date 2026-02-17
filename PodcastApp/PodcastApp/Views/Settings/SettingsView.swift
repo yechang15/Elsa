@@ -31,16 +31,28 @@ struct SettingsView: View {
                     TextField("输入 API Key", text: Binding(
                         get: { appState.userConfig.llmApiKey },
                         set: { newValue in
+                            print("🔵 TextField set 被调用: '\(newValue)'")
                             appState.userConfig.llmApiKey = newValue
                             appState.saveConfig()
+                            print("🟢 保存后的值: '\(appState.userConfig.llmApiKey)'")
                         }
                     ))
                     .textFieldStyle(.roundedBorder)
                     .frame(height: 30)
+                    .onSubmit {
+                        print("🟡 onSubmit 被调用")
+                    }
 
-                    Text("当前: \(appState.userConfig.llmApiKey.isEmpty ? "未设置" : "已设置 (\(appState.userConfig.llmApiKey.count) 字符)")")
+                    HStack {
+                        Text("当前: \(appState.userConfig.llmApiKey.isEmpty ? "未设置" : "已设置 (\(appState.userConfig.llmApiKey.count) 字符)")")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+
+                        Button("显示值") {
+                            print("📋 API Key 当前值: '\(appState.userConfig.llmApiKey)'")
+                        }
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
