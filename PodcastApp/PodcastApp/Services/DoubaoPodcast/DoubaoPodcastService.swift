@@ -108,6 +108,11 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         voiceA: String,
         voiceB: String
     ) async throws {
+        NSLog("📝 准备发送StartSession请求...")
+
+        // 添加小延迟确保连接稳定
+        try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+
         // 构建payload
         let payload: [String: Any] = [
             "input_id": "podcast_\(UUID().uuidString)",
@@ -127,6 +132,7 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         ]
 
         let payloadData = try JSONSerialization.data(withJSONObject: payload)
+        NSLog("📝 Payload大小: \(payloadData.count) bytes")
 
         // 构建二进制帧
         let frame = buildFrame(
@@ -138,8 +144,16 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
             payload: payloadData
         )
 
+        NSLog("📝 Frame大小: \(frame.count) bytes")
+
         // 发送帧
-        try await webSocketTask?.send(.data(frame))
+        guard let task = webSocketTask else {
+            throw NSError(domain: "WebSocket", code: -1, userInfo: [NSLocalizedDescriptionKey: "WebSocket task is nil"])
+        }
+
+        NSLog("📤 正在发送StartSession请求...")
+        try await task.send(.data(frame))
+        NSLog("✅ StartSession请求已发送")
         progressHandler?("📤 已发送StartSession请求")
     }
 
