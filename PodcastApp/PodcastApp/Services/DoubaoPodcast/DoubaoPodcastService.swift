@@ -2,7 +2,7 @@ import Foundation
 
 /// 豆包播客API服务
 /// 文档：https://www.volcengine.com/docs/6561/1293828
-class DoubaoPodcastService: NSObject {
+class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     private let apiKey: String
     private let appKey: String
     private let resourceId = "volc.service_type.10050"
@@ -65,7 +65,15 @@ class DoubaoPodcastService: NSObject {
         request.setValue(appKey, forHTTPHeaderField: "X-Api-App-Key")
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
 
-        session = URLSession(configuration: .default)
+        // 打印请求头用于调试
+        print("🔍 WebSocket请求头:")
+        print("  X-Api-Access-Token: \(apiKey)")
+        print("  X-Api-Resource-Id: \(resourceId)")
+        print("  X-Api-App-Key: \(appKey)")
+
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         webSocketTask = session?.webSocketTask(with: request)
         webSocketTask?.resume()
 
@@ -162,17 +170,28 @@ class DoubaoPodcastService: NSObject {
 
     private func receiveMessages() async throws {
         while !isFinished {
-            guard let message = try? await webSocketTask?.receive() else {
-                break
-            }
+            do {
+                guard let message = try await webSocketTask?.receive() else {
+                    break
+                }
 
-            switch message {
-            case .data(let data):
-                try handleFrame(data)
-            case .string(let text):
-                print("收到文本消息: \(text)")
-            @unknown default:
-                break
+                switch message {
+                case .data(let data):
+                    try handleFrame(data)
+                case .string(let text):
+                    print("📨 收到文本消息: \(text)")
+                    progressHandler?("📨 服务器消息: \(text)")
+                @unknown default:
+                    break
+                }
+            } catch {
+                print("❌ WebSocket错误: \(error)")
+                print("❌ 错误详情: \(error.localizedDescription)")
+                if let urlError = error as? URLError {
+                    print("❌ URLError code: \(urlError.code.rawValue)")
+                    print("❌ URLError description: \(urlError.localizedDescription)")
+                }
+                throw error
             }
         }
     }
@@ -259,7 +278,32 @@ class DoubaoPodcastService: NSObject {
             }
 
         default:
-            print("未知事件: \(eventCode)")
+            print("❌ 未知事件: \(eventCode)")
+            progressHandler?("⚠️ 未知事件: \(eventCode)")
+        }
+    }
+
+    // MARK: - URLSessionWebSocketDelegate
+
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
+        print("✅ WebSocket已打开，协议: \(protocol ?? "无")")
+    }
+
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        print("🔒 WebSocket已关闭，代码: \(closeCode.rawValue)")
+        if let reason = reason, let reasonString = String(data: reason, encoding: .utf8) {
+            print("🔒 关闭原因: \(reasonString)")
+        }
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error = error {
+            print("❌ URLSession任务错误: \(error)")
+            print("❌ 错误详情: \(error.localizedDescription)")
+            if let httpResponse = task.response as? HTTPURLResponse {
+                print("❌ HTTP状态码: \(httpResponse.statusCode)")
+                print("❌ HTTP响应头: \(httpResponse.allHeaderFields)")
+            }
         }
     }
 }
