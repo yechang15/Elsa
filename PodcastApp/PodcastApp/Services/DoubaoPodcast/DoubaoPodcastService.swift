@@ -139,7 +139,7 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
 
         // Header (4 bytes)
         frame.append(0b00010001) // Byte 0: version=1, header_size=1
-        frame.append(0b10010100) // Byte 1: message_type=1001, flags=0100
+        frame.append(0b10010000) // Byte 1: message_type=1001, flags=0000 (no event number)
         frame.append(0b00010000) // Byte 2: serialization=JSON(0001), compression=none(0000)
         frame.append(0b00000000) // Byte 3: reserved
 
