@@ -66,12 +66,27 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        Group {
-            if isLoaded {
-                settingsForm
-            } else {
-                ProgressView("加载设置...")
-                    .frame(width: 500, height: 600)
+        VStack(spacing: 0) {
+            // 顶部工具栏
+            HStack {
+                Text("设置")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Spacer()
+            }
+            .padding()
+
+            Divider()
+
+            // 内容区
+            Group {
+                if isLoaded {
+                    settingsForm
+                } else {
+                    ProgressView("加载设置...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
         .task {
@@ -137,8 +152,13 @@ struct SettingsView: View {
     }
 
     private var settingsForm: some View {
-        Form {
-            Section("LLM 配置") {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+            // LLM 配置
+            VStack(alignment: .leading, spacing: 12) {
+                Text("LLM 配置")
+                    .font(.headline)
+                    .padding(.bottom, 4)
                 Picker("API 提供商", selection: $localLLMProvider) {
                     Text("豆包").tag("豆包")
                     Text("OpenAI").tag("OpenAI")
@@ -219,8 +239,12 @@ struct SettingsView: View {
                     }
                 }
             }
-            
-            Section("TTS 配置") {
+
+            // TTS 配置
+            VStack(alignment: .leading, spacing: 12) {
+                Text("TTS 配置")
+                    .font(.headline)
+                    .padding(.bottom, 4)
                 VStack(alignment: .leading, spacing: 8) {
                     Picker("TTS 引擎", selection: $localTTSEngine) {
                         ForEach([TTSEngine.system, .openai, .elevenlabs, .doubaoPodcast], id: \.self) { engine in
@@ -698,7 +722,11 @@ struct SettingsView: View {
                 }
             }
 
-            Section("播客生成") {
+            // 播客生成
+            VStack(alignment: .leading, spacing: 12) {
+                Text("播客生成")
+                    .font(.headline)
+                    .padding(.bottom, 4)
                 Picker("默认长度", selection: $localDefaultLength) {
                     Text("5分钟").tag(5)
                     Text("15分钟").tag(15)
@@ -748,7 +776,11 @@ struct SettingsView: View {
                     }
             }
 
-            Section("通知") {
+            // 通知
+            VStack(alignment: .leading, spacing: 12) {
+                Text("通知")
+                    .font(.headline)
+                    .padding(.bottom, 4)
                 Toggle("新播客生成时通知", isOn: $localNotifyNewPodcast)
                     .onChange(of: localNotifyNewPodcast) { oldValue, newValue in
                         guard !isInitializing else { return }
@@ -766,9 +798,9 @@ struct SettingsView: View {
                         }
                     }
             }
+            }
+            .padding()
         }
-        .formStyle(.grouped)
-        .frame(width: 500, height: 600)
     }
 
     // 加载可用语音
