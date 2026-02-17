@@ -64,6 +64,38 @@ extension RSSFeed {
         "产品设计": [
             "https://www.smashingmagazine.com/feed/",
             "https://www.nngroup.com/feed/rss/"
+        ],
+        "创业": [
+            "https://techcrunch.com/category/startups/feed/",
+            "https://36kr.com/feed"
+        ],
+        "前端开发": [
+            "https://css-tricks.com/feed/",
+            "https://www.smashingmagazine.com/feed/"
+        ],
+        "UX 研究": [
+            "https://www.nngroup.com/feed/rss/",
+            "https://uxdesign.cc/feed"
+        ],
+        "后端架构": [
+            "https://martinfowler.com/feed.atom",
+            "https://www.infoq.com/feed/"
+        ],
+        "数据科学": [
+            "https://towardsdatascience.com/feed",
+            "https://www.kdnuggets.com/feed"
+        ],
+        "移动开发": [
+            "https://android-developers.googleblog.com/feeds/posts/default",
+            "https://developer.apple.com/news/rss/news.rss"
+        ],
+        "开源项目": [
+            "https://github.blog/feed/",
+            "https://opensource.com/feed"
+        ],
+        "DevOps": [
+            "https://www.infoq.com/devops/feed/",
+            "https://devops.com/feed/"
         ]
     ]
 }

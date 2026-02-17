@@ -15,6 +15,12 @@ struct SettingsView: View {
     @State private var doubaoPodcastTestResult: String = ""
     @State private var doubaoPodcastTestProgress: String = ""
 
+    // 火山引擎TTS测试状态
+    @State private var isTestingVolcengineTTSA: Bool = false
+    @State private var volcengineTTSTestResultA: String = ""
+    @State private var isTestingVolcengineTTSB: Bool = false
+    @State private var volcengineTTSTestResultB: String = ""
+
     // 本地状态，避免焦点丢失和并发问题
     @State private var localApiKey: String = ""
     @State private var localModel: String = ""
@@ -43,6 +49,13 @@ struct SettingsView: View {
     @State private var localDoubaoPodcastAccessToken: String = ""
     @State private var localDoubaoPodcastVoiceA: String = ""
     @State private var localDoubaoPodcastVoiceB: String = ""
+
+    // 豆包双向流式TTS配置
+    @State private var localDoubaoTTSApiKey: String = ""
+    @State private var localDoubaoTTSAccessToken: String = ""
+    @State private var localDoubaoTTSResourceId: String = ""
+    @State private var localDoubaoTTSVoiceA: String = ""
+    @State private var localDoubaoTTSVoiceB: String = ""
 
     // 播客生成配置
     @State private var localDefaultLength: Int = 15
@@ -122,6 +135,12 @@ struct SettingsView: View {
                 localDoubaoPodcastAccessToken = appState.userConfig.doubaoPodcastAccessToken
                 localDoubaoPodcastVoiceA = appState.userConfig.doubaoPodcastVoiceA
                 localDoubaoPodcastVoiceB = appState.userConfig.doubaoPodcastVoiceB
+
+                localDoubaoTTSApiKey = appState.userConfig.doubaoTTSApiKey
+                localDoubaoTTSAccessToken = appState.userConfig.doubaoTTSAccessToken
+                localDoubaoTTSResourceId = appState.userConfig.doubaoTTSResourceId
+                localDoubaoTTSVoiceA = appState.userConfig.doubaoTTSVoiceA
+                localDoubaoTTSVoiceB = appState.userConfig.doubaoTTSVoiceB
 
                 localDefaultLength = appState.userConfig.defaultLength
                 localContentDepth = appState.userConfig.contentDepth
@@ -247,7 +266,7 @@ struct SettingsView: View {
                     .padding(.bottom, 4)
                 VStack(alignment: .leading, spacing: 8) {
                     Picker("TTS 引擎", selection: $localTTSEngine) {
-                        ForEach([TTSEngine.system, .openai, .elevenlabs, .doubaoPodcast], id: \.self) { engine in
+                        ForEach([TTSEngine.system, .doubaoTTS, .openai, .elevenlabs, .doubaoPodcast], id: \.self) { engine in
                             Text(engine.rawValue).tag(engine)
                         }
                     }
@@ -275,6 +294,22 @@ struct SettingsView: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                 Text("• 流程：原文 → LLM生成脚本 → 系统TTS转语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        case .doubaoTTS:
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("🔥 火山引擎双向流式TTS")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.orange)
+                                Text("• 使用火山引擎的双向流式语音合成API")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 需要配合上方的 LLM 先生成对话脚本")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("• 流程：原文 → LLM生成脚本 → 火山TTS转语音")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -622,6 +657,187 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
 
+                // 火山引擎双向流式TTS配置
+                if localTTSEngine == .doubaoTTS {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("火山引擎双向流式TTS配置")
+                            .font(.headline)
+
+                        // API Key
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("API Key")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            TextField("输入 API Key (新版UUID格式)", text: $localDoubaoTTSApiKey)
+                                .textFieldStyle(.roundedBorder)
+                                .onChange(of: localDoubaoTTSApiKey) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.doubaoTTSApiKey = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
+                            Text("💡 从火山引擎控制台获取")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+
+                        // Access Token (可选)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Access Token (可选，旧版需要)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            TextField("新版API Key无需填写", text: $localDoubaoTTSAccessToken)
+                                .textFieldStyle(.roundedBorder)
+                                .onChange(of: localDoubaoTTSAccessToken) { oldValue, newValue in
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.doubaoTTSAccessToken = newValue
+                                        appState.saveConfig()
+                                    }
+                                }
+                        }
+
+                        Divider()
+
+                        // Resource ID
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("模型版本")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Picker("", selection: $localDoubaoTTSResourceId) {
+                                Text("豆包语音合成2.0 (推荐)").tag("seed-tts-2.0")
+                                Text("豆包语音合成1.0").tag("seed-tts-1.0")
+                                Text("豆包语音合成1.0 (并发版)").tag("seed-tts-1.0-concurr")
+                                Text("声音复刻1.0").tag("seed-icl-1.0")
+                                Text("声音复刻1.0 (并发版)").tag("seed-icl-1.0-concurr")
+                                Text("声音复刻2.0").tag("seed-icl-2.0")
+                            }
+                            .labelsHidden()
+                            .onChange(of: localDoubaoTTSResourceId) { oldValue, newValue in
+                                guard !isInitializing else { return }
+                                Task { @MainActor in
+                                    appState.userConfig.doubaoTTSResourceId = newValue
+                                    appState.saveConfig()
+                                }
+                            }
+                        }
+
+                        Divider()
+
+                        // 主播A配置
+                        GroupBox(label: Text("主播A配置").font(.subheadline).fontWeight(.semibold)) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                // 音色选择
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("音色")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Picker("", selection: $localDoubaoTTSVoiceA) {
+                                        ForEach(VolcengineVoices.femaleVoices(for: localDoubaoTTSResourceId), id: \.id) { voice in
+                                            Text(voice.displayName).tag(voice.id)
+                                        }
+                                    }
+                                    .labelsHidden()
+                                    .onChange(of: localDoubaoTTSVoiceA) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        Task { @MainActor in
+                                            appState.userConfig.doubaoTTSVoiceA = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
+                                }
+
+                                // 测试按钮
+                                HStack {
+                                    Button(action: { testVolcengineTTS(isHostA: true) }) {
+                                        HStack {
+                                            if isTestingVolcengineTTSA {
+                                                ProgressView()
+                                                    .scaleEffect(0.7)
+                                            }
+                                            Text(isTestingVolcengineTTSA ? "测试中..." : "测试主播A")
+                                        }
+                                    }
+                                    .disabled(localDoubaoTTSApiKey.isEmpty || isTestingVolcengineTTSA)
+
+                                    if !volcengineTTSTestResultA.isEmpty {
+                                        Text(volcengineTTSTestResultA)
+                                            .font(.caption)
+                                            .foregroundColor(volcengineTTSTestResultA.contains("成功") ? .green : .red)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 8)
+                        }
+
+                        // 主播B配置
+                        GroupBox(label: Text("主播B配置").font(.subheadline).fontWeight(.semibold)) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                // 音色选择
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("音色")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Picker("", selection: $localDoubaoTTSVoiceB) {
+                                        ForEach(VolcengineVoices.maleVoices(for: localDoubaoTTSResourceId), id: \.id) { voice in
+                                            Text(voice.displayName).tag(voice.id)
+                                        }
+                                    }
+                                    .labelsHidden()
+                                    .onChange(of: localDoubaoTTSVoiceB) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        Task { @MainActor in
+                                            appState.userConfig.doubaoTTSVoiceB = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
+                                }
+
+                                // 测试按钮
+                                HStack {
+                                    Button(action: { testVolcengineTTS(isHostA: false) }) {
+                                        HStack {
+                                            if isTestingVolcengineTTSB {
+                                                ProgressView()
+                                                    .scaleEffect(0.7)
+                                            }
+                                            Text(isTestingVolcengineTTSB ? "测试中..." : "测试主播B")
+                                        }
+                                    }
+                                    .disabled(localDoubaoTTSApiKey.isEmpty || isTestingVolcengineTTSB)
+
+                                    if !volcengineTTSTestResultB.isEmpty {
+                                        Text(volcengineTTSTestResultB)
+                                            .font(.caption)
+                                            .foregroundColor(volcengineTTSTestResultB.contains("成功") ? .green : .red)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 8)
+                        }
+
+                        // 说明文字
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("💡 使用说明")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                            Text("• 推荐使用豆包语音合成2.0，音质更好")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                            Text("• 不同模型版本支持的音色不同，切换版本后请重新选择音色")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                            Text("• 点击测试按钮可以试听音色效果")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 4)
+                    }
+                    .padding(.vertical, 8)
+                }
+
                 // 豆包播客API配置
                 if localTTSEngine == .doubaoPodcast {
                     VStack(alignment: .leading, spacing: 12) {
@@ -947,6 +1163,84 @@ struct SettingsView: View {
                 await MainActor.run {
                     doubaoPodcastTestResult = "❌ 测试失败：\(error.localizedDescription)"
                     isTestingDoubaoPodcast = false
+                }
+            }
+        }
+    }
+
+    // 测试火山引擎TTS
+    private func testVolcengineTTS(isHostA: Bool) {
+        if isHostA {
+            isTestingVolcengineTTSA = true
+            volcengineTTSTestResultA = ""
+        } else {
+            isTestingVolcengineTTSB = true
+            volcengineTTSTestResultB = ""
+        }
+
+        Task {
+            do {
+                let apiKey = appState.userConfig.doubaoTTSApiKey
+                let accessToken = appState.userConfig.doubaoTTSAccessToken
+                let resourceId = appState.userConfig.doubaoTTSResourceId
+                let voiceId = isHostA ? appState.userConfig.doubaoTTSVoiceA : appState.userConfig.doubaoTTSVoiceB
+
+                let testText = isHostA ? "你好，我是主播A，很高兴为您服务。" : "你好，我是主播B，今天天气不错。"
+
+                print("=== 测试火山引擎TTS ===")
+                print("API Key: \(apiKey)")
+                print("Resource ID: \(resourceId)")
+                print("Voice ID: \(voiceId)")
+                print("主播: \(isHostA ? "A" : "B")")
+
+                // 创建TTS服务实例
+                let ttsService = VolcengineBidirectionalTTS(
+                    appId: apiKey,
+                    accessToken: accessToken,
+                    resourceId: resourceId
+                )
+
+                // 合成音频
+                let audioData = try await ttsService.synthesize(
+                    text: testText,
+                    voice: voiceId,
+                    speed: 1.0
+                )
+
+                // 保存音频文件
+                let tempDir = FileManager.default.temporaryDirectory
+                let audioFileName = "test_volcengine_\(isHostA ? "A" : "B")_\(UUID().uuidString).mp3"
+                let audioURL = tempDir.appendingPathComponent(audioFileName)
+                try audioData.write(to: audioURL)
+
+                print("✅ 音频已保存: \(audioURL.path)")
+
+                await MainActor.run {
+                    if isHostA {
+                        volcengineTTSTestResultA = "✅ 测试成功！(\(audioData.count/1024)KB)"
+                        isTestingVolcengineTTSA = false
+                    } else {
+                        volcengineTTSTestResultB = "✅ 测试成功！(\(audioData.count/1024)KB)"
+                        isTestingVolcengineTTSB = false
+                    }
+                }
+
+                // 自动播放
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/afplay")
+                process.arguments = [audioURL.path]
+                try? process.run()
+
+            } catch {
+                print("❌ 测试失败: \(error)")
+                await MainActor.run {
+                    if isHostA {
+                        volcengineTTSTestResultA = "❌ 失败：\(error.localizedDescription)"
+                        isTestingVolcengineTTSA = false
+                    } else {
+                        volcengineTTSTestResultB = "❌ 失败：\(error.localizedDescription)"
+                        isTestingVolcengineTTSB = false
+                    }
                 }
             }
         }

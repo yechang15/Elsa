@@ -19,7 +19,10 @@ final class Podcast {
     var contentDepth: String
     var hostStyle: String
 
-    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊") {
+    // RSS 来源信息
+    var sourceArticles: [SourceArticle] = [] // 来源文章列表
+
+    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊", sourceArticles: [SourceArticle] = []) {
         self.id = UUID()
         self.title = title
         self.topics = topics
@@ -31,6 +34,7 @@ final class Podcast {
         self.length = length
         self.contentDepth = contentDepth
         self.hostStyle = hostStyle
+        self.sourceArticles = sourceArticles
     }
 
     /// 格式化时长
@@ -63,5 +67,19 @@ enum PlayStatus {
         case .inProgress: return "进行中"
         case .completed: return "已听完"
         }
+    }
+}
+
+/// RSS 来源文章信息
+struct SourceArticle: Codable {
+    let title: String
+    let link: String
+    let description: String
+    let pubDate: Date
+
+    var formattedPubDate: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: pubDate, relativeTo: Date())
     }
 }

@@ -81,6 +81,13 @@ struct UserConfig: Codable, Equatable {
     var openaiTTSVoiceA: String = "alloy"
     var openaiTTSVoiceB: String = "echo"
 
+    // 豆包 TTS 配置（双向流式）
+    var doubaoTTSApiKey: String = "" // 新版API Key (UUID格式) 或 旧版App ID
+    var doubaoTTSAccessToken: String = "" // 仅旧版需要
+    var doubaoTTSResourceId: String = "seed-tts-2.0"
+    var doubaoTTSVoiceA: String = "zh_female_tianmeixiaoyuan"
+    var doubaoTTSVoiceB: String = "zh_male_aojiaobazong"
+
     // ElevenLabs TTS配置
     var elevenlabsApiKey: String = ""
     var elevenlabsVoiceA: String = ""
@@ -105,13 +112,6 @@ struct UserConfig: Codable, Equatable {
 
     // 外观配置
     var theme: AppTheme = .system
-}
-
-enum TTSEngine: String, Codable {
-    case system = "macOS系统TTS"
-    case openai = "OpenAI TTS"
-    case elevenlabs = "ElevenLabs"
-    case doubaoPodcast = "豆包播客API（一体化）"
 }
 
 enum ContentDepth: String, Codable {

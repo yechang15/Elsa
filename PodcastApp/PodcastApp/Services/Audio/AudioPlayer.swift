@@ -20,12 +20,32 @@ class AudioPlayer: NSObject, ObservableObject {
 
     /// 加载并播放播客
     func loadAndPlay(podcast: Podcast, audioURL: URL) {
+        print("=== 开始加载播客 ===")
+        print("播客标题: \(podcast.title)")
+        print("音频路径: \(audioURL.path)")
+        print("文件是否存在: \(FileManager.default.fileExists(atPath: audioURL.path))")
+
+        // 检查文件是否存在
+        guard FileManager.default.fileExists(atPath: audioURL.path) else {
+            print("❌ 音频文件不存在")
+            return
+        }
+
+        // 检查文件大小
+        if let attributes = try? FileManager.default.attributesOfItem(atPath: audioURL.path),
+           let fileSize = attributes[.size] as? Int64 {
+            print("文件大小: \(fileSize) 字节")
+        }
+
         // 停止当前播放
         stop()
 
         // 创建新播放器
         let playerItem = AVPlayerItem(url: audioURL)
         player = AVPlayer(playerItem: playerItem)
+
+        // 监听播放器状态
+        playerItem.addObserver(self, forKeyPath: "status", options: [.new], context: nil)
 
         // 设置播放速率
         player?.rate = playbackRate
@@ -45,6 +65,7 @@ class AudioPlayer: NSObject, ObservableObject {
         currentPodcast = podcast
 
         // 开始播放
+        print("开始播放...")
         play()
     }
 
@@ -123,6 +144,32 @@ class AudioPlayer: NSObject, ObservableObject {
         if let podcast = currentPodcast {
             podcast.isCompleted = true
             podcast.playProgress = 1.0
+        }
+    }
+
+    /// 监听播放器状态变化
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "status" {
+            if let playerItem = object as? AVPlayerItem {
+                switch playerItem.status {
+                case .readyToPlay:
+                    print("✅ 播放器准备就绪")
+                    Task {
+                        if let duration = try? await playerItem.asset.load(.duration).seconds, duration.isFinite {
+                            print("音频时长: \(duration) 秒")
+                        }
+                    }
+                case .failed:
+                    print("❌ 播放器加载失败")
+                    if let error = playerItem.error {
+                        print("错误: \(error.localizedDescription)")
+                    }
+                case .unknown:
+                    print("⚠️ 播放器状态未知")
+                @unknown default:
+                    break
+                }
+            }
         }
     }
 

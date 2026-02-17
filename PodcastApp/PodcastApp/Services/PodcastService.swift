@@ -22,21 +22,25 @@ class PodcastService: ObservableObject {
         config: UserConfig,
         modelContext: ModelContext
     ) async throws -> Podcast {
-        isGenerating = true
-        generationProgress = 0
-
-        defer {
-            isGenerating = false
+        await MainActor.run {
+            isGenerating = true
             generationProgress = 0
         }
 
+        defer {
+            Task { @MainActor in
+                isGenerating = false
+                generationProgress = 0
+            }
+        }
+
         // 1. 获取RSS内容 (30%)
-        generationProgress = 0.1
+        await MainActor.run { generationProgress = 0.1 }
         let rssFeeds = topics.flatMap { $0.rssFeeds }
         let feedURLs = rssFeeds.map { $0.url }
 
         let articles = await rssService.fetchMultipleFeeds(urls: feedURLs)
-        generationProgress = 0.3
+        await MainActor.run { generationProgress = 0.3 }
 
         guard !articles.isEmpty else {
             throw PodcastError.noContent
@@ -83,21 +87,48 @@ class PodcastService: ObservableObject {
             style: config.hostStyle.rawValue,
             depth: config.contentDepth.rawValue
         )
-        generationProgress = 0.6
+        await MainActor.run { generationProgress = 0.6 }
 
         // 3. 生成音频 (90%)
         let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
+
+        // 根据 TTS 引擎选择 API Key
+        let ttsApiKey: String
+        switch config.ttsEngine {
+        case .doubaoTTS:
+            ttsApiKey = config.llmApiKey // 使用 LLM API Key（豆包统一）
+        case .openai:
+            ttsApiKey = config.openaiTTSApiKey
+        default:
+            ttsApiKey = ""
+        }
+
         let audioURL = try await ttsService.generateAudio(
             script: script,
             voiceA: config.ttsVoiceA,
             voiceB: config.ttsVoiceB,
-            speed: averageSpeed
+            speed: averageSpeed,
+            engine: config.ttsEngine,
+            apiKey: ttsApiKey,
+            appId: config.doubaoTTSApiKey,
+            accessToken: config.doubaoTTSAccessToken,
+            resourceId: config.doubaoTTSResourceId
         )
-        generationProgress = 0.9
+        await MainActor.run { generationProgress = 0.9 }
 
         // 4. 创建播客对象
         let title = generateTitle(from: articles, topics: topics)
         let duration = config.defaultLength * 60
+
+        // 转换 RSS 文章为 SourceArticle
+        let sourceArticles = articles.prefix(10).map { article in
+            SourceArticle(
+                title: article.title,
+                link: article.link,
+                description: article.description,
+                pubDate: article.pubDate
+            )
+        }
 
         let podcast = Podcast(
             title: title,
@@ -106,15 +137,17 @@ class PodcastService: ObservableObject {
             scriptContent: script,
             length: config.defaultLength,
             contentDepth: config.contentDepth.rawValue,
-            hostStyle: config.hostStyle.rawValue
+            hostStyle: config.hostStyle.rawValue,
+            sourceArticles: sourceArticles
         )
 
         podcast.audioFilePath = audioURL.path
 
-        modelContext.insert(podcast)
-        try modelContext.save()
-
-        generationProgress = 1.0
+        await MainActor.run {
+            modelContext.insert(podcast)
+            try? modelContext.save()
+            generationProgress = 1.0
+        }
 
         return podcast
     }
@@ -136,7 +169,7 @@ class PodcastService: ObservableObject {
 
         // 2. 准备输入文本 (60%)
         let inputText = prepareInputText(from: articles, topics: topics, config: config)
-        generationProgress = 0.6
+        await MainActor.run { generationProgress = 0.6 }
 
         // 3. 调用豆包播客API生成音频 (90%)
         let doubaoPodcastService = DoubaoPodcastService(appId: appId, accessToken: accessToken)
@@ -154,11 +187,21 @@ class PodcastService: ObservableObject {
             print("豆包播客API: \(progress)")
         }
 
-        generationProgress = 0.9
+        await MainActor.run { generationProgress = 0.9 }
 
         // 4. 创建播客对象
         let title = generateTitle(from: articles, topics: topics)
         let duration = config.defaultLength * 60
+
+        // 转换 RSS 文章为 SourceArticle
+        let sourceArticles = articles.prefix(10).map { article in
+            SourceArticle(
+                title: article.title,
+                link: article.link,
+                description: article.description,
+                pubDate: article.pubDate
+            )
+        }
 
         let podcast = Podcast(
             title: title,
@@ -167,15 +210,17 @@ class PodcastService: ObservableObject {
             scriptContent: inputText,
             length: config.defaultLength,
             contentDepth: config.contentDepth.rawValue,
-            hostStyle: config.hostStyle.rawValue
+            hostStyle: config.hostStyle.rawValue,
+            sourceArticles: sourceArticles
         )
 
         podcast.audioFilePath = audioURL.path
 
-        modelContext.insert(podcast)
-        try modelContext.save()
-
-        generationProgress = 1.0
+        await MainActor.run {
+            modelContext.insert(podcast)
+            try? modelContext.save()
+            generationProgress = 1.0
+        }
 
         return podcast
     }
@@ -226,8 +271,12 @@ class PodcastService: ObservableObject {
             throw PodcastError.llmNotConfigured
         }
 
-        isGenerating = true
-        defer { isGenerating = false }
+        await MainActor.run { isGenerating = true }
+        defer {
+            Task { @MainActor in
+                isGenerating = false
+            }
+        }
 
         // 生成脚本
         let script = try await llmService.generatePodcastScript(

@@ -5,11 +5,19 @@ class LLMService {
     private let apiKey: String
     private let provider: LLMProvider
     private let model: String
+    private let urlSession: URLSession
 
     init(apiKey: String, provider: LLMProvider, model: String) {
         self.apiKey = apiKey
         self.provider = provider
         self.model = model
+
+        // 配置 URLSession，增加超时时间
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 180 // 3分钟
+        config.timeoutIntervalForResource = 600 // 10分钟
+        config.waitsForConnectivity = true // 等待网络连接
+        self.urlSession = URLSession(configuration: config)
     }
 
     /// 生成播客脚本
@@ -62,6 +70,10 @@ class LLMService {
 
     /// 调用豆包API
     private func callDoubaoAPI(prompt: String) async throws -> String {
+        print("开始调用豆包API...")
+        print("API Key 长度: \(apiKey.count)")
+        print("模型: \(model)")
+
         let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/responses")!
 
         var request = URLRequest(url: url)
@@ -86,15 +98,38 @@ class LLMService {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        print("发送请求到豆包API...")
+        let startTime = Date()
+
+        let (data, response) = try await urlSession.data(for: request)
+
+        let duration = Date().timeIntervalSince(startTime)
+        print("豆包API响应时间: \(duration)秒")
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             // 打印错误信息以便调试
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             if let errorString = String(data: data, encoding: .utf8) {
-                print("豆包API错误: \(errorString)")
+                print("豆包API错误 (状态码: \(statusCode)): \(errorString)")
             }
-            throw LLMError.apiError("API请求失败，状态码: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+
+            // 根据状态码提供更详细的错误信息
+            let errorMessage: String
+            switch statusCode {
+            case 401:
+                errorMessage = "API Key 无效或未授权，请检查设置中的 API Key 配置"
+            case 403:
+                errorMessage = "API 访问被拒绝，请检查 API Key 权限"
+            case 429:
+                errorMessage = "API 请求频率超限，请稍后再试"
+            case 500...599:
+                errorMessage = "API 服务器错误，请稍后再试"
+            default:
+                errorMessage = "API 请求失败，状态码: \(statusCode)"
+            }
+
+            throw LLMError.apiError(errorMessage)
         }
 
         let result = try JSONDecoder().decode(DoubaoResponse.self, from: data)
@@ -127,11 +162,28 @@ class LLMService {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await urlSession.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-            throw LLMError.apiError("API请求失败")
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if let errorString = String(data: data, encoding: .utf8) {
+                print("OpenAI API错误 (状态码: \(statusCode)): \(errorString)")
+            }
+
+            let errorMessage: String
+            switch statusCode {
+            case 401:
+                errorMessage = "OpenAI API Key 无效或未授权"
+            case 429:
+                errorMessage = "OpenAI API 请求频率超限"
+            case 500...599:
+                errorMessage = "OpenAI 服务器错误"
+            default:
+                errorMessage = "OpenAI API 请求失败，状态码: \(statusCode)"
+            }
+
+            throw LLMError.apiError(errorMessage)
         }
 
         let result = try JSONDecoder().decode(OpenAIResponse.self, from: data)
