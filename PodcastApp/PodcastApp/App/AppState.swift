@@ -87,7 +87,8 @@ struct UserConfig: Codable, Equatable {
     var elevenlabsVoiceB: String = ""
 
     // 豆包播客API配置（一体化模式）
-    var doubaoPodcastApiKey: String = ""
+    var doubaoPodcastAppId: String = ""
+    var doubaoPodcastAccessToken: String = ""
     var doubaoPodcastVoiceA: String = "zh_female_shuangkuaisisi_moon_bigtts"
     var doubaoPodcastVoiceB: String = "zh_male_wennuanahu_moon_bigtts"
 

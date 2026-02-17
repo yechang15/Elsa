@@ -3,7 +3,8 @@ import Foundation
 /// 豆包播客API服务
 /// 文档：https://www.volcengine.com/docs/6561/1293828
 class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
-    private let apiKey: String
+    private let appId: String
+    private let accessToken: String
     private let appKey: String
     private let resourceId = "volc.service_type.10050"
 
@@ -13,8 +14,9 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     private var isFinished = false
     private var progressHandler: ((String) -> Void)?
 
-    init(apiKey: String) {
-        self.apiKey = apiKey
+    init(appId: String, accessToken: String) {
+        self.appId = appId
+        self.accessToken = accessToken
         super.init()
     }
 
@@ -59,21 +61,22 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         let url = URL(string: "wss://openspeech.bytedance.com/api/v3/sami/podcasttts")!
         var request = URLRequest(url: url)
 
-        // 设置请求头 - 使用正确的请求头名称
-        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Key")
+        // 设置请求头 - 根据官方文档要求
+        request.setValue(appId, forHTTPHeaderField: "X-Api-App-Id")
+        request.setValue(accessToken, forHTTPHeaderField: "X-Api-Access-Key")
         request.setValue(resourceId, forHTTPHeaderField: "X-Api-Resource-Id")
         request.setValue(appKey, forHTTPHeaderField: "X-Api-App-Key")
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
-        request.setValue("0", forHTTPHeaderField: "X-Api-Sequence")  // 添加序列号
 
         // 打印请求头用于调试
         NSLog("🔍 WebSocket请求头:")
-        NSLog("  X-Api-Access-Key: \(apiKey)")
+        NSLog("  X-Api-App-Id: \(appId)")
+        NSLog("  X-Api-Access-Key: \(accessToken)")
         NSLog("  X-Api-Resource-Id: \(resourceId)")
         NSLog("  X-Api-App-Key: \(appKey)")
 
         progressHandler?("🔍 准备连接...")
-        progressHandler?("🔍 API Key: \(apiKey.prefix(8))...")
+        progressHandler?("🔍 App ID: \(appId)")
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
