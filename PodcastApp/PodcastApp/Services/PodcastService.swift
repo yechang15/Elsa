@@ -126,19 +126,13 @@ class PodcastService: ObservableObject {
         config: UserConfig,
         modelContext: ModelContext
     ) async throws -> Podcast {
-        // 验证API Key
-        guard !config.doubaoPodcastApiKey.isEmpty else {
-            throw PodcastError.generationFailed("豆包播客API Key未配置")
+        // 验证配置
+        guard !config.doubaoPodcastAppId.isEmpty && !config.doubaoPodcastAccessToken.isEmpty else {
+            throw PodcastError.generationFailed("豆包播客API配置不完整")
         }
 
-        // 解析API Key (格式: appId:accessToken)
-        let components = config.doubaoPodcastApiKey.split(separator: ":")
-        guard components.count == 2 else {
-            throw PodcastError.generationFailed("豆包播客API Key格式错误，应为: appId:accessToken")
-        }
-
-        let appId = String(components[0])
-        let accessToken = String(components[1])
+        let appId = config.doubaoPodcastAppId
+        let accessToken = config.doubaoPodcastAccessToken
 
         // 2. 准备输入文本 (60%)
         let inputText = prepareInputText(from: articles, topics: topics, config: config)

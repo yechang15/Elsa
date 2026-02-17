@@ -452,11 +452,27 @@ struct SettingsView: View {
                         Text("豆包播客API配置")
                             .font(.headline)
 
-                        TextField("API Key", text: asyncBinding(
-                            get: { appState.userConfig.doubaoPodcastApiKey },
-                            set: { appState.userConfig.doubaoPodcastApiKey = $0 }
-                        ))
-                        .textFieldStyle(.roundedBorder)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("App ID")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            TextField("输入 App ID", text: asyncBinding(
+                                get: { appState.userConfig.doubaoPodcastAppId },
+                                set: { appState.userConfig.doubaoPodcastAppId = $0 }
+                            ))
+                            .textFieldStyle(.roundedBorder)
+                        }
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Access Token")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            TextField("输入 Access Token", text: asyncBinding(
+                                get: { appState.userConfig.doubaoPodcastAccessToken },
+                                set: { appState.userConfig.doubaoPodcastAccessToken = $0 }
+                            ))
+                            .textFieldStyle(.roundedBorder)
+                        }
 
                         HStack(spacing: 20) {
                             VStack(alignment: .leading) {
@@ -480,10 +496,6 @@ struct SettingsView: View {
                             }
                         }
 
-                        Text("提示：API Key格式为 appId:accessToken")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-
                         Text("使用此模式时，将直接调用豆包播客API，不使用上方的LLM配置")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -499,7 +511,7 @@ struct SettingsView: View {
                                     Text(isTestingDoubaoPodcast ? "生成中..." : "测试生成播客")
                                 }
                             }
-                            .disabled(isTestingDoubaoPodcast || appState.userConfig.doubaoPodcastApiKey.isEmpty)
+                            .disabled(isTestingDoubaoPodcast || appState.userConfig.doubaoPodcastAppId.isEmpty || appState.userConfig.doubaoPodcastAccessToken.isEmpty)
 
                             if !doubaoPodcastTestProgress.isEmpty {
                                 Text(doubaoPodcastTestProgress)
@@ -694,18 +706,8 @@ struct SettingsView: View {
 
         Task {
             do {
-                // 解析API Key
-                let components = appState.userConfig.doubaoPodcastApiKey.split(separator: ":")
-                guard components.count == 2 else {
-                    await MainActor.run {
-                        doubaoPodcastTestResult = "❌ API Key格式错误，应为: appId:accessToken"
-                        isTestingDoubaoPodcast = false
-                    }
-                    return
-                }
-
-                let appId = String(components[0])
-                let accessToken = String(components[1])
+                let appId = appState.userConfig.doubaoPodcastAppId
+                let accessToken = appState.userConfig.doubaoPodcastAccessToken
 
                 // 创建测试输入
                 let testInput = """
