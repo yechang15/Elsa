@@ -199,8 +199,8 @@ class PodcastService: ObservableObject {
         text += "# 参考内容\n"
         for (index, article) in articles.prefix(5).enumerated() {
             text += "\(index + 1). \(article.title)\n"
-            if let description = article.description {
-                text += "   \(description)\n"
+            if !article.description.isEmpty {
+                text += "   \(article.description)\n"
             }
             text += "\n"
         }
