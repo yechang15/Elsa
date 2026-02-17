@@ -2,7 +2,9 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
-    
+    @State private var testResult: String = ""
+    @State private var isTesting: Bool = false
+
     var body: some View {
         Form {
             Section("LLM 配置") {
@@ -11,16 +13,46 @@ struct SettingsView: View {
                     Text("OpenAI").tag("OpenAI")
                 }
 
-                SecureField("API Key", text: $appState.userConfig.llmApiKey)
-                    .help("豆包: 从火山引擎控制台获取\nOpenAI: 从 platform.openai.com 获取")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("API Key")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("输入 API Key", text: $appState.userConfig.llmApiKey)
+                        .textFieldStyle(.roundedBorder)
+                }
 
-                TextField("模型", text: $appState.userConfig.llmModel)
-                    .help("豆包推荐: doubao-seed-2-0-pro-260215\nOpenAI推荐: gpt-4")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模型")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("输入模型名称", text: $appState.userConfig.llmModel)
+                        .textFieldStyle(.roundedBorder)
+                }
 
                 if appState.userConfig.llmProvider == "豆包" {
                     Text("豆包模型示例：doubao-seed-2-0-pro-260215")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                }
+
+                // 测试连接按钮
+                HStack {
+                    Button(action: testConnection) {
+                        HStack {
+                            if isTesting {
+                                ProgressView()
+                                    .scaleEffect(0.7)
+                            }
+                            Text(isTesting ? "测试中..." : "测试连接")
+                        }
+                    }
+                    .disabled(appState.userConfig.llmApiKey.isEmpty || isTesting)
+
+                    if !testResult.isEmpty {
+                        Text(testResult)
+                            .font(.caption)
+                            .foregroundColor(testResult.contains("成功") ? .green : .red)
+                    }
                 }
             }
             
@@ -57,7 +89,7 @@ struct SettingsView: View {
                 
                 Toggle("自动生成", isOn: $appState.userConfig.autoGenerate)
             }
-            
+         
             Section("通知") {
                 Toggle("新播客生成时通知", isOn: $appState.userConfig.notifyNewPodcast)
                 Toggle("RSS源更新时通知", isOn: $appState.userConfig.notifyRSSUpdate)
@@ -67,6 +99,54 @@ struct SettingsView: View {
         .frame(width: 500, height: 600)
         .onChange(of: appState.userConfig) { _, _ in
             appState.saveConfig()
+        }
+    }
+
+    // 测试连接
+    private func testConnection() {
+        isTesting = true
+        testResult = ""
+
+        Task {
+            do {
+                let provider: LLMProvider = appState.userConfig.llmProvider == "豆包" ? .doubao : .openai
+                let llmService = LLMService(
+                    apiKey: appState.userConfig.llmApiKey,
+                    provider: provider,
+                    model: appState.userConfig.llmModel
+                )
+
+                // 创建测试文章
+                let testArticle = RSSArticle(
+                    title: "测试文章",
+                    link: "https://example.com",
+                    description: "这是一个测试",
+                    pubDate: Date(),
+                    content: "测试内容"
+                )
+
+                let script = try await llmService.generatePodcastScript(
+                    articles: [testArticle],
+                    topics: ["测试"],
+                    length: 1,
+                    style: "轻松闲聊",
+                    depth: "快速浏览"
+                )
+
+                await MainActor.run {
+                    if script.isEmpty {
+                        testResult = "❌ 连接失败：返回内容为空"
+                    } else {
+                        testResult = "✅ 连接成功！"
+                    }
+                    isTesting = false
+                }
+            } catch {
+                await MainActor.run {
+                    testResult = "❌ 连接失败：\(error.localizedDescription)"
+                    isTesting = false
+                }
+            }
         }
     }
 }
