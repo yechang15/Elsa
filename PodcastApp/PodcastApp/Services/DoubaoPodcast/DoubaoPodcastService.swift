@@ -286,7 +286,7 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     // MARK: - URLSessionWebSocketDelegate
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        print("✅ WebSocket已打开，协议: \(protocol ?? "无")")
+        print("✅ WebSocket已打开，协议: \(`protocol` ?? "无")")
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
