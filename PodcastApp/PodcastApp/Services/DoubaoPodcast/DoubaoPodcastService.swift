@@ -66,10 +66,13 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
 
         // 打印请求头用于调试
-        print("🔍 WebSocket请求头:")
-        print("  X-Api-Access-Token: \(apiKey)")
-        print("  X-Api-Resource-Id: \(resourceId)")
-        print("  X-Api-App-Key: \(appKey)")
+        NSLog("🔍 WebSocket请求头:")
+        NSLog("  X-Api-Access-Token: \(apiKey)")
+        NSLog("  X-Api-Resource-Id: \(resourceId)")
+        NSLog("  X-Api-App-Key: \(appKey)")
+
+        progressHandler?("🔍 准备连接...")
+        progressHandler?("🔍 API Key: \(apiKey.prefix(8))...")
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
@@ -298,11 +301,14 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
-            print("❌ URLSession任务错误: \(error)")
-            print("❌ 错误详情: \(error.localizedDescription)")
+            NSLog("❌ URLSession任务错误: \(error)")
+            NSLog("❌ 错误详情: \(error.localizedDescription)")
+            progressHandler?("❌ 连接错误: \(error.localizedDescription)")
+
             if let httpResponse = task.response as? HTTPURLResponse {
-                print("❌ HTTP状态码: \(httpResponse.statusCode)")
-                print("❌ HTTP响应头: \(httpResponse.allHeaderFields)")
+                NSLog("❌ HTTP状态码: \(httpResponse.statusCode)")
+                NSLog("❌ HTTP响应头: \(httpResponse.allHeaderFields)")
+                progressHandler?("❌ HTTP状态码: \(httpResponse.statusCode)")
             }
         }
     }
