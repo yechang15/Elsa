@@ -13,6 +13,8 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     private var audioData = Data()
     private var isFinished = false
     private var progressHandler: ((String) -> Void)?
+    private var connectionOpened = false
+    private var connectionContinuation: CheckedContinuation<Void, Error>?
 
     init(appId: String, accessToken: String) {
         self.appId = appId
@@ -83,6 +85,11 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         webSocketTask = session?.webSocketTask(with: request)
         webSocketTask?.resume()
+
+        // 等待WebSocket真正打开
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            self.connectionContinuation = continuation
+        }
 
         progressHandler?("🔗 WebSocket连接已建立")
     }
@@ -293,13 +300,20 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     // MARK: - URLSessionWebSocketDelegate
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        print("✅ WebSocket已打开，协议: \(`protocol` ?? "无")")
+        NSLog("✅ WebSocket已打开，协议: \(`protocol` ?? "无")")
+        connectionOpened = true
+        connectionContinuation?.resume()
+        connectionContinuation = nil
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        print("🔒 WebSocket已关闭，代码: \(closeCode.rawValue)")
+        NSLog("🔒 WebSocket已关闭，代码: \(closeCode.rawValue)")
         if let reason = reason, let reasonString = String(data: reason, encoding: .utf8) {
-            print("🔒 关闭原因: \(reasonString)")
+            NSLog("🔒 关闭原因: \(reasonString)")
+        }
+        if !connectionOpened {
+            connectionContinuation?.resume(throwing: NSError(domain: "WebSocket", code: Int(closeCode.rawValue), userInfo: [NSLocalizedDescriptionKey: "WebSocket closed before opening"]))
+            connectionContinuation = nil
         }
     }
 
@@ -313,6 +327,11 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
                 NSLog("❌ HTTP状态码: \(httpResponse.statusCode)")
                 NSLog("❌ HTTP响应头: \(httpResponse.allHeaderFields)")
                 progressHandler?("❌ HTTP状态码: \(httpResponse.statusCode)")
+            }
+
+            if !connectionOpened {
+                connectionContinuation?.resume(throwing: error)
+                connectionContinuation = nil
             }
         }
     }
