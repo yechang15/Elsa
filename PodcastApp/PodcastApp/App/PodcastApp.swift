@@ -19,6 +19,9 @@ struct PodcastApp: App {
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
+
+        // 设置应用激活策略
+        NSApplication.shared.setActivationPolicy(.regular)
     }
 
     var body: some Scene {
@@ -31,10 +34,7 @@ struct PodcastApp: App {
                 .modelContainer(modelContainer)
                 .frame(minWidth: 1000, minHeight: 600)
         }
-        .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
         .commands {
-            // 自定义菜单命令
             CommandGroup(replacing: .newItem) {}
         }
 
