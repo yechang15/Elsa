@@ -127,19 +127,18 @@ class PodcastService: ObservableObject {
         modelContext: ModelContext
     ) async throws -> Podcast {
         // 验证配置
-        guard !config.doubaoPodcastAppId.isEmpty && !config.doubaoPodcastAccessToken.isEmpty else {
-            throw PodcastError.generationFailed("豆包播客API配置不完整")
+        guard !config.doubaoPodcastApiKey.isEmpty else {
+            throw PodcastError.generationFailed("豆包播客API Key未配置")
         }
 
-        let appId = config.doubaoPodcastAppId
-        let accessToken = config.doubaoPodcastAccessToken
+        let apiKey = config.doubaoPodcastApiKey
 
         // 2. 准备输入文本 (60%)
         let inputText = prepareInputText(from: articles, topics: topics, config: config)
         generationProgress = 0.6
 
         // 3. 调用豆包播客API生成音频 (90%)
-        let doubaoPodcastService = DoubaoPodcastService(appId: appId, accessToken: accessToken)
+        let doubaoPodcastService = DoubaoPodcastService(apiKey: apiKey)
 
         let tempDir = FileManager.default.temporaryDirectory
         let audioFileName = "podcast_\(UUID().uuidString).mp3"

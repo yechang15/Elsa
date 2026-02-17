@@ -453,23 +453,12 @@ struct SettingsView: View {
                             .font(.headline)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("App ID")
+                            Text("API Key")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            TextField("输入 App ID", text: asyncBinding(
-                                get: { appState.userConfig.doubaoPodcastAppId },
-                                set: { appState.userConfig.doubaoPodcastAppId = $0 }
-                            ))
-                            .textFieldStyle(.roundedBorder)
-                        }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Access Token")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            TextField("输入 Access Token", text: asyncBinding(
-                                get: { appState.userConfig.doubaoPodcastAccessToken },
-                                set: { appState.userConfig.doubaoPodcastAccessToken = $0 }
+                            TextField("输入 API Key", text: asyncBinding(
+                                get: { appState.userConfig.doubaoPodcastApiKey },
+                                set: { appState.userConfig.doubaoPodcastApiKey = $0 }
                             ))
                             .textFieldStyle(.roundedBorder)
                         }
@@ -511,7 +500,7 @@ struct SettingsView: View {
                                     Text(isTestingDoubaoPodcast ? "生成中..." : "测试生成播客")
                                 }
                             }
-                            .disabled(isTestingDoubaoPodcast || appState.userConfig.doubaoPodcastAppId.isEmpty || appState.userConfig.doubaoPodcastAccessToken.isEmpty)
+                            .disabled(isTestingDoubaoPodcast || appState.userConfig.doubaoPodcastApiKey.isEmpty)
 
                             if !doubaoPodcastTestProgress.isEmpty {
                                 Text(doubaoPodcastTestProgress)
@@ -706,8 +695,7 @@ struct SettingsView: View {
 
         Task {
             do {
-                let appId = appState.userConfig.doubaoPodcastAppId
-                let accessToken = appState.userConfig.doubaoPodcastAccessToken
+                let apiKey = appState.userConfig.doubaoPodcastApiKey
 
                 // 创建测试输入
                 let testInput = """
@@ -730,7 +718,7 @@ struct SettingsView: View {
                 let audioURL = tempDir.appendingPathComponent(audioFileName)
 
                 // 调用API
-                let service = DoubaoPodcastService(appId: appId, accessToken: accessToken)
+                let service = DoubaoPodcastService(apiKey: apiKey)
                 try await service.generatePodcast(
                     inputText: testInput,
                     voiceA: appState.userConfig.doubaoPodcastVoiceA,

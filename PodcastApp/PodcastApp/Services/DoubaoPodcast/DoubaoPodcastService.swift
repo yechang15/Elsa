@@ -3,8 +3,7 @@ import Foundation
 /// 豆包播客API服务
 /// 文档：https://www.volcengine.com/docs/6561/1293828
 class DoubaoPodcastService: NSObject {
-    private let appId: String
-    private let accessToken: String
+    private let apiKey: String
     private let appKey: String
     private let resourceId = "volc.service_type.10050"
 
@@ -14,9 +13,8 @@ class DoubaoPodcastService: NSObject {
     private var isFinished = false
     private var progressHandler: ((String) -> Void)?
 
-    init(appId: String, accessToken: String) {
-        self.appId = appId
-        self.accessToken = accessToken
+    init(apiKey: String) {
+        self.apiKey = apiKey
         super.init()
     }
 
@@ -61,9 +59,8 @@ class DoubaoPodcastService: NSObject {
         let url = URL(string: "wss://openspeech.bytedance.com/api/v3/sami/podcasttts")!
         var request = URLRequest(url: url)
 
-        // 设置请求头
-        request.setValue(appId, forHTTPHeaderField: "X-Api-App-Id")
-        request.setValue(accessToken, forHTTPHeaderField: "X-Api-Access-Token")
+        // 设置请求头 - 使用API Key作为Access Token
+        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Access-Token")
         request.setValue(resourceId, forHTTPHeaderField: "X-Api-Resource-Id")
         request.setValue(appKey, forHTTPHeaderField: "X-Api-App-Key")
         request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
