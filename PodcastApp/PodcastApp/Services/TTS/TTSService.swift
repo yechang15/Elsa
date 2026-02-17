@@ -66,7 +66,13 @@ class TTSService: NSObject, ObservableObject {
     func speak(text: String, voice: String, speed: Float = 1.0) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(identifier: voice)
-        utterance.rate = speed
+
+        // 将倍速转换为 AVSpeechUtterance 的 rate 值
+        // AVSpeechUtterance.rate 范围：0.0-1.0
+        // 其中 AVSpeechUtteranceDefaultSpeechRate (约0.5) 是正常速度
+        // 我们的倍速范围：0.5x-2.0x
+        // 转换公式：rate = defaultRate * speed
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * speed
 
         synthesizer.speak(utterance)
         isSpeaking = true

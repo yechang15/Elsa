@@ -66,9 +66,25 @@ struct UserConfig: Codable, Equatable {
 
     // TTS配置
     var ttsEngine: TTSEngine = .system
-    var ttsSpeed: Double = 1.0
+
+    // 系统TTS配置
     var ttsVoiceA: String = "com.apple.voice.compact.zh-CN.Tingting"
+    var ttsSpeedA: Double = 1.0
+    var ttsTestTextA: String = "大家好，我是主播A，今天咱们聊聊Swift的异步编程特性。"
     var ttsVoiceB: String = "com.apple.voice.compact.zh-CN.Sinji"
+    var ttsSpeedB: Double = 1.0
+    var ttsTestTextB: String = "大家好，我是主播B，这个话题确实很有意思呢！"
+
+    // OpenAI TTS配置
+    var openaiTTSApiKey: String = ""
+    var openaiTTSModel: String = "tts-1"
+    var openaiTTSVoiceA: String = "alloy"
+    var openaiTTSVoiceB: String = "echo"
+
+    // ElevenLabs TTS配置
+    var elevenlabsApiKey: String = ""
+    var elevenlabsVoiceA: String = ""
+    var elevenlabsVoiceB: String = ""
 
     // 播客生成配置
     var defaultLength: Int = 15 // 分钟

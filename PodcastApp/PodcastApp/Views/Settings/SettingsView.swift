@@ -6,13 +6,17 @@ struct SettingsView: View {
 
     @State private var testResult: String = ""
     @State private var isTesting: Bool = false
-    @State private var ttsTestResult: String = ""
-    @State private var isTestingTTS: Bool = false
+    @State private var ttsTestResultA: String = ""
+    @State private var isTestingTTSA: Bool = false
+    @State private var ttsTestResultB: String = ""
+    @State private var isTestingTTSB: Bool = false
     @State private var availableVoices: [AVSpeechSynthesisVoice] = []
 
     // 本地状态，避免焦点丢失
     @State private var localApiKey: String = ""
     @State private var localModel: String = ""
+    @State private var localTestTextA: String = ""
+    @State private var localTestTextB: String = ""
     @State private var isInitializing: Bool = true
 
     // 焦点管理
@@ -120,62 +124,247 @@ struct SettingsView: View {
                 }
 
                 if appState.userConfig.ttsEngine == .system {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("主播A语音")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    // 主播A配置
+                    GroupBox(label: Text("主播A配置").font(.headline)) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            // 语音选择
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Picker("", selection: asyncBinding(
+                                    get: { appState.userConfig.ttsVoiceA },
+                                    set: { appState.userConfig.ttsVoiceA = $0 }
+                                )) {
+                                    ForEach(availableVoices, id: \.identifier) { voice in
+                                        Text(voice.name).tag(voice.identifier)
+                                    }
+                                }
+                                .labelsHidden()
+                            }
 
-                        Picker("", selection: asyncBinding(
-                            get: { appState.userConfig.ttsVoiceA },
-                            set: { appState.userConfig.ttsVoiceA = $0 }
-                        )) {
-                            ForEach(availableVoices, id: \.identifier) { voice in
-                                Text(voice.name).tag(voice.identifier)
+                            // 语速控制
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("语速: \(appState.userConfig.ttsSpeedA, specifier: "%.1f")x")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Slider(value: asyncBinding(
+                                    get: { appState.userConfig.ttsSpeedA },
+                                    set: { appState.userConfig.ttsSpeedA = $0 }
+                                ), in: 0.5...2.0, step: 0.1)
+                            }
+
+                            // 测试文案
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("测试文案")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextEditor(text: $localTestTextA)
+                                    .frame(height: 60)
+                                    .font(.body)
+                                    .border(Color.gray.opacity(0.3), width: 1)
+                                    .cornerRadius(4)
+                                    .onChange(of: localTestTextA) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        DispatchQueue.main.async {
+                                            appState.userConfig.ttsTestTextA = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
+                            }
+
+                            // 测试按钮
+                            HStack {
+                                Button(action: { testTTS(voice: appState.userConfig.ttsVoiceA, speed: appState.userConfig.ttsSpeedA, text: appState.userConfig.ttsTestTextA, isHostA: true) }) {
+                                    HStack {
+                                        if isTestingTTSA {
+                                            ProgressView()
+                                                .scaleEffect(0.7)
+                                        }
+                                        Text(isTestingTTSA ? "播放中..." : "测试主播A")
+                                    }
+                                }
+                                .disabled(isTestingTTSA)
+
+                                if !ttsTestResultA.isEmpty {
+                                    Text(ttsTestResultA)
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                }
                             }
                         }
-                        .labelsHidden()
+                        .padding(.vertical, 8)
+                    }
 
-                        Text("主播B语音")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    // 主播B配置
+                    GroupBox(label: Text("主播B配置").font(.headline)) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            // 语音选择
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("语音")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Picker("", selection: asyncBinding(
+                                    get: { appState.userConfig.ttsVoiceB },
+                                    set: { appState.userConfig.ttsVoiceB = $0 }
+                                )) {
+                                    ForEach(availableVoices, id: \.identifier) { voice in
+                                        Text(voice.name).tag(voice.identifier)
+                                    }
+                                }
+                                .labelsHidden()
+                            }
 
-                        Picker("", selection: asyncBinding(
-                            get: { appState.userConfig.ttsVoiceB },
-                            set: { appState.userConfig.ttsVoiceB = $0 }
-                        )) {
-                            ForEach(availableVoices, id: \.identifier) { voice in
-                                Text(voice.name).tag(voice.identifier)
+                            // 语速控制
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("语速: \(appState.userConfig.ttsSpeedB, specifier: "%.1f")x")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Slider(value: asyncBinding(
+                                    get: { appState.userConfig.ttsSpeedB },
+                                    set: { appState.userConfig.ttsSpeedB = $0 }
+                                ), in: 0.5...2.0, step: 0.1)
+                            }
+
+                            // 测试文案
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("测试文案")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                TextEditor(text: $localTestTextB)
+                                    .frame(height: 60)
+                                    .font(.body)
+                                    .border(Color.gray.opacity(0.3), width: 1)
+                                    .cornerRadius(4)
+                                    .onChange(of: localTestTextB) { oldValue, newValue in
+                                        guard !isInitializing else { return }
+                                        DispatchQueue.main.async {
+                                            appState.userConfig.ttsTestTextB = newValue
+                                            appState.saveConfig()
+                                        }
+                                    }
+                            }
+
+                            // 测试按钮
+                            HStack {
+                                Button(action: { testTTS(voice: appState.userConfig.ttsVoiceB, speed: appState.userConfig.ttsSpeedB, text: appState.userConfig.ttsTestTextB, isHostA: false) }) {
+                                    HStack {
+                                        if isTestingTTSB {
+                                            ProgressView()
+                                                .scaleEffect(0.7)
+                                        }
+                                        Text(isTestingTTSB ? "播放中..." : "测试主播B")
+                                    }
+                                }
+                                .disabled(isTestingTTSB)
+
+                                if !ttsTestResultB.isEmpty {
+                                    Text(ttsTestResultB)
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                }
                             }
                         }
-                        .labelsHidden()
+                        .padding(.vertical, 8)
                     }
                 }
 
-                Slider(value: asyncBinding(
-                    get: { appState.userConfig.ttsSpeed },
-                    set: { appState.userConfig.ttsSpeed = $0 }
-                ), in: 0.5...2.0, step: 0.1) {
-                    Text("语速: \(appState.userConfig.ttsSpeed, specifier: "%.1f")x")
+                // OpenAI TTS 配置
+                if appState.userConfig.ttsEngine == .openai {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("OpenAI TTS 配置")
+                            .font(.headline)
+
+                        TextField("API Key", text: asyncBinding(
+                            get: { appState.userConfig.openaiTTSApiKey },
+                            set: { appState.userConfig.openaiTTSApiKey = $0 }
+                        ))
+                        .textFieldStyle(.roundedBorder)
+
+                        Picker("模型", selection: asyncBinding(
+                            get: { appState.userConfig.openaiTTSModel },
+                            set: { appState.userConfig.openaiTTSModel = $0 }
+                        )) {
+                            Text("tts-1 (标准)").tag("tts-1")
+                            Text("tts-1-hd (高清)").tag("tts-1-hd")
+                        }
+
+                        HStack(spacing: 20) {
+                            VStack(alignment: .leading) {
+                                Text("主播A语音")
+                                    .font(.caption)
+                                Picker("", selection: asyncBinding(
+                                    get: { appState.userConfig.openaiTTSVoiceA },
+                                    set: { appState.userConfig.openaiTTSVoiceA = $0 }
+                                )) {
+                                    Text("Alloy").tag("alloy")
+                                    Text("Echo").tag("echo")
+                                    Text("Fable").tag("fable")
+                                    Text("Onyx").tag("onyx")
+                                    Text("Nova").tag("nova")
+                                    Text("Shimmer").tag("shimmer")
+                                }
+                                .labelsHidden()
+                            }
+
+                            VStack(alignment: .leading) {
+                                Text("主播B语音")
+                                    .font(.caption)
+                                Picker("", selection: asyncBinding(
+                                    get: { appState.userConfig.openaiTTSVoiceB },
+                                    set: { appState.userConfig.openaiTTSVoiceB = $0 }
+                                )) {
+                                    Text("Alloy").tag("alloy")
+                                    Text("Echo").tag("echo")
+                                    Text("Fable").tag("fable")
+                                    Text("Onyx").tag("onyx")
+                                    Text("Nova").tag("nova")
+                                    Text("Shimmer").tag("shimmer")
+                                }
+                                .labelsHidden()
+                            }
+                        }
+
+                        Text("⚠️ OpenAI TTS 功能尚未实现，敬请期待")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.vertical, 8)
                 }
 
-                // TTS 测试按钮
-                HStack {
-                    Button(action: testTTS) {
-                        HStack {
-                            if isTestingTTS {
-                                ProgressView()
-                                    .scaleEffect(0.7)
-                            }
-                            Text(isTestingTTS ? "播放中..." : "测试语音")
-                        }
-                    }
-                    .disabled(isTestingTTS)
+                // ElevenLabs TTS 配置
+                if appState.userConfig.ttsEngine == .elevenlabs {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("ElevenLabs TTS 配置")
+                            .font(.headline)
 
-                    if !ttsTestResult.isEmpty {
-                        Text(ttsTestResult)
+                        TextField("API Key", text: asyncBinding(
+                            get: { appState.userConfig.elevenlabsApiKey },
+                            set: { appState.userConfig.elevenlabsApiKey = $0 }
+                        ))
+                        .textFieldStyle(.roundedBorder)
+
+                        TextField("主播A Voice ID", text: asyncBinding(
+                            get: { appState.userConfig.elevenlabsVoiceA },
+                            set: { appState.userConfig.elevenlabsVoiceA = $0 }
+                        ))
+                        .textFieldStyle(.roundedBorder)
+
+                        TextField("主播B Voice ID", text: asyncBinding(
+                            get: { appState.userConfig.elevenlabsVoiceB },
+                            set: { appState.userConfig.elevenlabsVoiceB = $0 }
+                        ))
+                        .textFieldStyle(.roundedBorder)
+
+                        Text("⚠️ ElevenLabs TTS 功能尚未实现，敬请期待")
                             .font(.caption)
-                            .foregroundColor(.green)
+                            .foregroundColor(.orange)
+
+                        Text("提示：Voice ID 可以在 ElevenLabs 控制台中找到")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
+                    .padding(.vertical, 8)
                 }
             }
             
@@ -231,6 +420,8 @@ struct SettingsView: View {
             // 初始化本地状态
             localApiKey = appState.userConfig.llmApiKey
             localModel = appState.userConfig.llmModel
+            localTestTextA = appState.userConfig.ttsTestTextA
+            localTestTextB = appState.userConfig.ttsTestTextB
 
             // 加载语音列表
             loadAvailableVoices()
@@ -262,19 +453,23 @@ struct SettingsView: View {
     }
 
     // 测试 TTS
-    private func testTTS() {
-        isTestingTTS = true
-        ttsTestResult = ""
+    private func testTTS(voice: String, speed: Double, text: String, isHostA: Bool) {
+        if isHostA {
+            isTestingTTSA = true
+            ttsTestResultA = ""
+        } else {
+            isTestingTTSB = true
+            ttsTestResultB = ""
+        }
 
         Task {
             let ttsService = TTSService()
-            let testText = "哈喽各位码友，今天咱们聊聊Swift的异步编程特性呀？"
 
             await MainActor.run {
                 ttsService.speak(
-                    text: testText,
-                    voice: appState.userConfig.ttsVoiceA,
-                    speed: Float(appState.userConfig.ttsSpeed)
+                    text: text,
+                    voice: voice,
+                    speed: Float(speed)
                 )
             }
 
@@ -282,8 +477,13 @@ struct SettingsView: View {
             try? await Task.sleep(nanoseconds: 5_000_000_000) // 5秒
 
             await MainActor.run {
-                ttsTestResult = "✅ 播放完成"
-                isTestingTTS = false
+                if isHostA {
+                    ttsTestResultA = "✅ 播放完成"
+                    isTestingTTSA = false
+                } else {
+                    ttsTestResultB = "✅ 播放完成"
+                    isTestingTTSB = false
+                }
             }
         }
     }

@@ -58,11 +58,13 @@ class PodcastService: ObservableObject {
         generationProgress = 0.6
 
         // 3. 生成音频 (90%)
+        // 使用两个主播的平均语速
+        let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
         let audioURL = try await ttsService.generateAudio(
             script: script,
             voiceA: config.ttsVoiceA,
             voiceB: config.ttsVoiceB,
-            speed: Float(config.ttsSpeed)
+            speed: averageSpeed
         )
         generationProgress = 0.9
 
@@ -129,11 +131,12 @@ class PodcastService: ObservableObject {
         )
 
         // 生成音频
+        let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
         let audioURL = try await ttsService.generateAudio(
             script: script,
             voiceA: config.ttsVoiceA,
             voiceB: config.ttsVoiceB,
-            speed: Float(config.ttsSpeed)
+            speed: averageSpeed
         )
 
         // 创建播客
