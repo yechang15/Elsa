@@ -91,17 +91,25 @@ class RSSService: ObservableObject {
     }
 
     /// 批量获取多个RSS源
-    func fetchMultipleFeeds(urls: [String]) async -> [RSSArticle] {
-        await withTaskGroup(of: [RSSArticle].self) { group in
-            for url in urls {
+    func fetchMultipleFeeds(urls: [String], progressHandler: ((Int, Int) -> Void)? = nil) async -> [RSSArticle] {
+        let totalCount = urls.count
+        var completedCount = 0
+
+        return await withTaskGroup(of: (Int, [RSSArticle]).self) { group in
+            for (index, url) in urls.enumerated() {
                 group.addTask {
-                    (try? await self.fetchFeed(url: url)) ?? []
+                    let articles = (try? await self.fetchFeed(url: url)) ?? []
+                    return (index, articles)
                 }
             }
 
             var allArticles: [RSSArticle] = []
-            for await articles in group {
+            for await (_, articles) in group {
+                completedCount += 1
                 allArticles.append(contentsOf: articles)
+
+                // 报告进度
+                progressHandler?(completedCount, totalCount)
             }
 
             // 按发布时间排序

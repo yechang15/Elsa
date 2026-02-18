@@ -40,10 +40,9 @@ struct PodcastListView: View {
                 ScrollView {
                     LazyVStack(spacing: 16) {
                         ForEach(filteredPodcasts) { podcast in
-                            PodcastCard(podcast: podcast)
-                                .onTapGesture {
-                                    playPodcast(podcast)
-                                }
+                            PodcastCard(podcast: podcast, onPlay: {
+                                playPodcast(podcast)
+                            })
                         }
                     }
                     .padding()
@@ -74,18 +73,30 @@ struct PodcastListView: View {
 
 struct PodcastCard: View {
     let podcast: Podcast
+    let onPlay: () -> Void
     @State private var isExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // 标题和话题
-            VStack(alignment: .leading, spacing: 4) {
-                Text(podcast.title)
-                    .font(.headline)
+            HStack(alignment: .top, spacing: 12) {
+                // 播放按钮
+                Button(action: onPlay) {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.accentColor)
+                }
+                .buttonStyle(.plain)
+                .help("播放播客")
 
-                Text(podcast.topics.joined(separator: " · "))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(podcast.title)
+                        .font(.headline)
+
+                    Text(podcast.topics.joined(separator: " · "))
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
             }
 
             // 时长和日期

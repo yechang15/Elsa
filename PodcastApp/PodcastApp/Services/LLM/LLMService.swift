@@ -27,9 +27,19 @@ class LLMService {
         length: Int,
         style: String,
         depth: String,
+        hostAName: String = "主播A",
+        hostBName: String = "主播B",
         progressHandler: ((String) -> Void)? = nil
     ) async throws -> String {
-        let prompt = buildPrompt(articles: articles, topics: topics, length: length, style: style, depth: depth)
+        let prompt = buildPrompt(
+            articles: articles,
+            topics: topics,
+            length: length,
+            style: style,
+            depth: depth,
+            hostAName: hostAName,
+            hostBName: hostBName
+        )
 
         switch provider {
         case .doubao:
@@ -40,7 +50,15 @@ class LLMService {
     }
 
     /// 构建提示词
-    private func buildPrompt(articles: [RSSArticle], topics: [String], length: Int, style: String, depth: String) -> String {
+    private func buildPrompt(
+        articles: [RSSArticle],
+        topics: [String],
+        length: Int,
+        style: String,
+        depth: String,
+        hostAName: String,
+        hostBName: String
+    ) -> String {
         let articlesText = articles.prefix(5).map { article in
             """
             标题：\(article.title)
@@ -59,11 +77,12 @@ class LLMService {
         \(articlesText)
 
         要求：
-        1. 生成两个主播（主播A和主播B）的对话
+        1. 生成两个主播（\(hostAName)和\(hostBName)）的对话
         2. 对话要自然、有趣，符合\(style)的风格
         3. 内容深度符合\(depth)的要求
         4. 时长约\(length)分钟（约\(length * 150)字）
-        5. 格式：每行一个对话，格式为"主播A：内容"或"主播B：内容"
+        5. 格式：每行一个对话，格式为"\(hostAName)：内容"或"\(hostBName)：内容"
+        6. 主播在介绍自己时，直接说"我是\(hostAName)"或"我是\(hostBName)"，不要说"我是主播A"或"我是主播B"
 
         请直接输出播客脚本，不要有其他说明文字。
         """

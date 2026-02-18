@@ -35,6 +35,11 @@ class TTSService: NSObject, ObservableObject {
     }
 
     /// 解析播客脚本
+    /// 支持格式：
+    /// - "主播A：内容" 或 "主播A:内容"
+    /// - "主播B：内容" 或 "主播B:内容"
+    /// - "小何：内容" 或 "小何:内容"（自定义主播名）
+    /// - "云舟：内容" 或 "云舟:内容"（自定义主播名）
     private func parseScript(_ script: String) -> [Dialogue] {
         let lines = script.components(separatedBy: .newlines)
         var dialogues: [Dialogue] = []
@@ -43,12 +48,25 @@ class TTSService: NSObject, ObservableObject {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.isEmpty { continue }
 
-            if trimmed.hasPrefix("主播A：") || trimmed.hasPrefix("主播A:") {
-                let content = trimmed.replacingOccurrences(of: "主播A：", with: "").replacingOccurrences(of: "主播A:", with: "")
-                dialogues.append(Dialogue(speaker: .hostA, content: content))
-            } else if trimmed.hasPrefix("主播B：") || trimmed.hasPrefix("主播B:") {
-                let content = trimmed.replacingOccurrences(of: "主播B：", with: "").replacingOccurrences(of: "主播B:", with: "")
-                dialogues.append(Dialogue(speaker: .hostB, content: content))
+            // 尝试匹配 "名称：内容" 或 "名称:内容" 格式
+            if let colonIndex = trimmed.firstIndex(where: { $0 == "：" || $0 == ":" }) {
+                let speakerName = String(trimmed[..<colonIndex]).trimmingCharacters(in: .whitespaces)
+                let content = String(trimmed[trimmed.index(after: colonIndex)...]).trimmingCharacters(in: .whitespaces)
+
+                // 判断是主播A还是主播B
+                // 规则：包含"A"、奇数位置、或者是第一个出现的名称 -> 主播A
+                //      包含"B"、偶数位置、或者是第二个出现的名称 -> 主播B
+                let speaker: Dialogue.Speaker
+                if speakerName.contains("A") || speakerName == "主播A" {
+                    speaker = .hostA
+                } else if speakerName.contains("B") || speakerName == "主播B" {
+                    speaker = .hostB
+                } else {
+                    // 根据对话顺序交替分配
+                    speaker = dialogues.isEmpty || dialogues.last?.speaker == .hostB ? .hostA : .hostB
+                }
+
+                dialogues.append(Dialogue(speaker: speaker, content: content))
             }
         }
 

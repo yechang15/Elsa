@@ -43,7 +43,13 @@ class PodcastService: ObservableObject {
         let rssFeeds = topics.flatMap { $0.rssFeeds }
         let feedURLs = rssFeeds.map { $0.url }
 
-        let articles = await rssService.fetchMultipleFeeds(urls: feedURLs)
+        let articles = await rssService.fetchMultipleFeeds(urls: feedURLs) { completed, total in
+            Task { @MainActor in
+                self.currentStatus = "正在获取RSS内容... (\(completed)/\(total))"
+                // 进度从0.1到0.3，根据完成比例计算
+                self.generationProgress = 0.1 + (0.2 * Double(completed) / Double(total))
+            }
+        }
         await MainActor.run {
             generationProgress = 0.3
             currentStatus = "已获取 \(articles.count) 篇文章"
@@ -98,12 +104,18 @@ class PodcastService: ObservableObject {
 
         // 2. 生成播客脚本 (60%)
         await MainActor.run { currentStatus = "正在生成播客脚本..." }
+
+        // 获取主播名称
+        let (hostAName, hostBName) = getHostNames(from: config)
+
         let script = try await llmService.generatePodcastScript(
             articles: articles,
             topics: topics,
             length: config.defaultLength,
             style: config.hostStyle.rawValue,
-            depth: config.contentDepth.rawValue
+            depth: config.contentDepth.rawValue,
+            hostAName: hostAName,
+            hostBName: hostBName
         ) { progress in
             // 实时显示脚本生成进度
             Task { @MainActor in
@@ -300,6 +312,56 @@ class PodcastService: ObservableObject {
         } else {
             return "\(topics.joined(separator: " · ")) - \(dateString)"
         }
+    }
+
+    /// 从配置中获取主播名称
+    /// 从音色ID或名称中提取简短的主播名称
+    private func getHostNames(from config: UserConfig) -> (String, String) {
+        let hostAName: String
+        let hostBName: String
+
+        switch config.ttsEngine {
+        case .doubaoTTS:
+            // 从豆包TTS音色ID中提取名称
+            hostAName = extractVoiceName(from: config.doubaoTTSVoiceA, resourceId: config.doubaoTTSResourceId)
+            hostBName = extractVoiceName(from: config.doubaoTTSVoiceB, resourceId: config.doubaoTTSResourceId)
+        case .doubaoPodcast:
+            // 从豆包播客音色ID中提取名称
+            hostAName = extractVoiceName(from: config.doubaoPodcastVoiceA, resourceId: "")
+            hostBName = extractVoiceName(from: config.doubaoPodcastVoiceB, resourceId: "")
+        case .system:
+            // 系统TTS使用默认名称
+            hostAName = "婷婷"
+            hostBName = "辛吉"
+        case .openai:
+            // OpenAI TTS使用音色名称
+            hostAName = config.openaiTTSVoiceA.capitalized
+            hostBName = config.openaiTTSVoiceB.capitalized
+        case .elevenlabs:
+            // ElevenLabs使用默认名称
+            hostAName = "主播A"
+            hostBName = "主播B"
+        }
+
+        return (hostAName, hostBName)
+    }
+
+    /// 从音色ID中提取名称
+    private func extractVoiceName(from voiceId: String, resourceId: String) -> String {
+        // 尝试从VolcengineVoices中查找
+        let allVoices = VolcengineVoices.tts2Voices + VolcengineVoices.tts1Voices
+        if let voice = allVoices.first(where: { $0.id == voiceId }) {
+            // 提取名称的第一部分（去掉版本号和描述）
+            let name = voice.name
+            // 例如："小何 2.0" -> "小何", "Vivi 2.0" -> "Vivi"
+            if let firstPart = name.components(separatedBy: " ").first {
+                return firstPart
+            }
+            return name
+        }
+
+        // 如果找不到，返回默认名称
+        return "主播"
     }
 
     /// 手动生成播客（基于选定的文章）
