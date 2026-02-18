@@ -141,6 +141,7 @@ struct GeneratePodcastSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var podcastService: PodcastService
+    @EnvironmentObject var audioPlayer: AudioPlayer
 
     @Query(sort: \Topic.priority, order: .reverse) private var topics: [Topic]
 
@@ -402,6 +403,13 @@ struct GeneratePodcastSheet: View {
                     stepProgress = 1.0
                     print("播客生成成功: \(podcast.title)")
                     print("音频文件路径: \(podcast.audioFilePath ?? "无")")
+
+                    // 自动播放生成的播客
+                    if let audioPath = podcast.audioFilePath {
+                        let audioURL = URL(fileURLWithPath: audioPath)
+                        audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
+                        print("自动开始播放播客")
+                    }
                 }
 
                 // 延迟一下让用户看到完成状态

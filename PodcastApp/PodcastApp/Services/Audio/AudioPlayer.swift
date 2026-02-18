@@ -157,6 +157,10 @@ class AudioPlayer: NSObject, ObservableObject {
                     Task {
                         if let duration = try? await playerItem.asset.load(.duration).seconds, duration.isFinite {
                             print("音频时长: \(duration) 秒")
+                            // 立即更新duration，确保进度条能正确显示
+                            await MainActor.run {
+                                self.duration = duration
+                            }
                         }
                     }
                 case .failed:
