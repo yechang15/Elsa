@@ -55,33 +55,43 @@ class PodcastService: ObservableObject {
 
         let topicNames = topics.map { $0.name }
 
-        // 根据TTS引擎选择不同的生成方式
-        if config.ttsEngine == .doubaoPodcast {
-            // 使用豆包播客API（一体化模式）
-            return try await generateWithDoubaoPodcast(
-                articles: articles,
-                topics: topicNames,
-                config: config,
-                modelContext: modelContext
-            )
-        } else {
-            // 使用传统模式（LLM生成脚本 + TTS合成音频）
+        // 根据TTS引擎的策略选择不同的生成方式
+        // 策略1：一体化引擎（如豆包播客API）- 直接将原文发送给API，由API内部完成脚本生成和音频合成
+        // 策略2：纯TTS引擎（如系统TTS、豆包TTS、OpenAI TTS等）- 先用LLM生成对话脚本，再用TTS合成音频
+        if config.ttsEngine.needsScriptGeneration {
+            // 策略2：纯TTS引擎 - 需要LLM生成脚本
             return try await generateWithTraditionalTTS(
                 articles: articles,
                 topics: topicNames,
                 config: config,
                 modelContext: modelContext
             )
+        } else {
+            // 策略1：一体化引擎 - 不需要LLM生成脚本
+            switch config.ttsEngine {
+            case .doubaoPodcast:
+                return try await generateWithDoubaoPodcast(
+                    articles: articles,
+                    topics: topicNames,
+                    config: config,
+                    modelContext: modelContext
+                )
+            default:
+                throw PodcastError.generationFailed("不支持的一体化引擎: \(config.ttsEngine.rawValue)")
+            }
         }
     }
 
-    /// 使用传统TTS生成播客
+    /// 使用传统TTS生成播客（策略2：纯TTS引擎）
+    /// 流程：原文 → LLM生成对话脚本 → TTS合成音频
+    /// 适用引擎：系统TTS、豆包TTS、OpenAI TTS、ElevenLabs等
     private func generateWithTraditionalTTS(
         articles: [RSSArticle],
         topics: [String],
         config: UserConfig,
         modelContext: ModelContext
     ) async throws -> Podcast {
+        // 验证：纯TTS引擎必须配置LLM服务
         guard let llmService = llmService else {
             throw PodcastError.llmNotConfigured
         }
@@ -109,21 +119,34 @@ class PodcastService: ObservableObject {
         await MainActor.run { currentStatus = "正在合成音频..." }
         let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
 
-        // 根据 TTS 引擎选择 API Key
+        // 根据 TTS 引擎选择 API Key 和音色
         let ttsApiKey: String
+        let voiceA: String
+        let voiceB: String
+
         switch config.ttsEngine {
         case .doubaoTTS:
             ttsApiKey = config.llmApiKey // 使用 LLM API Key（豆包统一）
+            voiceA = config.doubaoTTSVoiceA
+            voiceB = config.doubaoTTSVoiceB
         case .openai:
             ttsApiKey = config.openaiTTSApiKey
+            voiceA = config.openaiTTSVoiceA
+            voiceB = config.openaiTTSVoiceB
+        case .elevenlabs:
+            ttsApiKey = config.elevenlabsApiKey
+            voiceA = config.elevenlabsVoiceA
+            voiceB = config.elevenlabsVoiceB
         default:
             ttsApiKey = ""
+            voiceA = config.ttsVoiceA
+            voiceB = config.ttsVoiceB
         }
 
         let audioURL = try await ttsService.generateAudio(
             script: script,
-            voiceA: config.ttsVoiceA,
-            voiceB: config.ttsVoiceB,
+            voiceA: voiceA,
+            voiceB: voiceB,
             speed: averageSpeed,
             engine: config.ttsEngine,
             apiKey: ttsApiKey,
@@ -169,7 +192,9 @@ class PodcastService: ObservableObject {
         return podcast
     }
 
-    /// 使用豆包播客API生成播客
+    /// 使用豆包播客API生成播客（策略1：一体化引擎）
+    /// 流程：原文 → 一体化API（内部生成脚本+合成音频）
+    /// 特点：不需要单独配置LLM，API内部完成所有处理
     private func generateWithDoubaoPodcast(
         articles: [RSSArticle],
         topics: [String],

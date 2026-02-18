@@ -38,6 +38,16 @@ class VolcengineBidirectionalTTS: NSObject {
 
     /// 合成语音
     func synthesize(text: String, voice: String, speed: Float = 1.0) async throws -> Data {
+        // 验证音色是否与resource ID匹配
+        let availableVoices = VolcengineVoices.voices(for: resourceId)
+        guard availableVoices.contains(where: { $0.id == voice }) else {
+            print("❌ 音色验证失败:")
+            print("   选择的音色: \(voice)")
+            print("   当前Resource ID: \(resourceId)")
+            print("   可用音色: \(availableVoices.map { $0.id }.joined(separator: ", "))")
+            throw TTSError.invalidVoice("音色 '\(voice)' 不支持 Resource ID '\(resourceId)'")
+        }
+
         // 重置缓冲区
         audioDataBuffer = Data()
 

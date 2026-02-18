@@ -279,93 +279,57 @@ struct SettingsView: View {
                     }
 
                     // 引擎说明
-                    Group {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(localTTSEngine.needsScriptGeneration ? "📱 纯TTS引擎" : "🎙️ 一体化引擎")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(localTTSEngine.needsScriptGeneration ? .blue : .green)
+
+                            Spacer()
+                        }
+
+                        Text("• \(localTTSEngine.workflow)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        if localTTSEngine.needsScriptGeneration {
+                            Text("• ⚠️ 需要配合上方的 LLM 先生成对话脚本")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        } else {
+                            Text("• ✅ 不需要单独配置 LLM，一步到位")
+                                .font(.caption)
+                                .foregroundColor(.green)
+                        }
+
+                        // 引擎特定说明
                         switch localTTSEngine {
                         case .system:
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("📱 纯TTS引擎")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.blue)
-                                Text("• 使用 macOS 系统自带的语音合成")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 需要配合上方的 LLM 先生成对话脚本")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 流程：原文 → LLM生成脚本 → 系统TTS转语音")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text("• 使用 macOS 系统自带的语音合成")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         case .doubaoTTS:
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("🔥 火山引擎双向流式TTS")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.orange)
-                                Text("• 使用火山引擎的双向流式语音合成API")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 需要配合上方的 LLM 先生成对话脚本")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 流程：原文 → LLM生成脚本 → 火山TTS转语音")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text("• 使用火山引擎的双向流式语音合成API")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         case .openai:
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("📱 纯TTS引擎")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.blue)
-                                Text("• 使用 OpenAI 的高质量语音合成")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 需要配合上方的 LLM 先生成对话脚本")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 流程：原文 → LLM生成脚本 → OpenAI TTS转语音")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text("• 使用 OpenAI 的高质量语音合成")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         case .elevenlabs:
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("📱 纯TTS引擎")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.blue)
-                                Text("• 使用 ElevenLabs 的超自然语音合成")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 需要配合上方的 LLM 先生成对话脚本")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 流程：原文 → LLM生成脚本 → ElevenLabs转语音")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text("• 使用 ElevenLabs 的超自然语音合成")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         case .doubaoPodcast:
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("🎙️ 一体化播客引擎")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.green)
-                                Text("• 豆包播客API自动完成脚本生成和语音合成")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 不需要单独配置 LLM，一步到位")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("• 流程：原文 → 豆包播客API → 播客音频（一步完成）")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                            Text("• 豆包播客API自动完成脚本生成和语音合成")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.vertical, 4)
-                    .padding(.horizontal, 8)
-                    .background(Color.gray.opacity(0.1))
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(Color.secondary.opacity(0.1))
                     .cornerRadius(8)
                 }
 

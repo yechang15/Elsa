@@ -92,7 +92,7 @@ struct PodcastCard: View {
             HStack {
                 Text(podcast.formattedDuration)
                 Text("·")
-                Text(podcast.createdAt, style: .date)
+                Text(podcast.createdAt, format: .dateTime.year().month().day().hour().minute())
                 Text("·")
                 Text("\(podcast.length) 分钟")
             }

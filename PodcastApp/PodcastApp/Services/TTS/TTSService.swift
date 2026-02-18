@@ -374,6 +374,7 @@ enum TTSError: LocalizedError {
     case invalidURL
     case connectionFailed
     case invalidResponse
+    case invalidVoice(String)
 
     var errorDescription: String? {
         switch self {
@@ -389,6 +390,8 @@ enum TTSError: LocalizedError {
             return "连接失败"
         case .invalidResponse:
             return "无效的响应"
+        case .invalidVoice(let message):
+            return "音色配置错误: \(message)"
         }
     }
 }
@@ -407,6 +410,38 @@ enum TTSEngine: String, Codable {
     case openai = "OpenAI TTS"
     case elevenlabs = "ElevenLabs"
     case doubaoPodcast = "豆包播客API（一体化）"
+
+    /// 是否需要LLM生成对话脚本
+    /// - 纯TTS引擎：需要先用LLM将原文转换为对话脚本，再用TTS合成音频
+    /// - 一体化引擎：直接将原文发送给API，由API内部完成脚本生成和音频合成
+    var needsScriptGeneration: Bool {
+        switch self {
+        case .system, .doubaoTTS, .openai, .elevenlabs:
+            return true  // 纯TTS引擎，需要LLM生成脚本
+        case .doubaoPodcast:
+            return false // 一体化引擎，不需要LLM生成脚本
+        }
+    }
+
+    /// 引擎类型描述
+    var engineType: String {
+        switch self {
+        case .system, .doubaoTTS, .openai, .elevenlabs:
+            return "纯TTS引擎"
+        case .doubaoPodcast:
+            return "一体化引擎"
+        }
+    }
+
+    /// 工作流程描述
+    var workflow: String {
+        switch self {
+        case .system, .doubaoTTS, .openai, .elevenlabs:
+            return "原文 → LLM生成对话脚本 → TTS合成音频"
+        case .doubaoPodcast:
+            return "原文 → 一体化API（内部生成脚本+合成音频）"
+        }
+    }
 }
 
 /// 可用的系统语音
