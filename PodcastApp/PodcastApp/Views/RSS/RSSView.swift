@@ -82,7 +82,56 @@ struct RSSView: View {
     }
 
     private func refreshAllFeeds() {
-        // TODO: 实现刷新所有 RSS 源
+        // 获取所有RSS源
+        let allFeeds = topics.flatMap { $0.rssFeeds }
+
+        guard !allFeeds.isEmpty else { return }
+
+        // 清空之前的测试结果
+        feedTestResults.removeAll()
+
+        // 标记所有源为测试中
+        for feed in allFeeds {
+            testingFeeds.insert(feed.id)
+        }
+
+        // 创建feedId到feed对象的映射
+        let feedMap = Dictionary(uniqueKeysWithValues: allFeeds.map { ($0.id, $0) })
+
+        // 并发测试所有RSS源
+        Task {
+            await withTaskGroup(of: (UUID, FeedTestResult, Int).self) { group in
+                for feed in allFeeds {
+                    group.addTask {
+                        do {
+                            let articles = try await self.rssService.fetchFeed(url: feed.url)
+                            return (feed.id, .success(articles.count), articles.count)
+                        } catch {
+                            return (feed.id, .failure(error.localizedDescription), 0)
+                        }
+                    }
+                }
+
+                // 收集所有结果
+                for await (feedId, result, articleCount) in group {
+                    await MainActor.run {
+                        self.testingFeeds.remove(feedId)
+                        self.feedTestResults[feedId] = result
+
+                        // 如果测试成功，更新RSS源的元数据
+                        if case .success = result, let feed = feedMap[feedId] {
+                            feed.lastUpdated = Date()
+                            feed.articleCount = articleCount
+                        }
+                    }
+                }
+
+                // 保存所有更新
+                await MainActor.run {
+                    try? self.modelContext.save()
+                }
+            }
+        }
     }
 
     private func testFeed(_ feed: RSSFeed) {
@@ -94,6 +143,11 @@ struct RSSView: View {
                 await MainActor.run {
                     testingFeeds.remove(feed.id)
                     feedTestResults[feed.id] = .success(articles.count)
+
+                    // 更新RSS源的元数据
+                    feed.lastUpdated = Date()
+                    feed.articleCount = articles.count
+                    try? modelContext.save()
                 }
             } catch {
                 await MainActor.run {

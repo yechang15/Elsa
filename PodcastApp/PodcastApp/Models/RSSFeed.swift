@@ -31,16 +31,17 @@ final class RSSFeed {
         }
 
         let interval = Date().timeIntervalSince(lastUpdated)
-        let hours = Int(interval / 3600)
+        let minutes = Int(interval / 60)
 
-        if hours < 1 {
+        // 1分钟内显示"刚刚更新"
+        if minutes < 1 {
             return "刚刚更新"
-        } else if hours < 24 {
-            return "\(hours) 小时前更新"
-        } else {
-            let days = hours / 24
-            return "\(days) 天前更新"
         }
+
+        // 超过1分钟，显示具体时间
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return formatter.string(from: lastUpdated)
     }
 }
 
