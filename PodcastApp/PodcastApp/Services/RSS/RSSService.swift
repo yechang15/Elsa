@@ -7,25 +7,67 @@ class RSSService: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
 
-    /// 获取RSS源内容
-    func fetchFeed(url: String) async throws -> [RSSArticle] {
+    init() {
+        // 禁用系统代理，避免代理连接失败
+        let config = URLSessionConfiguration.default
+        config.connectionProxyDictionary = [:]
+        URLSession.shared.configuration.connectionProxyDictionary = [:]
+    }
+
+    /// 获取RSS源内容（不重试）
+    func fetchFeed(url: String, retryCount: Int = 0) async throws -> [RSSArticle] {
         guard let feedURL = URL(string: url) else {
+            print("❌ RSS源URL无效: \(url)")
             throw RSSError.invalidURL
         }
 
-        return try await withCheckedThrowingContinuation { continuation in
-            let parser = FeedParser(URL: feedURL)
+        print("📡 开始获取RSS: \(url)")
 
-            parser.parseAsync { result in
-                switch result {
-                case .success(let feed):
-                    let articles = self.extractArticles(from: feed)
-                    continuation.resume(returning: articles)
+        do {
+            let articles = try await fetchFeedOnce(url: feedURL)
+            print("✅ RSS获取成功: \(url) - \(articles.count) 篇文章")
+            return articles
+        } catch {
+            print("❌ RSS获取失败: \(url)")
+            print("   错误: \(error.localizedDescription)")
+            throw error
+        }
+    }
 
-                case .failure(let error):
-                    continuation.resume(throwing: RSSError.parseFailed(error.localizedDescription))
+    /// 单次获取RSS源内容（带超时）
+    private func fetchFeedOnce(url: URL) async throws -> [RSSArticle] {
+        return try await withThrowingTaskGroup(of: [RSSArticle].self) { group in
+            // 添加获取任务
+            group.addTask {
+                try await withCheckedThrowingContinuation { continuation in
+                    let parser = FeedParser(URL: url)
+
+                    parser.parseAsync { result in
+                        switch result {
+                        case .success(let feed):
+                            let articles = self.extractArticles(from: feed)
+                            continuation.resume(returning: articles)
+
+                        case .failure(let error):
+                            continuation.resume(throwing: RSSError.parseFailed(error.localizedDescription))
+                        }
+                    }
                 }
             }
+
+            // 添加超时任务
+            group.addTask {
+                try await Task.sleep(nanoseconds: 10_000_000_000) // 10秒超时
+                throw RSSError.networkError("请求超时")
+            }
+
+            // 返回第一个完成的任务结果
+            if let result = try await group.next() {
+                group.cancelAll()
+                return result
+            }
+
+            throw RSSError.networkError("获取失败")
         }
     }
 
@@ -115,6 +157,57 @@ class RSSService: ObservableObject {
             // 按发布时间排序
             return allArticles.sorted { $0.pubDate > $1.pubDate }
         }
+    }
+
+    /// 批量获取多个RSS源（带详细结果）
+    func fetchMultipleFeedsWithDetails(urls: [String], progressHandler: ((Int, Int) -> Void)? = nil) async -> [(url: String, articles: [RSSArticle])] {
+        let totalCount = urls.count
+        var completedCount = 0
+        var successCount = 0
+        var failedCount = 0
+
+        print("📡 开始批量获取 \(totalCount) 个RSS源...")
+
+        let results = await withTaskGroup(of: (String, [RSSArticle]).self) { group in
+            for url in urls {
+                group.addTask {
+                    do {
+                        let articles = try await self.fetchFeed(url: url)
+                        return (url, articles)
+                    } catch {
+                        // 失败时返回空数组，但保留URL信息
+                        return (url, [])
+                    }
+                }
+            }
+
+            var results: [(url: String, articles: [RSSArticle])] = []
+            for await result in group {
+                completedCount += 1
+                if result.1.isEmpty {
+                    failedCount += 1
+                } else {
+                    successCount += 1
+                }
+
+                results.append(result)
+
+                // 报告进度
+                progressHandler?(completedCount, totalCount)
+            }
+
+            print("📊 RSS获取完成: 成功 \(successCount)/\(totalCount), 失败 \(failedCount)/\(totalCount)")
+            if failedCount > 0 {
+                print("⚠️ 失败的RSS源:")
+                for result in results where result.1.isEmpty {
+                    print("   - \(result.0)")
+                }
+            }
+
+            return results
+        }
+
+        return results
     }
 }
 

@@ -4,6 +4,9 @@ import SwiftData
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var audioPlayer: AudioPlayer
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var hasCleanedFailedRSS = false
 
     var body: some View {
         Group {
@@ -14,6 +17,49 @@ struct ContentView: View {
                 // 主界面
                 MainView()
             }
+        }
+        .onAppear {
+            cleanFailedRSSFeeds()
+        }
+    }
+
+    /// 清理失效的RSS源
+    private func cleanFailedRSSFeeds() {
+        guard !hasCleanedFailedRSS else { return }
+        hasCleanedFailedRSS = true
+
+        let failedURLs = [
+            "https://hbr.org/feed",
+            "https://openai.com/blog/rss/",
+            "https://www.anthropic.com/rss.xml",
+            "https://cloud.google.com/blog/rss",
+            "https://www.mckinsey.com/featured-insights/rss",
+            "https://www.economist.com/rss",
+            "https://www.wsj.com/xml/rss/3_7085.xml",
+            "https://www.bloomberg.com/feed/podcast/money-stuff.xml",
+            "https://ai.googleblog.com/feeds/posts/default",
+            "https://www.geekpark.net/rss"
+        ]
+
+        do {
+            let descriptor = FetchDescriptor<RSSFeed>()
+            let allFeeds = try modelContext.fetch(descriptor)
+
+            var deletedCount = 0
+            for feed in allFeeds {
+                if failedURLs.contains(feed.url) {
+                    modelContext.delete(feed)
+                    deletedCount += 1
+                    print("🗑️ 删除失效RSS源: \(feed.url)")
+                }
+            }
+
+            if deletedCount > 0 {
+                try modelContext.save()
+                print("✅ 已清理 \(deletedCount) 个失效的RSS源")
+            }
+        } catch {
+            print("❌ 清理失效RSS源失败: \(error)")
         }
     }
 }

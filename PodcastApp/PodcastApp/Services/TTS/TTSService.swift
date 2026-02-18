@@ -101,13 +101,49 @@ class TTSService: NSObject, ObservableObject {
                 speed: speed
             )
 
+            print("   收到音频数据: \(audioData.count) 字节")
+
+            // 验证音频数据不为空
+            guard audioData.count > 0 else {
+                print("❌ 音频数据为空，跳过此段对话")
+                continue
+            }
+
             // 保存音频数据到临时文件
             let tempFile = FileManager.default.temporaryDirectory
                 .appendingPathComponent("dialogue_\(index)_\(UUID().uuidString).mp3")
             try audioData.write(to: tempFile)
+
+            // 验证文件写入成功
+            if let attrs = try? FileManager.default.attributesOfItem(atPath: tempFile.path),
+               let fileSize = attrs[.size] as? Int64 {
+                print("   临时文件已保存: \(tempFile.lastPathComponent) (\(fileSize) 字节)")
+            }
+
+            // 验证音频文件是否有效
+            let asset = AVURLAsset(url: tempFile)
+            do {
+                let tracks = try await asset.loadTracks(withMediaType: .audio)
+                if tracks.isEmpty {
+                    print("⚠️ 警告：音频文件无效，没有音频轨道")
+                    try? FileManager.default.removeItem(at: tempFile)
+                    continue
+                }
+                let duration = try await asset.load(.duration)
+                print("   音频验证成功，时长: \(CMTimeGetSeconds(duration)) 秒")
+            } catch {
+                print("❌ 音频文件验证失败: \(error.localizedDescription)")
+                try? FileManager.default.removeItem(at: tempFile)
+                continue
+            }
+
             audioFiles.append(tempFile)
 
             print("✅ 第 \(index + 1) 段对话合成完成")
+        }
+
+        guard !audioFiles.isEmpty else {
+            throw TTSError.audioProcessingFailed
         }
 
         // 合并所有音频文件
@@ -262,41 +298,47 @@ class TTSService: NSObject, ObservableObject {
 
     /// 合成单段对话
     private func synthesizeSingleDialogue(text: String, voice: String, speed: Float, outputURL: URL) async throws {
+        // macOS的AVSpeechSynthesizer不支持直接写入文件
+        // 这里使用一个简化的实现：生成静音占位
+        // 如果需要真正的系统TTS音频，建议使用NSSpeechSynthesizer或其他方案
+
         return try await withCheckedThrowingContinuation { continuation in
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.voice = AVSpeechSynthesisVoice(identifier: voice)
-            utterance.rate = AVSpeechUtteranceDefaultSpeechRate * speed
+            // 估算音频时长（基于文本长度）
+            let estimatedDuration = Double(text.count) / 10.0 * Double(speed) // 粗略估算
+            let sampleRate: Double = 44100.0
+            let frameCount = AVAudioFrameCount(estimatedDuration * sampleRate)
 
-            // 使用 AVSpeechSynthesizer 写入文件
-            // 注意：macOS 的 AVSpeechSynthesizer 不直接支持写入文件
-            // 我们需要使用 AVAudioEngine 录制输出
+            // 创建音频格式
+            let format = AVAudioFormat(
+                commonFormat: .pcmFormatFloat32,
+                sampleRate: sampleRate,
+                channels: 1,
+                interleaved: false
+            )!
 
-            let engine = AVAudioEngine()
-            let player = AVAudioPlayerNode()
+            // 创建PCM buffer
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+                continuation.resume(throwing: TTSError.audioProcessingFailed)
+                return
+            }
+            buffer.frameLength = frameCount
 
-            engine.attach(player)
-            engine.connect(player, to: engine.mainMixerNode, format: nil)
-
-            // 创建音频文件
+            // 创建音频文件（使用CAF格式，更兼容）
             let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 44100.0,
+                AVFormatIDKey: Int(kAudioFormatLinearPCM),
+                AVSampleRateKey: sampleRate,
                 AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                AVLinearPCMBitDepthKey: 32,
+                AVLinearPCMIsFloatKey: true,
+                AVLinearPCMIsBigEndianKey: false
             ]
 
             do {
                 let audioFile = try AVAudioFile(forWriting: outputURL, settings: settings)
-
-                // 使用系统 TTS 生成音频
-                // 这是一个简化实现，实际需要更复杂的音频处理
-                // 暂时使用占位实现
-                let silence = AVAudioPCMBuffer(pcmFormat: engine.mainMixerNode.outputFormat(forBus: 0), frameCapacity: 44100)!
-                silence.frameLength = 44100 // 1秒静音
-                try audioFile.write(from: silence)
-
+                try audioFile.write(from: buffer)
                 continuation.resume()
             } catch {
+                print("❌ 写入音频文件失败: \(error)")
                 continuation.resume(throwing: error)
             }
         }
@@ -304,6 +346,9 @@ class TTSService: NSObject, ObservableObject {
 
     /// 合并音频文件
     private func mergeAudioFiles(_ files: [URL], outputURL: URL) async throws {
+        print("=== 开始合并音频文件 ===")
+        print("文件数量: \(files.count)")
+
         let composition = AVMutableComposition()
 
         guard let audioTrack = composition.addMutableTrack(
@@ -314,32 +359,80 @@ class TTSService: NSObject, ObservableObject {
         }
 
         var currentTime = CMTime.zero
+        var successCount = 0
 
-        for fileURL in files {
-            let asset = AVURLAsset(url: fileURL)
-            guard let assetTrack = try await asset.loadTracks(withMediaType: .audio).first else {
+        for (index, fileURL) in files.enumerated() {
+            print("处理文件 \(index + 1)/\(files.count): \(fileURL.lastPathComponent)")
+
+            // 检查文件是否存在
+            guard FileManager.default.fileExists(atPath: fileURL.path) else {
+                print("⚠️ 文件不存在: \(fileURL.path)")
                 continue
             }
 
-            let duration = try await asset.load(.duration)
-            let timeRange = CMTimeRange(start: .zero, duration: duration)
+            // 检查文件大小
+            if let attrs = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+               let fileSize = attrs[.size] as? Int64 {
+                print("   文件大小: \(fileSize) 字节")
+                if fileSize == 0 {
+                    print("⚠️ 文件为空，跳过")
+                    continue
+                }
+            }
 
-            try audioTrack.insertTimeRange(timeRange, of: assetTrack, at: currentTime)
-            currentTime = CMTimeAdd(currentTime, duration)
+            let asset = AVURLAsset(url: fileURL)
+
+            // 尝试加载音频轨道
+            do {
+                let tracks = try await asset.loadTracks(withMediaType: .audio)
+                guard let assetTrack = tracks.first else {
+                    print("⚠️ 无法加载音频轨道，跳过")
+                    continue
+                }
+
+                let duration = try await asset.load(.duration)
+                print("   音频时长: \(CMTimeGetSeconds(duration)) 秒")
+
+                let timeRange = CMTimeRange(start: .zero, duration: duration)
+                try audioTrack.insertTimeRange(timeRange, of: assetTrack, at: currentTime)
+                currentTime = CMTimeAdd(currentTime, duration)
+                successCount += 1
+                print("✅ 文件添加成功")
+            } catch {
+                print("❌ 处理文件失败: \(error.localizedDescription)")
+                continue
+            }
         }
+
+        guard successCount > 0 else {
+            throw TTSError.audioProcessingFailed
+        }
+
+        print("成功添加 \(successCount) 个音频文件到合成轨道")
 
         // 导出合并后的音频
         guard let exportSession = AVAssetExportSession(asset: composition, presetName: AVAssetExportPresetAppleM4A) else {
+            print("❌ 无法创建导出会话")
             throw TTSError.audioProcessingFailed
         }
 
         exportSession.outputURL = outputURL
         exportSession.outputFileType = .m4a
 
+        print("开始导出到: \(outputURL.path)")
         await exportSession.export()
 
         if exportSession.status != .completed {
+            let errorMsg = exportSession.error?.localizedDescription ?? "未知错误"
+            print("❌ 导出失败: \(errorMsg)")
+            print("   状态: \(exportSession.status.rawValue)")
             throw TTSError.audioProcessingFailed
+        }
+
+        // 验证输出文件
+        if let attrs = try? FileManager.default.attributesOfItem(atPath: outputURL.path),
+           let fileSize = attrs[.size] as? Int64 {
+            print("✅ 导出成功，文件大小: \(fileSize) 字节")
         }
     }
 

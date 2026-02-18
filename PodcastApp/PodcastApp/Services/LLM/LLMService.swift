@@ -17,6 +17,10 @@ class LLMService {
         config.timeoutIntervalForRequest = 180 // 3分钟
         config.timeoutIntervalForResource = 600 // 10分钟
         config.waitsForConnectivity = true // 等待网络连接
+
+        // 禁用代理，避免代理连接失败的问题
+        config.connectionProxyDictionary = [:]
+
         self.urlSession = URLSession(configuration: config)
     }
 

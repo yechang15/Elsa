@@ -43,13 +43,31 @@ class PodcastService: ObservableObject {
         let rssFeeds = topics.flatMap { $0.rssFeeds }
         let feedURLs = rssFeeds.map { $0.url }
 
-        let articles = await rssService.fetchMultipleFeeds(urls: feedURLs) { completed, total in
+        // 使用带详细结果的方法获取RSS内容
+        let feedResults = await rssService.fetchMultipleFeedsWithDetails(urls: feedURLs) { completed, total in
             Task { @MainActor in
                 self.currentStatus = "正在获取RSS内容... (\(completed)/\(total))"
                 // 进度从0.1到0.3，根据完成比例计算
                 self.generationProgress = 0.1 + (0.2 * Double(completed) / Double(total))
             }
         }
+
+        // 合并所有文章
+        let articles = feedResults.flatMap { $0.articles }.sorted { $0.pubDate > $1.pubDate }
+
+        // 更新RSS源的元数据
+        await MainActor.run {
+            let now = Date()
+            for feed in rssFeeds {
+                feed.lastUpdated = now
+                // 查找该feed的文章数
+                if let result = feedResults.first(where: { $0.url == feed.url }) {
+                    feed.articleCount = result.articles.count
+                }
+            }
+            try? modelContext.save()
+        }
+
         await MainActor.run {
             generationProgress = 0.3
             currentStatus = "已获取 \(articles.count) 篇文章"

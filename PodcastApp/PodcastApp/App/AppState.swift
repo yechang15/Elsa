@@ -20,8 +20,10 @@ class AppState: ObservableObject {
             do {
                 self.userConfig = try JSONDecoder().decode(UserConfig.self, from: data)
 
-                // 强制检查并修复音色配置
+                // 强制检查并修复配置
                 var needsSave = false
+
+                // 修复音色配置
                 if self.userConfig.doubaoTTSVoiceA == "zh_female_tianmeixiaoyuan" {
                     print("⚠️ 修复主播A音色配置")
                     self.userConfig.doubaoTTSVoiceA = "zh_female_xiaohe_uranus_bigtts"
@@ -33,11 +35,16 @@ class AppState: ObservableObject {
                     needsSave = true
                 }
 
+                // 检查TTS引擎配置是否合理
+                if self.userConfig.ttsEngine == .doubaoTTS && !self.userConfig.doubaoTTSApiKey.isEmpty {
+                    print("✅ TTS引擎配置: 豆包双向流式TTS")
+                }
+
                 if needsSave {
                     // 立即保存修复后的配置
                     if let fixedData = try? JSONEncoder().encode(self.userConfig) {
                         UserDefaults.standard.set(fixedData, forKey: "userConfig")
-                        print("✅ 音色配置已自动修复并保存")
+                        print("✅ 配置已自动修复并保存")
                     }
                 }
             } catch {
@@ -47,6 +54,14 @@ class AppState: ObservableObject {
                 // 尝试保留旧的API Key等重要信息
                 if let oldDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     var newConfig = UserConfig()
+
+                    // 迁移TTS引擎配置
+                    if let ttsEngineRaw = oldDict["ttsEngine"] as? String {
+                        if let ttsEngine = TTSEngine(rawValue: ttsEngineRaw) {
+                            newConfig.ttsEngine = ttsEngine
+                            print("✅ 迁移TTS引擎: \(ttsEngineRaw)")
+                        }
+                    }
 
                     // 迁移重要字段
                     if let llmApiKey = oldDict["llmApiKey"] as? String {
@@ -72,8 +87,8 @@ class AppState: ObservableObject {
                     if let voiceA = oldDict["doubaoTTSVoiceA"] as? String {
                         // 检查是否是旧的不兼容音色
                         if voiceA == "zh_female_tianmeixiaoyuan" || voiceA == "zh_male_aojiaobazong" {
-                            print("⚠️ 检测到旧的音色配置，使用新的默认值")
-                            // 使用新的默认值（已在UserConfig中定义）
+                            print("⚠️ 检测到旧的主播A音色配置，使用新的默认值: zh_female_xiaohe_uranus_bigtts")
+                            newConfig.doubaoTTSVoiceA = "zh_female_xiaohe_uranus_bigtts"
                         } else {
                             newConfig.doubaoTTSVoiceA = voiceA
                         }
@@ -81,7 +96,8 @@ class AppState: ObservableObject {
 
                     if let voiceB = oldDict["doubaoTTSVoiceB"] as? String {
                         if voiceB == "zh_female_tianmeixiaoyuan" || voiceB == "zh_male_aojiaobazong" {
-                            print("⚠️ 检测到旧的音色配置，使用新的默认值")
+                            print("⚠️ 检测到旧的主播B音色配置，使用新的默认值: zh_male_taocheng_uranus_bigtts")
+                            newConfig.doubaoTTSVoiceB = "zh_male_taocheng_uranus_bigtts"
                         } else {
                             newConfig.doubaoTTSVoiceB = voiceB
                         }

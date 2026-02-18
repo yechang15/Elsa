@@ -82,6 +82,7 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
+        config.connectionProxyDictionary = [:] // 禁用代理
         session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         webSocketTask = session?.webSocketTask(with: request)
         webSocketTask?.resume()

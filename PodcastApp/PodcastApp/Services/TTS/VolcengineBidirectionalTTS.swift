@@ -38,6 +38,11 @@ class VolcengineBidirectionalTTS: NSObject {
 
     /// 合成语音
     func synthesize(text: String, voice: String, speed: Float = 1.0) async throws -> Data {
+        print("=== 开始合成语音 ===")
+        print("文本长度: \(text.count) 字符")
+        print("音色: \(voice)")
+        print("语速: \(speed)")
+
         // 验证音色是否与resource ID匹配
         let availableVoices = VolcengineVoices.voices(for: resourceId)
         guard availableVoices.contains(where: { $0.id == voice }) else {
@@ -65,6 +70,15 @@ class VolcengineBidirectionalTTS: NSObject {
 
         // 断开连接
         try await disconnect()
+
+        print("✅ 合成完成，音频数据大小: \(audioDataBuffer.count) 字节")
+
+        // 验证音频数据
+        if audioDataBuffer.count == 0 {
+            print("⚠️ 警告：音频数据为空")
+        } else if audioDataBuffer.count < 100 {
+            print("⚠️ 警告：音频数据过小，可能不完整")
+        }
 
         return audioDataBuffer
     }
@@ -96,6 +110,7 @@ class VolcengineBidirectionalTTS: NSObject {
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
+        config.connectionProxyDictionary = [:] // 禁用代理
         session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
 
         webSocketTask = session?.webSocketTask(with: request)
