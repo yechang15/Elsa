@@ -183,6 +183,8 @@ struct UserConfig: Codable, Equatable {
     var hostStyle: HostStyle = .casual
     var autoGenerate: Bool = true
     var autoGenerateTime: String = "08:00"
+    var autoGenerateFrequency: AutoGenerateFrequency = .daily // 生成频率
+    var autoGenerateTopics: [String] = [] // 自动生成的话题ID列表
 
     // 通知配置
     var notifyNewPodcast: Bool = true
@@ -201,6 +203,26 @@ enum HostStyle: String, Codable {
     case casual = "轻松闲聊"
     case serious = "严肃分析"
     case humorous = "幽默吐槽"
+}
+
+enum AutoGenerateFrequency: String, Codable, CaseIterable {
+    case daily = "每天"
+    case weekdays = "工作日"
+    case weekends = "周末"
+    case custom = "自定义"
+
+    var description: String {
+        switch self {
+        case .daily:
+            return "每天生成"
+        case .weekdays:
+            return "周一至周五生成"
+        case .weekends:
+            return "周六、周日生成"
+        case .custom:
+            return "自定义周期"
+        }
+    }
 }
 
 enum AppTheme: String, Codable {

@@ -62,6 +62,8 @@ struct SettingsView: View {
     @State private var localContentDepth: ContentDepth = .quick
     @State private var localHostStyle: HostStyle = .casual
     @State private var localAutoGenerate: Bool = true
+    @State private var localAutoGenerateTime: String = "08:00"
+    @State private var localAutoGenerateFrequency: AutoGenerateFrequency = .daily
 
     // 通知配置
     @State private var localNotifyNewPodcast: Bool = true
@@ -146,6 +148,8 @@ struct SettingsView: View {
                 localContentDepth = appState.userConfig.contentDepth
                 localHostStyle = appState.userConfig.hostStyle
                 localAutoGenerate = appState.userConfig.autoGenerate
+                localAutoGenerateTime = appState.userConfig.autoGenerateTime
+                localAutoGenerateFrequency = appState.userConfig.autoGenerateFrequency
 
                 localNotifyNewPodcast = appState.userConfig.notifyNewPodcast
                 localNotifyRSSUpdate = appState.userConfig.notifyRSSUpdate
@@ -973,6 +977,58 @@ struct SettingsView: View {
                             appState.saveConfig()
                         }
                     }
+
+                if localAutoGenerate {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // 生成频率
+                        Picker("生成频率", selection: $localAutoGenerateFrequency) {
+                            ForEach(AutoGenerateFrequency.allCases, id: \.self) { frequency in
+                                Text(frequency.rawValue).tag(frequency)
+                            }
+                        }
+                        .onChange(of: localAutoGenerateFrequency) { oldValue, newValue in
+                            guard !isInitializing else { return }
+                            Task { @MainActor in
+                                appState.userConfig.autoGenerateFrequency = newValue
+                                appState.saveConfig()
+                            }
+                        }
+
+                        // 生成时间
+                        HStack {
+                            Text("生成时间")
+                                .font(.subheadline)
+
+                            Spacer()
+
+                            // 小时选择器
+                            Picker("", selection: Binding(
+                                get: {
+                                    let components = localAutoGenerateTime.split(separator: ":")
+                                    return Int(components.first ?? "8") ?? 8
+                                },
+                                set: { newHour in
+                                    localAutoGenerateTime = String(format: "%02d:00", newHour)
+                                    guard !isInitializing else { return }
+                                    Task { @MainActor in
+                                        appState.userConfig.autoGenerateTime = localAutoGenerateTime
+                                        appState.saveConfig()
+                                    }
+                                }
+                            )) {
+                                ForEach(0..<24, id: \.self) { hour in
+                                    Text(String(format: "%02d:00", hour)).tag(hour)
+                                }
+                            }
+                            .frame(width: 100)
+                        }
+
+                        Text("提示：\(localAutoGenerateFrequency.description)，在 \(localAutoGenerateTime) 自动生成播客")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.leading, 20)
+                }
             }
 
             // 通知
