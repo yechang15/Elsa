@@ -264,52 +264,69 @@ struct RSSFeedCard: View {
                 }
             }
 
-            // 测试结果
-            if let result = testResult {
-                HStack {
+            // 状态信息（合并测试结果和RSS源状态）
+            HStack {
+                // 根据测试结果显示状态
+                if let result = testResult {
                     switch result {
-                    case .success(let count):
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text("可用 - 获取到 \(count) 篇文章")
+                    case .success:
+                        Label("活跃", systemImage: "circle.fill")
                             .font(.caption)
                             .foregroundColor(.green)
+
+                        Text("·")
+                            .foregroundColor(.secondary)
+
+                        Text(feed.updateStatusText)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Text("·")
+                            .foregroundColor(.secondary)
+
+                        Text("\(feed.articleCount) 篇文章")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
                     case .failure(let error):
-                        Image(systemName: "xmark.circle.fill")
+                        Label("失败", systemImage: "xmark.circle.fill")
+                            .font(.caption)
                             .foregroundColor(.red)
-                        Text("失败: \(error)")
+
+                        Text("·")
+                            .foregroundColor(.secondary)
+
+                        Text(error)
                             .font(.caption)
                             .foregroundColor(.red)
                             .lineLimit(1)
                     }
-                }
-            }
-
-            // 状态信息
-            HStack {
-                if feed.isActive {
-                    Label("活跃", systemImage: "circle.fill")
-                        .font(.caption)
-                        .foregroundColor(.green)
                 } else {
-                    Label("已禁用", systemImage: "circle.fill")
+                    // 没有测试结果时，根据lastUpdated判断
+                    if feed.lastUpdated != nil {
+                        Label("活跃", systemImage: "circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    } else {
+                        Label("未测试", systemImage: "circle.fill")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+
+                    Text("·")
+                        .foregroundColor(.secondary)
+
+                    Text(feed.updateStatusText)
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondary)
+
+                    Text("·")
+                        .foregroundColor(.secondary)
+
+                    Text("\(feed.articleCount) 篇文章")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-
-                Text("·")
-                    .foregroundColor(.secondary)
-
-                Text(feed.updateStatusText)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                Text("·")
-                    .foregroundColor(.secondary)
-
-                Text("\(feed.articleCount) 篇文章")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
         }
         .padding()
