@@ -51,7 +51,6 @@ extension RSSFeed {
         // 技术开发
         "Swift 开发": [
             "https://www.swift.org/blog/rss.xml",
-            "https://nshipster.com/feed.xml",
             "https://www.avanderlee.com/feed/",
             "https://www.swiftbysundell.com/feed.xml"
         ],
@@ -135,7 +134,6 @@ extension RSSFeed {
             "https://techcrunch.com/feed/",
             "https://www.theverge.com/rss/index.xml",
             "https://36kr.com/feed",
-            "https://www.geekpark.net/rss",
             "https://sspai.com/feed"
         ],
         "商业分析": [
