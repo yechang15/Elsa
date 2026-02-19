@@ -178,8 +178,7 @@ struct MemoryView: View {
 
                 await MainActor.run {
                     isGenerating = false
-                    let hasLLM = memoryManager.llmService != nil
-                    alertMessage = hasLLM ? "摘要已生成（LLM 版本）\n长度: \(content.count) 字符" : "摘要已生成（基础版本）\n长度: \(content.count) 字符"
+                    alertMessage = "摘要已生成\n长度: \(content.count) 字符"
                     showAlert = true
                     selectedTab = .summary // 触发刷新
                 }
@@ -248,7 +247,7 @@ extension MemoryFileType {
     var description: String {
         switch self {
         case .summary:
-            return "📝 压缩摘要（300字内），生成播客时自动注入到 AI prompt，让播客更符合你的偏好"
+            return "📝 从其他 3 个记忆文件智能压缩生成（300字内），生成播客时自动注入到 AI prompt"
         case .preferences:
             return "🎯 从你的播放行为和订阅话题分析得出，每10次播放自动更新，用于个性化推荐"
         case .profile:

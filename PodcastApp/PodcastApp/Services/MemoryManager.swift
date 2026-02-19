@@ -232,25 +232,24 @@ class MemoryManager: ObservableObject {
         return content
     }
 
-    /// 生成记忆摘要（LLM 版本）
+    /// 生成记忆摘要（从其他 3 个 MD 文件压缩）
     func generateSummary() async throws -> String {
-        // 读取所有记忆文件
+        guard let llmService = llmService else {
+            throw MemoryError.behaviorTrackerNotAvailable // 复用这个错误，或者提示用户配置 LLM
+        }
+
+        // 读取其他 3 个记忆文件
         let preferences = loadPreferences()
         let profile = loadProfile()
         let goals = loadGoals()
 
-        // 如果有 LLM 服务，使用智能压缩
-        if let llmService = llmService {
-            return try await generateSummaryWithLLM(
-                preferences: preferences,
-                profile: profile,
-                goals: goals,
-                llmService: llmService
-            )
-        }
-
-        // 否则使用基础版本（从行为数据提取）
-        return try await generateSummaryBasic()
+        // 使用 LLM 智能压缩
+        return try await generateSummaryWithLLM(
+            preferences: preferences,
+            profile: profile,
+            goals: goals,
+            llmService: llmService
+        )
     }
 
     /// 使用 LLM 生成智能摘要
@@ -317,69 +316,6 @@ class MemoryManager: ObservableObject {
 
         print("✅ LLM 摘要生成完成")
         return summary
-    }
-
-    /// 基础版本：从行为数据生成摘要
-    private func generateSummaryBasic() async throws -> String {
-        print("📊 使用基础版本生成记忆摘要...")
-
-        var content = "# User Memory Summary\n\n"
-        content += "最后更新：\(Date().formatted(date: .long, time: .omitted))\n\n"
-
-        // 提取关键信息（简化版）
-        content += "## 核心特征\n\n"
-
-        // 1. 从订阅话题提取
-        let subscribedTopics = getSubscribedTopics()
-        if !subscribedTopics.isEmpty {
-            let topicNames = subscribedTopics.prefix(5).map { $0.name }
-            content += "- **订阅话题**：\(topicNames.joined(separator: "、"))\n"
-        }
-
-        // 2. 从偏好中提取高分话题
-        let topicPreferences = getTopicPreferences()
-        let topTopics = topicPreferences
-            .filter { $0.preferenceScore >= 70 }
-            .sorted { $0.preferenceScore > $1.preferenceScore }
-            .prefix(5)
-            .map { $0.topicName }
-
-        if !topTopics.isEmpty {
-            content += "- **高偏好话题**（从播放分析）：\(topTopics.joined(separator: "、"))\n"
-        }
-
-        // 3. 从播放会话提取时长偏好
-        if let tracker = behaviorTracker {
-            let recentSessions = tracker.getRecentPlaybackSessions(limit: 20)
-            if !recentSessions.isEmpty {
-                let avgDuration = recentSessions.map { $0.totalDuration }.reduce(0, +) / recentSessions.count
-                let avgSpeed = recentSessions.map { $0.playbackSpeed }.reduce(0, +) / Double(recentSessions.count)
-                let avgCompletionRate = recentSessions.map { $0.completionRate }.reduce(0, +) / Double(recentSessions.count)
-
-                content += "- **形式偏好**：平均时长 \(avgDuration / 60) 分钟"
-                if avgSpeed > 1.0 {
-                    content += "，\(String(format: "%.1f", avgSpeed))x 播放速度"
-                }
-                content += "\n"
-                content += "- **完播率**：\(Int(avgCompletionRate * 100))%\n"
-            }
-        }
-
-        // 如果没有任何数据
-        if subscribedTopics.isEmpty && topTopics.isEmpty {
-            content += "暂无用户数据。请先添加感兴趣的话题并播放播客。\n"
-        }
-
-        content += "\n## 生成建议\n\n"
-        if !subscribedTopics.isEmpty || !topTopics.isEmpty {
-            content += "- 话题选择：优先推荐用户订阅和高偏好话题\n"
-            content += "- 内容深度：根据用户完播率调整\n"
-            content += "- 时长控制：参考用户平均播放时长\n"
-        } else {
-            content += "暂无足够数据生成建议。\n"
-        }
-
-        return content
     }
 
     // MARK: - 辅助方法
