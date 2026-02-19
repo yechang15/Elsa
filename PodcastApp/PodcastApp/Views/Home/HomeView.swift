@@ -19,17 +19,40 @@ struct HomeView: View {
     ]
 
     var body: some View {
-        ZStack {
+        VStack(spacing: 0) {
+            // 话题标签栏
+            TopicTabBar(
+                topics: allTopics,
+                selectedTopic: $selectedTopic
+            )
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+
+            Divider()
+
+            // 内容区域
             VStack(spacing: 0) {
-                // 话题标签栏
-                TopicTabBar(
-                    topics: allTopics,
-                    selectedTopic: $selectedTopic
-                )
+                // 生成播客按钮
+                HStack {
+                    Button(action: { showingGenerateSheet = true }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus.circle.fill")
+                            Text("为「\(selectedTopic)」生成播客")
+                        }
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.accentColor)
+                        .cornerRadius(20)
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+                }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
-
-                Divider()
 
                 // 播客网格
                 if filteredPodcasts.isEmpty {
@@ -47,25 +70,6 @@ struct HomeView: View {
                         }
                         .padding()
                     }
-                }
-            }
-
-            // 浮动生成按钮（右下角）
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: { showingGenerateSheet = true }) {
-                        Label("生成播客", systemImage: "plus.circle.fill")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color.accentColor)
-                            .cornerRadius(25)
-                            .shadow(radius: 4)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(20)
                 }
             }
         }

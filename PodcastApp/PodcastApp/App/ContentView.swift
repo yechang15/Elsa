@@ -70,32 +70,59 @@ struct MainView: View {
     @EnvironmentObject var podcastService: PodcastService
 
     @State private var showingGenerateSheet = false
+    @State private var isShowingChat = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 主内容区
+        ZStack {
             HStack(spacing: 0) {
-                // 侧边栏
-                Sidebar()
-                    .frame(width: 200)
+                // 左侧主内容区
+                VStack(spacing: 0) {
+                    // 主内容区
+                    HStack(spacing: 0) {
+                        // 侧边栏
+                        Sidebar()
+                            .frame(width: 200)
 
-                Divider()
+                        Divider()
 
-                // 主内容
-                mainContent
+                        // 主内容
+                        mainContent
+                    }
+
+                    Divider()
+
+                    // 底部播放控制栏
+                    if audioPlayer.currentPodcast != nil {
+                        PlayerControlBar()
+                            .frame(height: 80)
+                    }
+                }
+
+                // 右侧对话面板
+                if isShowingChat {
+                    Divider()
+                    ChatView(isShowingChat: $isShowingChat)
+                        .frame(width: 400)
+                        .transition(.move(edge: .trailing))
+                }
             }
 
-            Divider()
-
-            // 底部播放控制栏
-            if audioPlayer.currentPodcast != nil {
-                PlayerControlBar()
-                    .frame(height: 80)
+            // 全局浮动对话按钮（只在对话面板关闭时显示）
+            if !isShowingChat {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ChatFloatingButton(isShowingChat: $isShowingChat)
+                            .padding(20)
+                    }
+                }
             }
         }
         .sheet(isPresented: $showingGenerateSheet) {
             GeneratePodcastSheet()
         }
+        .animation(.easeInOut(duration: 0.3), value: isShowingChat)
     }
 
     @ViewBuilder

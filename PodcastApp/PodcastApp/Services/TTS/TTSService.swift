@@ -21,7 +21,8 @@ class TTSService: NSObject, ObservableObject {
     }
 
     /// 将播客脚本转换为音频文件
-    func generateAudio(script: String, voiceA: String, voiceB: String, speed: Float = 1.0, engine: TTSEngine = .system, apiKey: String = "", appId: String = "", accessToken: String = "", resourceId: String = "seed-tts-2.0") async throws -> URL {
+    /// 返回: (音频文件URL, 脚本段落时间戳数组)
+    func generateAudio(script: String, voiceA: String, voiceB: String, speed: Float = 1.0, engine: TTSEngine = .system, apiKey: String = "", appId: String = "", accessToken: String = "", resourceId: String = "seed-tts-2.0") async throws -> (URL, [ScriptSegment]) {
         // 解析脚本
         let dialogues = parseScript(script)
 
@@ -33,14 +34,12 @@ class TTSService: NSObject, ObservableObject {
         // 根据引擎选择合成方式
         switch engine {
         case .system:
-            try await synthesizeToFile(dialogues: dialogues, voiceA: voiceA, voiceB: voiceB, speed: speed, outputURL: audioURL)
+            return try await synthesizeToFile(dialogues: dialogues, voiceA: voiceA, voiceB: voiceB, speed: speed, outputURL: audioURL)
         case .doubaoTTS:
-            try await synthesizeWithVolcengineBidirectionalTTS(dialogues: dialogues, voiceA: voiceA, voiceB: voiceB, speed: speed, appId: appId, accessToken: accessToken, resourceId: resourceId, outputURL: audioURL)
+            return try await synthesizeWithVolcengineBidirectionalTTS(dialogues: dialogues, voiceA: voiceA, voiceB: voiceB, speed: speed, appId: appId, accessToken: accessToken, resourceId: resourceId, outputURL: audioURL)
         default:
             throw TTSError.unsupportedEngine
         }
-
-        return audioURL
     }
 
     /// 解析播客脚本
@@ -83,7 +82,7 @@ class TTSService: NSObject, ObservableObject {
     }
 
     /// 使用火山引擎双向流式TTS合成音频
-    private func synthesizeWithVolcengineBidirectionalTTS(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, appId: String, accessToken: String, resourceId: String, outputURL: URL) async throws {
+    private func synthesizeWithVolcengineBidirectionalTTS(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, appId: String, accessToken: String, resourceId: String, outputURL: URL) async throws -> (URL, [ScriptSegment]) {
         print("=== 使用火山引擎双向流式TTS合成音频 ===")
         print("对话数量: \(dialogues.count)")
         print("输出路径: \(outputURL.path)")
@@ -157,7 +156,7 @@ class TTSService: NSObject, ObservableObject {
 
         // 合并所有音频文件
         print("合并音频文件...")
-        try await mergeAudioFiles(audioFiles, outputURL: outputURL)
+        let segments = try await mergeAudioFiles(audioFiles, dialogues: dialogues, outputURL: outputURL)
 
         // 清理临时文件
         for file in audioFiles {
@@ -165,10 +164,11 @@ class TTSService: NSObject, ObservableObject {
         }
 
         print("✅ 音频合成完成: \(outputURL.path)")
+        return (outputURL, segments)
     }
 
     /// 使用豆包 TTS API 合成音频（已废弃，保留用于兼容）
-    private func synthesizeWithDoubaoTTS(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, apiKey: String, outputURL: URL) async throws {
+    private func synthesizeWithDoubaoTTS(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, apiKey: String, outputURL: URL) async throws -> (URL, [ScriptSegment]) {
         print("=== 使用豆包 TTS API 合成音频 ===")
         print("对话数量: \(dialogues.count)")
         print("输出路径: \(outputURL.path)")
@@ -196,7 +196,7 @@ class TTSService: NSObject, ObservableObject {
 
         print("合并音频文件...")
         // 合并所有音频文件
-        try await mergeAudioFiles(audioFiles, outputURL: outputURL)
+        let segments = try await mergeAudioFiles(audioFiles, dialogues: dialogues, outputURL: outputURL)
 
         // 清理临时文件
         for file in audioFiles {
@@ -204,6 +204,7 @@ class TTSService: NSObject, ObservableObject {
         }
 
         print("✅ 音频合成完成")
+        return (outputURL, segments)
     }
 
     /// 调用豆包 TTS API
@@ -267,7 +268,7 @@ class TTSService: NSObject, ObservableObject {
 
         return audioData
     }
-    private func synthesizeToFile(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, outputURL: URL) async throws {
+    private func synthesizeToFile(dialogues: [Dialogue], voiceA: String, voiceB: String, speed: Float, outputURL: URL) async throws -> (URL, [ScriptSegment]) {
         print("=== 开始合成音频 ===")
         print("对话数量: \(dialogues.count)")
         print("输出路径: \(outputURL.path)")
@@ -295,7 +296,7 @@ class TTSService: NSObject, ObservableObject {
 
         print("合并音频文件...")
         // 合并所有音频文件
-        try await mergeAudioFiles(audioFiles, outputURL: outputURL)
+        let segments = try await mergeAudioFiles(audioFiles, dialogues: dialogues, outputURL: outputURL)
 
         // 清理临时文件
         for file in audioFiles {
@@ -303,6 +304,7 @@ class TTSService: NSObject, ObservableObject {
         }
 
         print("✅ 音频合成完成")
+        return (outputURL, segments)
     }
 
     /// 合成单段对话
@@ -371,7 +373,7 @@ class TTSService: NSObject, ObservableObject {
     #endif
 
     /// 合并音频文件
-    private func mergeAudioFiles(_ files: [URL], outputURL: URL) async throws {
+    private func mergeAudioFiles(_ files: [URL], dialogues: [Dialogue], outputURL: URL) async throws -> [ScriptSegment] {
         print("=== 开始合并音频文件 ===")
         print("文件数量: \(files.count)")
 
@@ -386,6 +388,7 @@ class TTSService: NSObject, ObservableObject {
 
         var currentTime = CMTime.zero
         var successCount = 0
+        var segments: [ScriptSegment] = [] // 记录时间戳
 
         for (index, fileURL) in files.enumerated() {
             print("处理文件 \(index + 1)/\(files.count): \(fileURL.lastPathComponent)")
@@ -421,6 +424,25 @@ class TTSService: NSObject, ObservableObject {
 
                 let timeRange = CMTimeRange(start: .zero, duration: duration)
                 try audioTrack.insertTimeRange(timeRange, of: assetTrack, at: currentTime)
+
+                // 记录时间戳
+                let startTime = CMTimeGetSeconds(currentTime)
+                let endTime = startTime + CMTimeGetSeconds(duration)
+
+                // 获取对应的对话内容
+                if index < dialogues.count {
+                    let dialogue = dialogues[index]
+                    let speakerName = dialogue.speaker == .hostA ? "主播A" : "主播B"
+                    let segment = ScriptSegment(
+                        speaker: speakerName,
+                        content: dialogue.content,
+                        startTime: startTime,
+                        endTime: endTime
+                    )
+                    segments.append(segment)
+                    print("   记录段落: \(speakerName) [\(String(format: "%.2f", startTime))s - \(String(format: "%.2f", endTime))s]")
+                }
+
                 currentTime = CMTimeAdd(currentTime, duration)
                 successCount += 1
                 print("✅ 文件添加成功")
@@ -460,6 +482,9 @@ class TTSService: NSObject, ObservableObject {
            let fileSize = attrs[.size] as? Int64 {
             print("✅ 导出成功，文件大小: \(fileSize) 字节")
         }
+
+        print("✅ 生成了 \(segments.count) 个时间戳段落")
+        return segments
     }
 
     /// 实时播放（用于预览）

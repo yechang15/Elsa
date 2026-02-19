@@ -25,7 +25,10 @@ final class Podcast {
     // RSS 来源信息
     var sourceArticles: [SourceArticle] = [] // 来源文章列表
 
-    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊", category: String = "系统推荐", sourceArticles: [SourceArticle] = []) {
+    // 脚本段落（带时间戳）- 序列化存储
+    var segmentsData: Data? // 脚本段落列表的序列化数据
+
+    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊", category: String = "系统推荐", sourceArticles: [SourceArticle] = [], segments: [ScriptSegment] = []) {
         self.id = UUID()
         self.title = title
         self.topics = topics
@@ -39,6 +42,29 @@ final class Podcast {
         self.hostStyle = hostStyle
         self.category = category
         self.sourceArticles = sourceArticles
+
+        // 序列化 segments
+        if !segments.isEmpty {
+            self.segmentsData = try? JSONEncoder().encode(segments)
+        }
+    }
+
+    /// 获取脚本段落
+    var segments: [ScriptSegment] {
+        guard let data = segmentsData else { return [] }
+        return (try? JSONDecoder().decode([ScriptSegment].self, from: data)) ?? []
+    }
+
+    /// 根据播放时间获取当前段落
+    func getCurrentSegment(at time: Double) -> ScriptSegment? {
+        return segments.first { $0.contains(time: time) }
+    }
+
+    /// 获取指定时间范围内的段落
+    func getSegments(from startTime: Double, to endTime: Double) -> [ScriptSegment] {
+        return segments.filter { segment in
+            segment.startTime < endTime && segment.endTime > startTime
+        }
     }
 
     /// 获取分组名称（兼容旧数据）

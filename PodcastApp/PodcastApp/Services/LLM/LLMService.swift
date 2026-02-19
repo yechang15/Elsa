@@ -368,6 +368,165 @@ class LLMService {
         let result = try JSONDecoder().decode(OpenAIResponse.self, from: data)
         return result.choices.first?.message.content ?? ""
     }
+
+    /// 通用对话方法（用于聊天功能）- 流式版本
+    func chatStreaming(prompt: String, progressHandler: ((String) -> Void)?) async throws -> String {
+        switch provider {
+        case .doubao:
+            return try await chatWithDoubaoStreaming(prompt: prompt, progressHandler: progressHandler)
+        case .openai:
+            return try await chatWithOpenAIStreaming(prompt: prompt, progressHandler: progressHandler)
+        }
+    }
+
+    /// 与豆包对话（流式）
+    private func chatWithDoubaoStreaming(prompt: String, progressHandler: ((String) -> Void)?) async throws -> String {
+        let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "user", "content": prompt]
+            ],
+            "stream": true
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        var fullText = ""
+        let (bytes, response) = try await urlSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            throw LLMError.apiError("API 请求失败，状态码: \(statusCode)")
+        }
+
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let data = line.dropFirst(6)
+
+            if data == "[DONE]" { break }
+
+            guard let jsonData = data.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                  let choices = json["choices"] as? [[String: Any]],
+                  let delta = choices.first?["delta"] as? [String: Any],
+                  let content = delta["content"] as? String else {
+                continue
+            }
+
+            fullText += content
+            progressHandler?(fullText)
+        }
+
+        return fullText
+    }
+
+    /// 与OpenAI对话（流式）
+    private func chatWithOpenAIStreaming(prompt: String, progressHandler: ((String) -> Void)?) async throws -> String {
+        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "user", "content": prompt]
+            ],
+            "stream": true
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        var fullText = ""
+        let (bytes, response) = try await urlSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            throw LLMError.apiError("OpenAI API 请求失败，状态码: \(statusCode)")
+        }
+
+        for try await line in bytes.lines {
+            guard line.hasPrefix("data: ") else { continue }
+            let data = line.dropFirst(6)
+
+            if data == "[DONE]" { break }
+
+            guard let jsonData = data.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                  let choices = json["choices"] as? [[String: Any]],
+                  let delta = choices.first?["delta"] as? [String: Any],
+                  let content = delta["content"] as? String else {
+                continue
+            }
+
+            fullText += content
+            progressHandler?(fullText)
+        }
+
+        return fullText
+    }
+
+    /// 通用对话方法（用于聊天功能）
+    func chat(prompt: String) async throws -> String {
+        switch provider {
+        case .doubao:
+            return try await chatWithDoubao(prompt: prompt)
+        case .openai:
+            return try await chatWithOpenAI(prompt: prompt)
+        }
+    }
+
+    /// 与豆包对话
+    private func chatWithDoubao(prompt: String) async throws -> String {
+        let url = URL(string: "https://ark.cn-beijing.volces.com/api/v3/chat/completions")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "user", "content": prompt]
+            ]
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await urlSession.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            throw LLMError.apiError("API 请求失败，状态码: \(statusCode)")
+        }
+
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let choices = json["choices"] as? [[String: Any]],
+              let message = choices.first?["message"] as? [String: Any],
+              let content = message["content"] as? String else {
+            throw LLMError.invalidResponse
+        }
+
+        return content
+    }
+
+    /// 与OpenAI对话
+    private func chatWithOpenAI(prompt: String) async throws -> String {
+        return try await callOpenAIAPI(prompt: prompt)
+    }
 }
 
 /// LLM提供商

@@ -187,7 +187,7 @@ class PodcastService: ObservableObject {
             voiceB = config.ttsVoiceB
         }
 
-        let audioURL = try await ttsService.generateAudio(
+        let (audioURL, segments) = try await ttsService.generateAudio(
             script: script,
             voiceA: voiceA,
             voiceB: voiceB,
@@ -223,7 +223,8 @@ class PodcastService: ObservableObject {
             contentDepth: config.contentDepth.rawValue,
             hostStyle: config.hostStyle.rawValue,
             category: category,
-            sourceArticles: sourceArticles
+            sourceArticles: sourceArticles,
+            segments: segments
         )
 
         podcast.audioFilePath = audioURL.path
@@ -456,7 +457,7 @@ class PodcastService: ObservableObject {
 
         // 生成音频
         let averageSpeed = Float((config.ttsSpeedA + config.ttsSpeedB) / 2.0)
-        let audioURL = try await ttsService.generateAudio(
+        let (audioURL, segments) = try await ttsService.generateAudio(
             script: script,
             voiceA: config.ttsVoiceA,
             voiceB: config.ttsVoiceB,
@@ -474,7 +475,8 @@ class PodcastService: ObservableObject {
             scriptContent: script,
             length: config.defaultLength,
             contentDepth: config.contentDepth.rawValue,
-            hostStyle: config.hostStyle.rawValue
+            hostStyle: config.hostStyle.rawValue,
+            segments: segments
         )
 
         podcast.audioFilePath = audioURL.path

@@ -31,7 +31,7 @@ struct PodcastDetailView: View {
             // 标签页内容
             Group {
                 if selectedTab == .script {
-                    ScriptView(scriptContent: podcast.scriptContent)
+                    ScriptView(podcast: podcast)
                 } else {
                     SourceArticlesView(articles: podcast.sourceArticles)
                 }

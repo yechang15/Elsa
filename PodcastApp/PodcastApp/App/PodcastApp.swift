@@ -24,7 +24,7 @@ struct PodcastApp: App {
     init() {
         // 初始化SwiftData容器
         do {
-            modelContainer = try ModelContainer(for: Topic.self, Podcast.self, RSSFeed.self, ListeningHistory.self)
+            modelContainer = try ModelContainer(for: Topic.self, Podcast.self, RSSFeed.self, ListeningHistory.self, ChatMessage.self)
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
