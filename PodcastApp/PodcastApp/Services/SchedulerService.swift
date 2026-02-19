@@ -124,6 +124,15 @@ class SchedulerService: ObservableObject {
 
                 // 检查每个话题是否需要生成
                 for topic in topics {
+                    // 检查是否正在生成中
+                    let isGenerating = await MainActor.run {
+                        generatingCategories.contains(topic.name)
+                    }
+
+                    if isGenerating {
+                        continue // 跳过正在生成的话题
+                    }
+
                     let lastGenerationKey = topicLastGenerationPrefix + topic.id.uuidString
 
                     // 获取上次生成时间
@@ -142,6 +151,11 @@ class SchedulerService: ObservableObject {
                     if shouldGenerate {
                         print("🎙️ 触发话题自动生成: \(topic.name)")
 
+                        // 标记为正在生成
+                        await MainActor.run {
+                            generatingCategories.insert(topic.name)
+                        }
+
                         // 异步生成单个话题的播客
                         await generateTopicPodcast(
                             topic: topic,
@@ -152,6 +166,11 @@ class SchedulerService: ObservableObject {
 
                         // 记录生成时间
                         UserDefaults.standard.set(now, forKey: lastGenerationKey)
+
+                        // 移除生成标记
+                        await MainActor.run {
+                            generatingCategories.remove(topic.name)
+                        }
 
                         // 每次只生成一个话题，避免同时生成太多
                         break
@@ -184,21 +203,28 @@ class SchedulerService: ObservableObject {
 
                 // 1. 检查"系统推荐"是否为空
                 if config.autoGenerate && !existingCategories.contains("系统推荐") {
-                    print("🎙️ 检测到系统推荐分类为空，立即生成...")
-                    await MainActor.run {
-                        generatingCategories.insert("系统推荐")
+                    // 检查是否正在生成中
+                    let isGenerating = await MainActor.run {
+                        generatingCategories.contains("系统推荐")
                     }
 
-                    // 获取所有话题
-                    let topicDescriptor = FetchDescriptor<Topic>()
-                    let topics = try modelContext.fetch(topicDescriptor)
+                    if !isGenerating {
+                        print("🎙️ 检测到系统推荐分类为空，立即生成...")
+                        await MainActor.run {
+                            generatingCategories.insert("系统推荐")
+                        }
 
-                    if !topics.isEmpty {
-                        await generatePodcast(config: config, modelContext: modelContext, podcastService: podcastService)
-                    }
+                        // 获取所有话题
+                        let topicDescriptor = FetchDescriptor<Topic>()
+                        let topics = try modelContext.fetch(topicDescriptor)
 
-                    await MainActor.run {
-                        generatingCategories.remove("系统推荐")
+                        if !topics.isEmpty {
+                            await generatePodcast(config: config, modelContext: modelContext, podcastService: podcastService)
+                        }
+
+                        await MainActor.run {
+                            generatingCategories.remove("系统推荐")
+                        }
                     }
                 }
 
@@ -209,6 +235,15 @@ class SchedulerService: ObservableObject {
 
                     for topic in topics {
                         if !existingCategories.contains(topic.name) {
+                            // 检查是否正在生成中
+                            let isGenerating = await MainActor.run {
+                                generatingCategories.contains(topic.name)
+                            }
+
+                            if isGenerating {
+                                continue // 跳过正在生成的话题
+                            }
+
                             print("🎙️ 检测到\(topic.name)分类为空，立即生成...")
                             await MainActor.run {
                                 generatingCategories.insert(topic.name)
