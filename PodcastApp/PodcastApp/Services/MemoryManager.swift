@@ -235,7 +235,7 @@ class MemoryManager: ObservableObject {
     /// 生成记忆摘要（从其他 3 个 MD 文件压缩）
     func generateSummary() async throws -> String {
         guard let llmService = llmService else {
-            throw MemoryError.behaviorTrackerNotAvailable // 复用这个错误，或者提示用户配置 LLM
+            throw MemoryError.llmServiceNotAvailable
         }
 
         // 读取其他 3 个记忆文件
@@ -547,6 +547,7 @@ class MemoryManager: ObservableObject {
 
 enum MemoryError: LocalizedError {
     case behaviorTrackerNotAvailable
+    case llmServiceNotAvailable
     case fileNotFound(MemoryFileType)
     case invalidContent
 
@@ -554,6 +555,8 @@ enum MemoryError: LocalizedError {
         switch self {
         case .behaviorTrackerNotAvailable:
             return "行为追踪器不可用"
+        case .llmServiceNotAvailable:
+            return "LLM 服务不可用，请先在设置中配置 API Key"
         case .fileNotFound(let type):
             return "记忆文件不存在: \(type.rawValue)"
         case .invalidContent:
