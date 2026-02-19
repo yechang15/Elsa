@@ -176,9 +176,9 @@ struct MemoryView: View {
                     // 从 PodcastService 获取并注入
                     await MainActor.run {
                         podcastService.setupLLM(
-                            apiKey: appState.config.llmApiKey,
-                            provider: appState.config.llmProvider == "豆包" ? .doubao : .openai,
-                            model: appState.config.llmModel
+                            apiKey: appState.userConfig.llmApiKey,
+                            provider: appState.userConfig.llmProvider == "豆包" ? .doubao : .openai,
+                            model: appState.userConfig.llmModel
                         )
                     }
                     // 等待异步注入完成
