@@ -40,14 +40,8 @@ struct HomeView: View {
                             ForEach(filteredPodcasts) { podcast in
                                 PodcastGridCard(podcast: podcast)
                                     .onTapGesture {
-                                        // 进入详情页
+                                        // 只进入详情页，不自动播放
                                         appState.selectedPodcast = podcast
-
-                                        // 自动播放
-                                        if let audioPath = podcast.audioFilePath {
-                                            let audioURL = URL(fileURLWithPath: audioPath)
-                                            audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
-                                        }
                                     }
                             }
                         }
