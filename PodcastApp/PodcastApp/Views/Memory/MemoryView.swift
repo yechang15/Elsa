@@ -159,17 +159,23 @@ struct MemoryView: View {
         isGenerating = true
         Task {
             do {
+                print("🔄 开始生成摘要...")
                 let content = try await memoryManager.generateSummary()
+                print("✅ 摘要生成完成，长度: \(content.count) 字符")
+                print("📝 摘要内容预览: \(content.prefix(200))...")
+
                 try await memoryManager.updateSummary(content)
+                print("💾 摘要已保存")
 
                 await MainActor.run {
                     isGenerating = false
                     let hasLLM = memoryManager.llmService != nil
-                    alertMessage = hasLLM ? "摘要已生成（LLM 版本）" : "摘要已生成（基础版本）"
+                    alertMessage = hasLLM ? "摘要已生成（LLM 版本）\n长度: \(content.count) 字符" : "摘要已生成（基础版本）\n长度: \(content.count) 字符"
                     showAlert = true
                     selectedTab = .summary // 触发刷新
                 }
             } catch {
+                print("❌ 生成摘要失败: \(error)")
                 await MainActor.run {
                     isGenerating = false
                     alertMessage = "生成失败: \(error.localizedDescription)"

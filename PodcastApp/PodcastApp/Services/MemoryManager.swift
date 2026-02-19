@@ -146,7 +146,10 @@ class MemoryManager: ObservableObject {
             throw MemoryError.behaviorTrackerNotAvailable
         }
 
-        // 获取话题偏好数据
+        // 获取用户订阅的话题
+        let subscribedTopics = getSubscribedTopics()
+
+        // 获取话题偏好数据（从播放行为分析）
         let topicPreferences = getTopicPreferences()
 
         // 获取播放会话数据
@@ -156,38 +159,53 @@ class MemoryManager: ObservableObject {
         var content = "# Podcast Preferences\n\n"
         content += "最后更新：\(Date().formatted(date: .long, time: .omitted))\n\n"
 
-        // 话题偏好
-        content += "## Topic Preferences (话题偏好)\n\n"
-
-        let highInterest = topicPreferences.filter { $0.preferenceScore >= 80 }
-        let mediumInterest = topicPreferences.filter { $0.preferenceScore >= 60 && $0.preferenceScore < 80 }
-        let lowInterest = topicPreferences.filter { $0.preferenceScore < 40 }
-
-        if !highInterest.isEmpty {
-            content += "### 强烈感兴趣 (80-100分)\n"
-            for pref in highInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
-                content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分)\n"
+        // 1. 用户订阅的话题（主动选择）
+        content += "## Subscribed Topics (订阅话题)\n\n"
+        if !subscribedTopics.isEmpty {
+            content += "用户主动订阅的话题（按优先级排序）：\n\n"
+            for topic in subscribedTopics.sorted(by: { $0.priority < $1.priority }) {
+                content += "- \(topic.name)\n"
             }
             content += "\n"
+        } else {
+            content += "暂无订阅话题。\n\n"
         }
 
-        if !mediumInterest.isEmpty {
-            content += "### 比较感兴趣 (60-80分)\n"
-            for pref in mediumInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
-                content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分)\n"
+        // 2. 从播放行为分析出的话题偏好
+        content += "## Topic Preferences from Behavior (播放行为分析)\n\n"
+        if !topicPreferences.isEmpty {
+            let highInterest = topicPreferences.filter { $0.preferenceScore >= 80 }
+            let mediumInterest = topicPreferences.filter { $0.preferenceScore >= 60 && $0.preferenceScore < 80 }
+            let lowInterest = topicPreferences.filter { $0.preferenceScore < 40 }
+
+            if !highInterest.isEmpty {
+                content += "### 强烈感兴趣 (80-100分)\n"
+                for pref in highInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
+                    content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分) - 完播率: \(Int(pref.averageCompletionRate * 100))%\n"
+                }
+                content += "\n"
             }
-            content += "\n"
-        }
 
-        if !lowInterest.isEmpty {
-            content += "### 不感兴趣 (0-40分)\n"
-            for pref in lowInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
-                content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分)\n"
+            if !mediumInterest.isEmpty {
+                content += "### 比较感兴趣 (60-80分)\n"
+                for pref in mediumInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
+                    content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分) - 完播率: \(Int(pref.averageCompletionRate * 100))%\n"
+                }
+                content += "\n"
             }
-            content += "\n"
+
+            if !lowInterest.isEmpty {
+                content += "### 不感兴趣 (0-40分)\n"
+                for pref in lowInterest.sorted(by: { $0.preferenceScore > $1.preferenceScore }) {
+                    content += "- \(pref.topicName) (\(Int(pref.preferenceScore))分) - 完播率: \(Int(pref.averageCompletionRate * 100))%\n"
+                }
+                content += "\n"
+            }
+        } else {
+            content += "暂无播放数据，无法分析话题偏好。请先播放一些播客。\n\n"
         }
 
-        // 时长偏好（基于完播率）
+        // 3. 时长偏好（基于完播率）
         content += "## Length Preferences (时长偏好)\n\n"
         let avgCompletionRate = recentSessions.isEmpty ? 0 : recentSessions.map { $0.completionRate }.reduce(0, +) / Double(recentSessions.count)
         let avgDuration = recentSessions.isEmpty ? 0 : recentSessions.map { $0.totalDuration }.reduce(0, +) / recentSessions.count
@@ -195,14 +213,20 @@ class MemoryManager: ObservableObject {
         if avgDuration > 0 {
             content += "- 平均播放时长：\(avgDuration / 60) 分钟\n"
             content += "- 平均完播率：\(Int(avgCompletionRate * 100))%\n\n"
+        } else {
+            content += "暂无播放数据。\n\n"
         }
 
-        // 播放速度偏好
+        // 4. 播放速度偏好
         content += "## Pacing Preferences (节奏偏好)\n\n"
         let avgSpeed = recentSessions.isEmpty ? 1.0 : recentSessions.map { $0.playbackSpeed }.reduce(0, +) / Double(recentSessions.count)
         if avgSpeed > 1.0 {
             content += "- 经常使用 \(String(format: "%.1f", avgSpeed))x 播放速度\n"
             content += "- 偏好紧凑的节奏，信息密度高\n\n"
+        } else if !recentSessions.isEmpty {
+            content += "- 使用正常播放速度\n\n"
+        } else {
+            content += "暂无播放数据。\n\n"
         }
 
         return content
@@ -305,7 +329,14 @@ class MemoryManager: ObservableObject {
         // 提取关键信息（简化版）
         content += "## 核心特征\n\n"
 
-        // 从偏好中提取高分话题
+        // 1. 从订阅话题提取
+        let subscribedTopics = getSubscribedTopics()
+        if !subscribedTopics.isEmpty {
+            let topicNames = subscribedTopics.prefix(5).map { $0.name }
+            content += "- **订阅话题**：\(topicNames.joined(separator: "、"))\n"
+        }
+
+        // 2. 从偏好中提取高分话题
         let topicPreferences = getTopicPreferences()
         let topTopics = topicPreferences
             .filter { $0.preferenceScore >= 70 }
@@ -314,10 +345,10 @@ class MemoryManager: ObservableObject {
             .map { $0.topicName }
 
         if !topTopics.isEmpty {
-            content += "- **内容偏好**：\(topTopics.joined(separator: "、"))\n"
+            content += "- **高偏好话题**（从播放分析）：\(topTopics.joined(separator: "、"))\n"
         }
 
-        // 从播放会话提取时长偏好
+        // 3. 从播放会话提取时长偏好
         if let tracker = behaviorTracker {
             let recentSessions = tracker.getRecentPlaybackSessions(limit: 20)
             if !recentSessions.isEmpty {
@@ -334,10 +365,19 @@ class MemoryManager: ObservableObject {
             }
         }
 
+        // 如果没有任何数据
+        if subscribedTopics.isEmpty && topTopics.isEmpty {
+            content += "暂无用户数据。请先添加感兴趣的话题并播放播客。\n"
+        }
+
         content += "\n## 生成建议\n\n"
-        content += "- 话题选择：优先推荐高分话题\n"
-        content += "- 内容深度：根据用户完播率调整\n"
-        content += "- 时长控制：参考用户平均播放时长\n"
+        if !subscribedTopics.isEmpty || !topTopics.isEmpty {
+            content += "- 话题选择：优先推荐用户订阅和高偏好话题\n"
+            content += "- 内容深度：根据用户完播率调整\n"
+            content += "- 时长控制：参考用户平均播放时长\n"
+        } else {
+            content += "暂无足够数据生成建议。\n"
+        }
 
         return content
     }
@@ -348,6 +388,14 @@ class MemoryManager: ObservableObject {
     private func getTopicPreferences() -> [TopicPreference] {
         let descriptor = FetchDescriptor<TopicPreference>(
             sortBy: [SortDescriptor(\TopicPreference.preferenceScore, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    /// 获取用户订阅的话题
+    private func getSubscribedTopics() -> [Topic] {
+        let descriptor = FetchDescriptor<Topic>(
+            sortBy: [SortDescriptor(\Topic.priority, order: .forward)]
         )
         return (try? modelContext.fetch(descriptor)) ?? []
     }
