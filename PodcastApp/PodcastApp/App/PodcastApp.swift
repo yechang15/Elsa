@@ -19,6 +19,7 @@ struct PodcastApp: App {
     @StateObject private var rssService = RSSService()
     @StateObject private var podcastService = PodcastService()
     @StateObject private var audioPlayer = AudioPlayer()
+    @StateObject private var schedulerService = SchedulerService()
 
     init() {
         // 初始化SwiftData容器
@@ -39,8 +40,30 @@ struct PodcastApp: App {
                 .environmentObject(rssService)
                 .environmentObject(podcastService)
                 .environmentObject(audioPlayer)
+                .environmentObject(schedulerService)
                 .modelContainer(modelContainer)
                 .frame(minWidth: 1000, minHeight: 600)
+                .onAppear {
+                    // 启动调度器
+                    schedulerService.start(
+                        appState: appState,
+                        podcastService: podcastService,
+                        modelContext: modelContainer.mainContext
+                    )
+
+                    // 监听重启调度器的通知
+                    NotificationCenter.default.addObserver(
+                        forName: .restartScheduler,
+                        object: nil,
+                        queue: .main
+                    ) { _ in
+                        schedulerService.start(
+                            appState: appState,
+                            podcastService: podcastService,
+                            modelContext: modelContainer.mainContext
+                        )
+                    }
+                }
         }
         .commands {
             CommandGroup(replacing: .newItem) {}
@@ -49,6 +72,7 @@ struct PodcastApp: App {
         Settings {
             SettingsView()
                 .environmentObject(appState)
+                .environmentObject(schedulerService)
         }
     }
 }

@@ -41,10 +41,14 @@ class PodcastService: ObservableObject {
             currentStatus = "正在获取RSS内容..."
         }
         let rssFeeds = topics.flatMap { $0.rssFeeds }
-        let feedURLs = rssFeeds.map { $0.url }
+
+        // 去重：使用 Set 来确保每个 URL 只获取一次
+        let uniqueURLs = Array(Set(rssFeeds.map { $0.url }))
+
+        print("📊 总共 \(rssFeeds.count) 个RSS源，去重后 \(uniqueURLs.count) 个")
 
         // 使用带详细结果的方法获取RSS内容
-        let feedResults = await rssService.fetchMultipleFeedsWithDetails(urls: feedURLs) { completed, total in
+        let feedResults = await rssService.fetchMultipleFeedsWithDetails(urls: uniqueURLs) { completed, total in
             Task { @MainActor in
                 self.currentStatus = "正在获取RSS内容... (\(completed)/\(total))"
                 // 进度从0.1到0.3，根据完成比例计算

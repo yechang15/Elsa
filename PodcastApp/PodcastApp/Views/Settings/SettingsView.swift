@@ -3,6 +3,7 @@ import AVFoundation
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var schedulerService: SchedulerService
 
     @State private var testResult: String = ""
     @State private var isTesting: Bool = false
@@ -975,6 +976,8 @@ struct SettingsView: View {
                         Task { @MainActor in
                             appState.userConfig.autoGenerate = newValue
                             appState.saveConfig()
+                            // 重启调度器
+                            restartScheduler()
                         }
                     }
 
@@ -991,6 +994,8 @@ struct SettingsView: View {
                             Task { @MainActor in
                                 appState.userConfig.autoGenerateFrequency = newValue
                                 appState.saveConfig()
+                                // 重启调度器
+                                restartScheduler()
                             }
                         }
 
@@ -1013,6 +1018,8 @@ struct SettingsView: View {
                                     Task { @MainActor in
                                         appState.userConfig.autoGenerateTime = localAutoGenerateTime
                                         appState.saveConfig()
+                                        // 重启调度器
+                                        restartScheduler()
                                     }
                                 }
                             )) {
@@ -1026,6 +1033,24 @@ struct SettingsView: View {
                         Text("提示：\(localAutoGenerateFrequency.description)，在 \(localAutoGenerateTime) 自动生成播客")
                             .font(.caption)
                             .foregroundColor(.secondary)
+
+                        // 调度器状态
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(schedulerService.isSchedulerActive ? Color.green : Color.gray)
+                                .frame(width: 8, height: 8)
+
+                            Text(schedulerService.isSchedulerActive ? "调度器运行中" : "调度器已停止")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+
+                            if let nextTime = schedulerService.nextScheduledTime {
+                                Text("• 下次生成: \(nextTime.formatted(date: .abbreviated, time: .shortened))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 4)
                     }
                     .padding(.leading, 20)
                 }
@@ -1285,9 +1310,21 @@ struct SettingsView: View {
         }
     }
 
+    // 重启调度器
+    private func restartScheduler() {
+        // 需要获取 modelContext，但在 SettingsView 中没有直接访问
+        // 所以我们通过通知来触发重启
+        NotificationCenter.default.post(name: .restartScheduler, object: nil)
+    }
+
+}
+
+extension Notification.Name {
+    static let restartScheduler = Notification.Name("restartScheduler")
 }
 
 #Preview {
     SettingsView()
         .environmentObject(AppState())
+        .environmentObject(SchedulerService())
 }
