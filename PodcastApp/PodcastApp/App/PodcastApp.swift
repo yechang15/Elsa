@@ -20,14 +20,34 @@ struct PodcastApp: App {
     @StateObject private var podcastService = PodcastService()
     @StateObject private var audioPlayer = AudioPlayer()
     @StateObject private var schedulerService = SchedulerService()
+    @StateObject private var behaviorTracker: BehaviorTracker
+    @StateObject private var memoryManager: MemoryManager
 
     init() {
         // 初始化SwiftData容器
         do {
-            modelContainer = try ModelContainer(for: Topic.self, Podcast.self, RSSFeed.self, ListeningHistory.self, ChatMessage.self)
+            modelContainer = try ModelContainer(
+                for: Topic.self,
+                     Podcast.self,
+                     RSSFeed.self,
+                     ListeningHistory.self,
+                     ChatMessage.self,
+                     UserBehaviorEvent.self,
+                     PlaybackSession.self,
+                     ContentInteraction.self,
+                     TopicPreference.self
+            )
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
+
+        // 初始化行为追踪器
+        let tracker = BehaviorTracker(modelContext: modelContainer.mainContext)
+        _behaviorTracker = StateObject(wrappedValue: tracker)
+
+        // 初始化记忆管理器
+        let memory = MemoryManager(modelContext: modelContainer.mainContext, behaviorTracker: tracker)
+        _memoryManager = StateObject(wrappedValue: memory)
 
         // 设置应用激活策略
         NSApplication.shared.setActivationPolicy(.regular)
@@ -41,9 +61,23 @@ struct PodcastApp: App {
                 .environmentObject(podcastService)
                 .environmentObject(audioPlayer)
                 .environmentObject(schedulerService)
+                .environmentObject(behaviorTracker)
+                .environmentObject(memoryManager)
                 .modelContainer(modelContainer)
                 .frame(minWidth: 1000, minHeight: 600)
                 .onAppear {
+                    // 将行为追踪器注入到AudioPlayer
+                    audioPlayer.behaviorTracker = behaviorTracker
+
+                    // 将行为追踪器注入到PodcastService
+                    podcastService.behaviorTracker = behaviorTracker
+
+                    // 将记忆管理器注入到PodcastService
+                    podcastService.memoryManager = memoryManager
+
+                    // 建立 BehaviorTracker 和 MemoryManager 的双向引用
+                    behaviorTracker.memoryManager = memoryManager
+
                     // 启动调度器
                     schedulerService.start(
                         appState: appState,

@@ -6,6 +6,8 @@ struct ChatView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var audioPlayer: AudioPlayer
+    @EnvironmentObject var behaviorTracker: BehaviorTracker
+    @EnvironmentObject var memoryManager: MemoryManager
 
     @State private var messageText = ""
     @State private var messages: [ChatMessage] = []
@@ -213,6 +215,21 @@ struct ChatView: View {
                         )
                     }
                     isLoading = false
+
+                    // 记录聊天行为
+                    let extractedTopics = extractTopicsFromMessage(userMessage)
+                    behaviorTracker.recordChatMessage(message: userMsg, extractedTopics: extractedTopics)
+
+                    // 每 5 条对话尝试提取用户信息
+                    if messages.count % 10 == 0 {
+                        Task {
+                            do {
+                                try await memoryManager.extractFromChat(messages: messages)
+                            } catch {
+                                print("❌ 从聊天提取信息失败: \(error)")
+                            }
+                        }
+                    }
                 }
             } catch {
                 await MainActor.run {
@@ -230,6 +247,30 @@ struct ChatView: View {
     private func clearHistory() {
         messages.removeAll()
         // TODO: 从数据库中删除历史记录
+    }
+
+    /// 从消息中提取话题（简单的关键词匹配）
+    private func extractTopicsFromMessage(_ message: String) -> [String] {
+        var topics: [String] = []
+
+        // 如果当前正在播放播客，添加播客的话题
+        if let podcast = audioPlayer.currentPodcast {
+            topics.append(contentsOf: podcast.topics)
+        }
+
+        // 简单的关键词匹配（可以后续用LLM优化）
+        let commonTopics = [
+            "Swift", "iOS", "开发", "编程", "技术", "AI", "人工智能",
+            "前端", "后端", "数据", "设计", "产品", "创业", "投资"
+        ]
+
+        for topic in commonTopics {
+            if message.contains(topic) && !topics.contains(topic) {
+                topics.append(topic)
+            }
+        }
+
+        return topics
     }
 }
 

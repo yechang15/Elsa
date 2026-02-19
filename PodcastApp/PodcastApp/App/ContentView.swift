@@ -141,6 +141,8 @@ struct MainView: View {
                 RSSView()
             case .history:
                 HistoryView()
+            case .memory:
+                MemoryView()
             case .settings:
                 SettingsView()
             }

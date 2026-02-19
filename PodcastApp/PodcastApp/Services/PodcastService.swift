@@ -12,9 +12,20 @@ class PodcastService: ObservableObject {
     private var llmService: LLMService?
     private let ttsService = TTSService()
 
+    // 行为追踪器（可选）
+    var behaviorTracker: BehaviorTracker?
+
+    // 记忆管理器（可选）
+    var memoryManager: MemoryManager?
+
     /// 初始化LLM服务
     func setupLLM(apiKey: String, provider: LLMProvider, model: String) {
         llmService = LLMService(apiKey: apiKey, provider: provider, model: model)
+
+        // 同时注入到 MemoryManager
+        Task { @MainActor in
+            memoryManager?.llmService = llmService
+        }
     }
 
     /// 生成播客
@@ -138,6 +149,11 @@ class PodcastService: ObservableObject {
         let podcastType: PodcastType = (category == "系统推荐") ? .systemRecommended : .topicSpecific
         let frequency = getFrequencyDescription(category: category, config: config)
 
+        // 获取用户记忆（如果可用）
+        let userMemory = await MainActor.run {
+            memoryManager?.loadSummary()
+        }
+
         let script = try await llmService.generatePodcastScript(
             articles: articles,
             topics: topics,
@@ -147,7 +163,8 @@ class PodcastService: ObservableObject {
             hostAName: hostAName,
             hostBName: hostBName,
             podcastType: podcastType,
-            frequency: frequency
+            frequency: frequency,
+            userMemory: userMemory
         ) { progress in
             // 实时显示脚本生成进度
             Task { @MainActor in
@@ -235,6 +252,20 @@ class PodcastService: ObservableObject {
             generationProgress = 1.0
         }
 
+        // 记录播客生成行为
+        await MainActor.run {
+            behaviorTracker?.recordPodcastGeneration(
+                podcast: podcast,
+                config: [
+                    "length": config.defaultLength,
+                    "contentDepth": config.contentDepth.rawValue,
+                    "hostStyle": config.hostStyle.rawValue,
+                    "ttsEngine": config.ttsEngine.rawValue,
+                    "category": category
+                ]
+            )
+        }
+
         return podcast
     }
 
@@ -310,6 +341,20 @@ class PodcastService: ObservableObject {
             modelContext.insert(podcast)
             try? modelContext.save()
             generationProgress = 1.0
+        }
+
+        // 记录播客生成行为
+        await MainActor.run {
+            behaviorTracker?.recordPodcastGeneration(
+                podcast: podcast,
+                config: [
+                    "length": config.defaultLength,
+                    "contentDepth": config.contentDepth.rawValue,
+                    "hostStyle": config.hostStyle.rawValue,
+                    "ttsEngine": config.ttsEngine.rawValue,
+                    "category": category
+                ]
+            )
         }
 
         return podcast

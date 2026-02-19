@@ -7,6 +7,12 @@ class AudioPlayer: NSObject, ObservableObject {
     private var player: AVPlayer?
     private var timeObserver: Any?
 
+    // 行为追踪器
+    var behaviorTracker: BehaviorTracker?
+
+    // 记录上次播放位置（用于检测跳转）
+    private var lastPosition: Double = 0
+
     @Published var currentPodcast: Podcast?
     @Published var isPlaying = false
     @Published var currentTime: Double = 0
@@ -64,6 +70,12 @@ class AudioPlayer: NSObject, ObservableObject {
         // 更新当前播客
         currentPodcast = podcast
 
+        // 开始播放会话追踪
+        Task { @MainActor in
+            behaviorTracker?.startPlaybackSession(podcast: podcast, startPosition: podcast.playProgress * Double(podcast.duration))
+        }
+        lastPosition = podcast.playProgress * Double(podcast.duration)
+
         // 开始播放
         print("开始播放...")
         play()
@@ -71,19 +83,39 @@ class AudioPlayer: NSObject, ObservableObject {
 
     /// 播放
     func play() {
+        let wasPlaying = isPlaying
         player?.play()
         player?.rate = playbackRate
         isPlaying = true
+
+        // 记录播放行为（恢复播放）
+        if wasPlaying == false && currentPodcast != nil {
+            Task { @MainActor in
+                behaviorTracker?.recordResume()
+            }
+        }
     }
 
     /// 暂停
     func pause() {
         player?.pause()
         isPlaying = false
+
+        // 记录暂停行为
+        Task { @MainActor in
+            behaviorTracker?.recordPause()
+        }
     }
 
     /// 停止
     func stop() {
+        // 结束播放会话（中途退出）
+        if let podcast = currentPodcast {
+            Task { @MainActor in
+                behaviorTracker?.endPlaybackSession(finalPosition: currentTime)
+            }
+        }
+
         player?.pause()
         player = nil
         isPlaying = false
@@ -93,8 +125,15 @@ class AudioPlayer: NSObject, ObservableObject {
 
     /// 跳转到指定时间
     func seek(to time: Double) {
+        let fromPosition = currentTime
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
         player?.seek(to: cmTime)
+
+        // 记录跳转行为
+        Task { @MainActor in
+            behaviorTracker?.recordSeek(from: fromPosition, to: time)
+        }
+        lastPosition = time
     }
 
     /// 设置播放速率
@@ -102,6 +141,11 @@ class AudioPlayer: NSObject, ObservableObject {
         playbackRate = rate
         if isPlaying {
             player?.rate = rate
+        }
+
+        // 记录播放速度变化
+        Task { @MainActor in
+            behaviorTracker?.recordSpeedChange(speed: Double(rate))
         }
     }
 
@@ -129,6 +173,14 @@ class AudioPlayer: NSObject, ObservableObject {
                 // 同步更新播客的播放进度
                 if let podcast = self.currentPodcast, duration > 0 {
                     podcast.playProgress = time.seconds / duration
+
+                    // 更新播放会话进度
+                    Task { @MainActor in
+                        self.behaviorTracker?.updatePlaybackProgress(
+                            currentPosition: time.seconds,
+                            playbackSpeed: Double(self.playbackRate)
+                        )
+                    }
                 }
             }
         }
@@ -151,6 +203,11 @@ class AudioPlayer: NSObject, ObservableObject {
         if let podcast = currentPodcast {
             podcast.isCompleted = true
             podcast.playProgress = 1.0
+
+            // 结束播放会话（完播）
+            Task { @MainActor in
+                behaviorTracker?.endPlaybackSession(finalPosition: Double(podcast.duration))
+            }
         }
     }
 

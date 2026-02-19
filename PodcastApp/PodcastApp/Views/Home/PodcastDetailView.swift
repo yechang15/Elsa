@@ -4,6 +4,7 @@ struct PodcastDetailView: View {
     let podcast: Podcast
     @EnvironmentObject var audioPlayer: AudioPlayer
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var behaviorTracker: BehaviorTracker
 
     @State private var selectedTab: DetailTab = .script
 
@@ -36,6 +37,10 @@ struct PodcastDetailView: View {
                     SourceArticlesView(articles: podcast.sourceArticles)
                 }
             }
+        }
+        .onAppear {
+            // 记录播客查看行为
+            behaviorTracker.recordPodcastView(podcast: podcast, sourceScreen: "detail")
         }
     }
 

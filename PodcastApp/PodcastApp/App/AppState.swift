@@ -152,6 +152,7 @@ enum NavigationItem: String, CaseIterable {
     case topics = "兴趣话题"
     case rss = "RSS订阅"
     case history = "收听历史"
+    case memory = "用户记忆"
     case settings = "设置"
 
     var icon: String {
@@ -160,6 +161,7 @@ enum NavigationItem: String, CaseIterable {
         case .topics: return "target"
         case .rss: return "antenna.radiowaves.left.and.right"
         case .history: return "chart.bar"
+        case .memory: return "brain.head.profile"
         case .settings: return "gearshape"
         }
     }

@@ -41,6 +41,7 @@ class LLMService {
         hostBName: String = "主播B",
         podcastType: PodcastType = .systemRecommended,
         frequency: String? = nil,
+        userMemory: String? = nil,
         progressHandler: ((String) -> Void)? = nil
     ) async throws -> String {
         let prompt = buildPrompt(
@@ -52,7 +53,8 @@ class LLMService {
             hostAName: hostAName,
             hostBName: hostBName,
             podcastType: podcastType,
-            frequency: frequency
+            frequency: frequency,
+            userMemory: userMemory
         )
 
         switch provider {
@@ -60,6 +62,16 @@ class LLMService {
             return try await callDoubaoAPIStreaming(prompt: prompt, progressHandler: progressHandler)
         case .openai:
             return try await callOpenAIAPIStreaming(prompt: prompt, progressHandler: progressHandler)
+        }
+    }
+
+    /// 生成文本（通用方法，用于记忆摘要等）
+    func generateText(prompt: String) async throws -> String {
+        switch provider {
+        case .doubao:
+            return try await callDoubaoAPIStreaming(prompt: prompt, progressHandler: nil)
+        case .openai:
+            return try await callOpenAIAPIStreaming(prompt: prompt, progressHandler: nil)
         }
     }
 
@@ -73,7 +85,8 @@ class LLMService {
         hostAName: String,
         hostBName: String,
         podcastType: PodcastType,
-        frequency: String?
+        frequency: String?,
+        userMemory: String?
     ) -> String {
         let articlesText = articles.prefix(5).map { article in
             """
@@ -99,13 +112,27 @@ class LLMService {
             }
         }
 
+        // 构建用户记忆部分
+        let memorySection: String
+        if let memory = userMemory, !memory.isEmpty {
+            memorySection = """
+
+            【用户偏好记忆】
+            \(memory)
+
+            请根据以上用户偏好，调整播客的话题选择、内容深度、对话风格和节奏。
+            """
+        } else {
+            memorySection = ""
+        }
+
         return """
         你是一个播客脚本生成助手。请根据以下RSS文章内容，生成一个\(length)分钟的二人对话式播客脚本。
 
         播客定位：\(contextDescription)
         话题：\(topics.joined(separator: "、"))
         风格：\(style)
-        深度：\(depth)
+        深度：\(depth)\(memorySection)
 
         RSS文章内容：
         \(articlesText)

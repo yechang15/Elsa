@@ -3,6 +3,7 @@ import SwiftData
 
 struct TopicsView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var behaviorTracker: BehaviorTracker
     @Query(sort: \Topic.priority, order: .reverse) private var topics: [Topic]
 
     @State private var showingAddSheet = false
@@ -48,6 +49,9 @@ struct TopicsView: View {
     }
 
     private func deleteTopic(_ topic: Topic) {
+        // 记录删除话题行为
+        behaviorTracker.recordTopicRemove(topicName: topic.name)
+
         modelContext.delete(topic)
         try? modelContext.save()
     }
@@ -111,6 +115,7 @@ struct EmptyTopicsView: View {
 struct AddTopicsSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var behaviorTracker: BehaviorTracker
 
     let existingTopics: [String]
     @State private var selectedTopics: Set<String> = []
@@ -209,6 +214,9 @@ struct AddTopicsSheet: View {
             }
 
             modelContext.insert(topic)
+
+            // 记录添加话题行为
+            behaviorTracker.recordTopicAdd(topicName: topicName)
         }
 
         try? modelContext.save()
