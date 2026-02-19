@@ -59,7 +59,7 @@ struct SettingsView: View {
     @State private var localDoubaoTTSVoiceB: String = ""
 
     // 播客生成配置
-    @State private var localDefaultLength: Int = 15
+    @State private var localDefaultLength: Int = 3
     @State private var localContentDepth: ContentDepth = .quick
     @State private var localHostStyle: HostStyle = .casual
     @State private var localAutoGenerate: Bool = true
@@ -939,9 +939,9 @@ struct SettingsView: View {
                     .font(.headline)
                     .padding(.bottom, 4)
                 Picker("默认长度", selection: $localDefaultLength) {
+                    Text("1分钟").tag(1)
+                    Text("3分钟").tag(3)
                     Text("5分钟").tag(5)
-                    Text("15分钟").tag(15)
-                    Text("30分钟").tag(30)
                 }
                 .onChange(of: localDefaultLength) { oldValue, newValue in
                     guard !isInitializing else { return }

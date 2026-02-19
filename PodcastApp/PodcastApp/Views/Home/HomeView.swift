@@ -37,7 +37,7 @@ struct HomeView: View {
                     Button(action: startGeneratingPodcast) {
                         HStack(spacing: 6) {
                             Image(systemName: "plus.circle.fill")
-                            Text("为「\(selectedTopic)」生成播客")
+                            Text(generateButtonText)
                         }
                         .font(.subheadline)
                         .fontWeight(.medium)
@@ -93,6 +93,20 @@ struct HomeView: View {
         return topicList
     }
 
+    // 生成按钮文本
+    private var generateButtonText: String {
+        if selectedTopic == "推荐" {
+            // 推荐模式：显示将为哪个话题生成
+            if let firstTopic = topics.first {
+                return "为「\(firstTopic.name)」生成播客"
+            } else {
+                return "生成播客"
+            }
+        } else {
+            return "为「\(selectedTopic)」生成播客"
+        }
+    }
+
     // 根据选中的话题筛选播客
     private var filteredPodcasts: [Podcast] {
         if selectedTopic == "推荐" {
@@ -146,7 +160,10 @@ struct HomeView: View {
 
     // 目标话题列表
     private var targetTopics: [Topic] {
-        if selectedTopic == "推荐" || selectedTopic == "全部" {
+        if selectedTopic == "推荐" {
+            // 推荐模式：只为第一个话题生成，确保是单话题播客
+            return topics.isEmpty ? [] : [topics[0]]
+        } else if selectedTopic == "全部" {
             return topics
         } else {
             return topics.filter { $0.name == selectedTopic }
@@ -234,8 +251,8 @@ struct HomeView: View {
                 }
             }
 
-            // 等待一下让用户看到完成状态
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            // 等待一下让用户看到完成状态，并确保SwiftData查询已更新
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
 
             // 从生成列表中移除
             await MainActor.run {

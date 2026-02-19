@@ -208,7 +208,7 @@ struct UserConfig: Codable, Equatable {
     var doubaoPodcastVoiceB: String = "zh_male_wennuanahu_moon_bigtts"
 
     // 播客生成配置
-    var defaultLength: Int = 15 // 分钟
+    var defaultLength: Int = 3 // 分钟
     var contentDepth: ContentDepth = .quick
     var hostStyle: HostStyle = .casual
     var autoGenerate: Bool = true
