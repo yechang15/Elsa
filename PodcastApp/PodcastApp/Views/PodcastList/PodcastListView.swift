@@ -6,6 +6,7 @@ struct PodcastListView: View {
     @Query(sort: \Podcast.createdAt, order: .reverse) private var podcasts: [Podcast]
     @EnvironmentObject var audioPlayer: AudioPlayer
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var schedulerService: SchedulerService
 
     @State private var selectedFilter: FilterOption = .all
 
@@ -42,11 +43,32 @@ struct PodcastListView: View {
             }
 
             // 播客列表
-            if filteredPodcasts.isEmpty {
+            if filteredPodcasts.isEmpty && schedulerService.generatingCategories.isEmpty {
                 EmptyStateView()
             } else {
                 ScrollView {
                     LazyVStack(spacing: 20, pinnedViews: [.sectionHeaders]) {
+                        // 显示正在生成的分类占位符
+                        ForEach(Array(schedulerService.generatingCategories).sorted(), id: \.self) { category in
+                            Section {
+                                GeneratingPlaceholder(category: category)
+                            } header: {
+                                HStack {
+                                    Text(category)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text("生成中...")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                                .background(Color(NSColor.controlBackgroundColor))
+                            }
+                        }
+
+                        // 显示已有的播客分组
                         ForEach(groupedPodcasts.keys.sorted(), id: \.self) { category in
                             Section {
                                 ForEach(groupedPodcasts[category] ?? []) { podcast in
@@ -446,9 +468,39 @@ struct AutoGenerateConfigCard: View {
     }
 }
 
+/// 生成中占位符
+struct GeneratingPlaceholder: View {
+    let category: String
+
+    var body: some View {
+        VStack(spacing: 16) {
+            // 加载动画
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle())
+
+            VStack(spacing: 8) {
+                Text("正在生成\(category)播客")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Text("正在获取内容并生成音频，请稍候...")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(40)
+        .background(Color(NSColor.controlBackgroundColor))
+        .cornerRadius(12)
+    }
+}
+
 #Preview {
     PodcastListView()
         .environmentObject(AudioPlayer())
         .environmentObject(AppState())
+        .environmentObject(SchedulerService())
         .modelContainer(for: [Podcast.self])
 }

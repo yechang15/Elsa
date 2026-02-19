@@ -6,6 +6,7 @@ import UserNotifications
 class SchedulerService: ObservableObject {
     @Published var isSchedulerActive = false
     @Published var nextScheduledTime: Date?
+    @Published var generatingCategories: Set<String> = [] // 正在生成的分类
 
     private var timer: Timer?
     private let checkInterval: TimeInterval = 60 // 每分钟检查一次
@@ -49,6 +50,9 @@ class SchedulerService: ObservableObject {
 
         // 立即检查一次
         checkAndGenerate()
+
+        // 检查空分类并立即生成
+        checkEmptyCategories()
 
         print("✅ 调度器已启动，下次生成时间: \(nextScheduledTime?.formatted() ?? "未知")")
     }
@@ -155,6 +159,83 @@ class SchedulerService: ObservableObject {
                 }
             } catch {
                 print("❌ 检查话题自动生成失败: \(error)")
+            }
+        }
+    }
+
+    /// 检查空分类并立即生成
+    private func checkEmptyCategories() {
+        guard let appState = appState,
+              let podcastService = podcastService,
+              let modelContext = modelContext else {
+            return
+        }
+
+        let config = appState.userConfig
+
+        Task {
+            do {
+                // 获取所有播客
+                let podcastDescriptor = FetchDescriptor<Podcast>()
+                let allPodcasts = try modelContext.fetch(podcastDescriptor)
+
+                // 获取所有已存在的分类
+                let existingCategories = Set(allPodcasts.map { $0.displayCategory })
+
+                // 1. 检查"系统推荐"是否为空
+                if config.autoGenerate && !existingCategories.contains("系统推荐") {
+                    print("🎙️ 检测到系统推荐分类为空，立即生成...")
+                    await MainActor.run {
+                        generatingCategories.insert("系统推荐")
+                    }
+
+                    // 获取所有话题
+                    let topicDescriptor = FetchDescriptor<Topic>()
+                    let topics = try modelContext.fetch(topicDescriptor)
+
+                    if !topics.isEmpty {
+                        await generatePodcast(config: config, modelContext: modelContext, podcastService: podcastService)
+                    }
+
+                    await MainActor.run {
+                        generatingCategories.remove("系统推荐")
+                    }
+                }
+
+                // 2. 检查话题分类是否为空（如果启用了话题自动生成）
+                if config.topicAutoGenerate {
+                    let topicDescriptor = FetchDescriptor<Topic>()
+                    let topics = try modelContext.fetch(topicDescriptor)
+
+                    for topic in topics {
+                        if !existingCategories.contains(topic.name) {
+                            print("🎙️ 检测到\(topic.name)分类为空，立即生成...")
+                            await MainActor.run {
+                                generatingCategories.insert(topic.name)
+                            }
+
+                            await generateTopicPodcast(
+                                topic: topic,
+                                config: config,
+                                modelContext: modelContext,
+                                podcastService: podcastService
+                            )
+
+                            // 记录生成时间
+                            let lastGenerationKey = topicLastGenerationPrefix + topic.id.uuidString
+                            UserDefaults.standard.set(Date(), forKey: lastGenerationKey)
+
+                            await MainActor.run {
+                                generatingCategories.remove(topic.name)
+                            }
+
+                            // 每次只生成一个，避免同时生成太多
+                            break
+                        }
+                    }
+                }
+            } catch {
+                print("❌ 检查空分类失败: \(error)")
             }
         }
     }
