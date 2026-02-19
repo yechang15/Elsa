@@ -1,5 +1,8 @@
 import Foundation
 import AVFoundation
+#if os(macOS)
+import AppKit
+#endif
 
 /// TTS语音合成服务
 class TTSService: NSObject, ObservableObject {
@@ -298,51 +301,57 @@ class TTSService: NSObject, ObservableObject {
 
     /// 合成单段对话
     private func synthesizeSingleDialogue(text: String, voice: String, speed: Float, outputURL: URL) async throws {
-        // macOS的AVSpeechSynthesizer不支持直接写入文件
-        // 这里使用一个简化的实现：生成静音占位
-        // 如果需要真正的系统TTS音频，建议使用NSSpeechSynthesizer或其他方案
+        #if os(macOS)
+        // macOS: 使用 NSSpeechSynthesizer（虽然已弃用，但是最可靠的方法）
+        try await synthesizeWithNSSpeech(text: text, voice: voice, speed: speed, outputURL: outputURL)
+        #elseif os(iOS)
+        // iOS: 使用 AVSpeechSynthesizer（暂不支持写入文件，需要实时播放）
+        throw TTSError.unsupportedPlatform
+        #else
+        throw TTSError.unsupportedPlatform
+        #endif
+    }
 
+    #if os(macOS)
+    /// macOS: 使用 NSSpeechSynthesizer 合成音频到文件
+    /// 注意：NSSpeechSynthesizer 在 macOS 14.0 中已被弃用，但仍然可用
+    private func synthesizeWithNSSpeech(text: String, voice: String, speed: Float, outputURL: URL) async throws {
         return try await withCheckedThrowingContinuation { continuation in
-            // 估算音频时长（基于文本长度）
-            let estimatedDuration = Double(text.count) / 10.0 * Double(speed) // 粗略估算
-            let sampleRate: Double = 44100.0
-            let frameCount = AVAudioFrameCount(estimatedDuration * sampleRate)
+            let speechSynthesizer = NSSpeechSynthesizer()
 
-            // 创建音频格式
-            let format = AVAudioFormat(
-                commonFormat: .pcmFormatFloat32,
-                sampleRate: sampleRate,
-                channels: 1,
-                interleaved: false
-            )!
+            // 设置音色
+            let nsVoice = NSSpeechSynthesizer.VoiceName(rawValue: voice)
+            speechSynthesizer.setVoice(nsVoice)
 
-            // 创建PCM buffer
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+            // 设置语速 (NSSpeechSynthesizer 的速度范围通常是 90-720，默认约 200)
+            let baseRate: Float = 200.0
+            speechSynthesizer.rate = baseRate * speed
+
+            // 开始合成到文件
+            let success = speechSynthesizer.startSpeaking(text, to: outputURL)
+
+            if success {
+                // 等待合成完成
+                // NSSpeechSynthesizer 是同步的，但我们需要等待它完成
+                // 使用一个简单的轮询机制
+                DispatchQueue.global().async {
+                    while speechSynthesizer.isSpeaking {
+                        Thread.sleep(forTimeInterval: 0.1)
+                    }
+
+                    // 验证文件是否生成
+                    if FileManager.default.fileExists(atPath: outputURL.path) {
+                        continuation.resume()
+                    } else {
+                        continuation.resume(throwing: TTSError.audioProcessingFailed)
+                    }
+                }
+            } else {
                 continuation.resume(throwing: TTSError.audioProcessingFailed)
-                return
-            }
-            buffer.frameLength = frameCount
-
-            // 创建音频文件（使用CAF格式，更兼容）
-            let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatLinearPCM),
-                AVSampleRateKey: sampleRate,
-                AVNumberOfChannelsKey: 1,
-                AVLinearPCMBitDepthKey: 32,
-                AVLinearPCMIsFloatKey: true,
-                AVLinearPCMIsBigEndianKey: false
-            ]
-
-            do {
-                let audioFile = try AVAudioFile(forWriting: outputURL, settings: settings)
-                try audioFile.write(from: buffer)
-                continuation.resume()
-            } catch {
-                print("❌ 写入音频文件失败: \(error)")
-                continuation.resume(throwing: error)
             }
         }
     }
+    #endif
 
     /// 合并音频文件
     private func mergeAudioFiles(_ files: [URL], outputURL: URL) async throws {
@@ -486,6 +495,7 @@ enum TTSError: LocalizedError {
     case connectionFailed
     case invalidResponse
     case invalidVoice(String)
+    case unsupportedPlatform
 
     var errorDescription: String? {
         switch self {
@@ -503,6 +513,8 @@ enum TTSError: LocalizedError {
             return "无效的响应"
         case .invalidVoice(let message):
             return "音色配置错误: \(message)"
+        case .unsupportedPlatform:
+            return "不支持的平台"
         }
     }
 }
