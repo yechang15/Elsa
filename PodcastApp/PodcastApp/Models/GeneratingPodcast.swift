@@ -6,6 +6,7 @@ class GeneratingPodcast: Identifiable, ObservableObject {
     let id = UUID()
     let topicName: String
     let topics: [Topic]
+    let createdAt: Date
 
     @Published var currentStep: GenerationStep = .idle
     @Published var stepProgress: Double = 0.0
@@ -17,5 +18,6 @@ class GeneratingPodcast: Identifiable, ObservableObject {
     init(topicName: String, topics: [Topic]) {
         self.topicName = topicName
         self.topics = topics
+        self.createdAt = Date()
     }
 }

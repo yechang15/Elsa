@@ -14,14 +14,19 @@ struct GeneratingPodcastCard: View {
 
                 Spacer()
 
-                // 生成中指示器
-                HStack(spacing: 4) {
-                    ProgressView()
-                        .scaleEffect(0.7)
-                    Text("生成中")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                // 开始时间
+                Text(generatingPodcast.createdAt, format: .dateTime.month().day().hour().minute())
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // 生成中指示器
+            HStack(spacing: 4) {
+                ProgressView()
+                    .scaleEffect(0.7)
+                Text("生成中")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             // 进度环

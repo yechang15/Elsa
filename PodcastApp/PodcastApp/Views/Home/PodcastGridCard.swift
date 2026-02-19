@@ -59,7 +59,7 @@ struct PodcastGridCard: View {
 
                 Spacer()
 
-                Text(podcast.createdAt, format: .dateTime.month().day())
+                Text(podcast.createdAt, format: .dateTime.month().day().hour().minute())
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
