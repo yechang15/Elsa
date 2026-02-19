@@ -62,7 +62,12 @@ struct HomeView: View {
                         LazyVGrid(columns: columns, spacing: 20) {
                             // 正在生成的播客卡片
                             ForEach(generatingPodcasts) { generatingPodcast in
-                                GeneratingPodcastCard(generatingPodcast: generatingPodcast)
+                                GeneratingPodcastCard(
+                                    generatingPodcast: generatingPodcast,
+                                    onCancel: {
+                                        cancelGeneration(generatingPodcast)
+                                    }
+                                )
                             }
 
                             // 已生成的播客卡片
@@ -123,16 +128,20 @@ struct HomeView: View {
         // 创建生成中的播客对象
         let generatingPodcast = GeneratingPodcast(
             topicName: selectedTopic,
-            topics: targetTopics
+            topics: targetTopics,
+            config: appState.userConfig
         )
 
         // 添加到列表
         generatingPodcasts.insert(generatingPodcast, at: 0)
 
         // 在后台执行生成任务
-        Task {
+        let task = Task {
             await generatePodcast(generatingPodcast)
         }
+
+        // 保存任务引用以便取消
+        generatingPodcast.generationTask = task
     }
 
     // 目标话题列表
@@ -147,6 +156,14 @@ struct HomeView: View {
     // 生成播客
     private func generatePodcast(_ generatingPodcast: GeneratingPodcast) async {
         do {
+            // 检查是否已取消
+            guard !generatingPodcast.isCancelled else {
+                await MainActor.run {
+                    generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                }
+                return
+            }
+
             // 设置LLM服务
             let provider = LLMProvider(rawValue: appState.userConfig.llmProvider) ?? .doubao
             podcastService.setupLLM(
@@ -158,6 +175,11 @@ struct HomeView: View {
             // 监听进度变化
             let progressTask = Task {
                 while !Task.isCancelled {
+                    // 检查是否已取消
+                    if generatingPodcast.isCancelled {
+                        break
+                    }
+
                     await MainActor.run {
                         let progress = podcastService.generationProgress
                         let status = podcastService.currentStatus
@@ -191,6 +213,14 @@ struct HomeView: View {
 
             progressTask.cancel()
 
+            // 再次检查是否已取消
+            guard !generatingPodcast.isCancelled else {
+                await MainActor.run {
+                    generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                }
+                return
+            }
+
             await MainActor.run {
                 generatingPodcast.currentStep = .completed
                 generatingPodcast.stepProgress = 1.0
@@ -217,6 +247,12 @@ struct HomeView: View {
                 generatingPodcast.currentStep = .idle
             }
         }
+    }
+
+    // 取消生成
+    private func cancelGeneration(_ generatingPodcast: GeneratingPodcast) {
+        generatingPodcast.cancel()
+        generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
     }
 }
 

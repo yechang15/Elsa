@@ -6,6 +6,7 @@ class GeneratingPodcast: Identifiable, ObservableObject {
     let id = UUID()
     let topicName: String
     let topics: [Topic]
+    let config: UserConfig
     let createdAt: Date
 
     @Published var currentStep: GenerationStep = .idle
@@ -14,10 +15,19 @@ class GeneratingPodcast: Identifiable, ObservableObject {
     @Published var errorMessage: String?
     @Published var isCompleted: Bool = false
     @Published var generatedPodcast: Podcast?
+    @Published var isCancelled: Bool = false
 
-    init(topicName: String, topics: [Topic]) {
+    var generationTask: Task<Void, Never>?
+
+    init(topicName: String, topics: [Topic], config: UserConfig) {
         self.topicName = topicName
         self.topics = topics
+        self.config = config
         self.createdAt = Date()
+    }
+
+    func cancel() {
+        isCancelled = true
+        generationTask?.cancel()
     }
 }
