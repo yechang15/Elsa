@@ -10,7 +10,7 @@ struct HomeView: View {
     @EnvironmentObject var podcastService: PodcastService
 
     @State private var selectedTopic: String = "推荐"
-    @State private var showingGenerateSheet = false
+    @State private var generatingPodcasts: [GeneratingPodcast] = []
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -34,7 +34,7 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 // 生成播客按钮
                 HStack {
-                    Button(action: { showingGenerateSheet = true }) {
+                    Button(action: startGeneratingPodcast) {
                         HStack(spacing: 6) {
                             Image(systemName: "plus.circle.fill")
                             Text("为「\(selectedTopic)」生成播客")
@@ -55,11 +55,17 @@ struct HomeView: View {
                 .padding(.vertical, 12)
 
                 // 播客网格
-                if filteredPodcasts.isEmpty {
+                if filteredPodcasts.isEmpty && generatingPodcasts.isEmpty {
                     EmptyStateView()
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 20) {
+                            // 正在生成的播客卡片
+                            ForEach(generatingPodcasts) { generatingPodcast in
+                                GeneratingPodcastCard(generatingPodcast: generatingPodcast)
+                            }
+
+                            // 已生成的播客卡片
                             ForEach(filteredPodcasts) { podcast in
                                 PodcastGridCard(podcast: podcast)
                                     .onTapGesture {
@@ -72,9 +78,6 @@ struct HomeView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showingGenerateSheet) {
-            GeneratePodcastSheetForTopic(selectedTopic: selectedTopic)
         }
     }
 
@@ -111,6 +114,107 @@ struct HomeView: View {
             // 只显示topics数组中只有这一个话题的播客
             return podcasts.filter { podcast in
                 podcast.topics.count == 1 && podcast.topics.first == selectedTopic
+            }
+        }
+    }
+
+    // 开始生成播客
+    private func startGeneratingPodcast() {
+        // 创建生成中的播客对象
+        let generatingPodcast = GeneratingPodcast(
+            topicName: selectedTopic,
+            topics: targetTopics
+        )
+
+        // 添加到列表
+        generatingPodcasts.insert(generatingPodcast, at: 0)
+
+        // 在后台执行生成任务
+        Task {
+            await generatePodcast(generatingPodcast)
+        }
+    }
+
+    // 目标话题列表
+    private var targetTopics: [Topic] {
+        if selectedTopic == "推荐" || selectedTopic == "全部" {
+            return topics
+        } else {
+            return topics.filter { $0.name == selectedTopic }
+        }
+    }
+
+    // 生成播客
+    private func generatePodcast(_ generatingPodcast: GeneratingPodcast) async {
+        do {
+            // 设置LLM服务
+            let provider = LLMProvider(rawValue: appState.userConfig.llmProvider) ?? .doubao
+            podcastService.setupLLM(
+                apiKey: appState.userConfig.llmApiKey,
+                provider: provider,
+                model: appState.userConfig.llmModel
+            )
+
+            // 监听进度变化
+            let progressTask = Task {
+                while !Task.isCancelled {
+                    await MainActor.run {
+                        let progress = podcastService.generationProgress
+                        let status = podcastService.currentStatus
+
+                        generatingPodcast.currentStatus = status
+
+                        if progress < 0.3 {
+                            generatingPodcast.currentStep = .fetchingRSS
+                            generatingPodcast.stepProgress = progress / 0.3 * 0.25
+                        } else if progress < 0.6 {
+                            generatingPodcast.currentStep = .generatingScript
+                            generatingPodcast.stepProgress = 0.25 + (progress - 0.3) / 0.3 * 0.5
+                        } else if progress < 0.9 {
+                            generatingPodcast.currentStep = .generatingAudio
+                            generatingPodcast.stepProgress = 0.75 + (progress - 0.6) / 0.3 * 0.2
+                        } else {
+                            generatingPodcast.currentStep = .saving
+                            generatingPodcast.stepProgress = 0.95 + (progress - 0.9) / 0.1 * 0.05
+                        }
+                    }
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                }
+            }
+
+            // 生成播客
+            let podcast = try await podcastService.generatePodcast(
+                topics: generatingPodcast.topics,
+                config: appState.userConfig,
+                modelContext: modelContext
+            )
+
+            progressTask.cancel()
+
+            await MainActor.run {
+                generatingPodcast.currentStep = .completed
+                generatingPodcast.stepProgress = 1.0
+                generatingPodcast.generatedPodcast = podcast
+                generatingPodcast.isCompleted = true
+
+                // 自动播放生成的播客
+                if let audioPath = podcast.audioFilePath {
+                    let audioURL = URL(fileURLWithPath: audioPath)
+                    audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
+                }
+            }
+
+            // 等待一下让用户看到完成状态
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+
+            // 从生成列表中移除
+            await MainActor.run {
+                generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+            }
+        } catch {
+            await MainActor.run {
+                generatingPodcast.errorMessage = error.localizedDescription
+                generatingPodcast.currentStep = .idle
             }
         }
     }
