@@ -96,12 +96,7 @@ struct HomeView: View {
     // 生成按钮文本
     private var generateButtonText: String {
         if selectedTopic == "推荐" {
-            // 推荐模式：显示将为哪个话题生成
-            if let firstTopic = topics.first {
-                return "为「\(firstTopic.name)」生成播客"
-            } else {
-                return "生成播客"
-            }
+            return "为您生成个性化播客"
         } else {
             return "为「\(selectedTopic)」生成播客"
         }
@@ -139,6 +134,9 @@ struct HomeView: View {
 
     // 开始生成播客
     private func startGeneratingPodcast() {
+        // 记录当前选中的话题，用于判断是否需要切换标签
+        let currentTopic = selectedTopic
+
         // 创建生成中的播客对象
         let generatingPodcast = GeneratingPodcast(
             topicName: selectedTopic,
@@ -151,7 +149,7 @@ struct HomeView: View {
 
         // 在后台执行生成任务
         let task = Task {
-            await generatePodcast(generatingPodcast)
+            await generatePodcast(generatingPodcast, fromTopic: currentTopic)
         }
 
         // 保存任务引用以便取消
@@ -160,10 +158,8 @@ struct HomeView: View {
 
     // 目标话题列表
     private var targetTopics: [Topic] {
-        if selectedTopic == "推荐" {
-            // 推荐模式：只为第一个话题生成，确保是单话题播客
-            return topics.isEmpty ? [] : [topics[0]]
-        } else if selectedTopic == "全部" {
+        if selectedTopic == "推荐" || selectedTopic == "全部" {
+            // 推荐和全部：使用所有话题生成个性化播客
             return topics
         } else {
             return topics.filter { $0.name == selectedTopic }
@@ -171,7 +167,7 @@ struct HomeView: View {
     }
 
     // 生成播客
-    private func generatePodcast(_ generatingPodcast: GeneratingPodcast) async {
+    private func generatePodcast(_ generatingPodcast: GeneratingPodcast, fromTopic: String) async {
         do {
             // 检查是否已取消
             guard !generatingPodcast.isCancelled else {
@@ -243,6 +239,11 @@ struct HomeView: View {
                 generatingPodcast.stepProgress = 1.0
                 generatingPodcast.generatedPodcast = podcast
                 generatingPodcast.isCompleted = true
+
+                // 如果是从推荐页面生成的多话题播客，自动切换到全部标签
+                if fromTopic == "推荐" && podcast.topics.count > 1 {
+                    selectedTopic = "全部"
+                }
 
                 // 自动播放生成的播客
                 if let audioPath = podcast.audioFilePath {
