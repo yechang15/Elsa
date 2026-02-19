@@ -1,7 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct MemoryView: View {
     @EnvironmentObject var memoryManager: MemoryManager
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var podcastService: PodcastService
     @State private var selectedTab: MemoryFileType = .summary
     @State private var isGenerating = false
     @State private var showAlert = false
@@ -168,6 +171,20 @@ struct MemoryView: View {
         isGenerating = true
         Task {
             do {
+                // 确保 LLM 服务已注入
+                if memoryManager.llmService == nil {
+                    // 从 PodcastService 获取并注入
+                    await MainActor.run {
+                        podcastService.setupLLM(
+                            apiKey: appState.config.llmApiKey,
+                            provider: appState.config.llmProvider == "豆包" ? .doubao : .openai,
+                            model: appState.config.llmModel
+                        )
+                    }
+                    // 等待异步注入完成
+                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+                }
+
                 print("🔄 开始生成摘要...")
                 let content = try await memoryManager.generateSummary()
                 print("✅ 摘要生成完成，长度: \(content.count) 字符")
