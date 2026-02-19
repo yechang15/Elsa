@@ -9,6 +9,12 @@ class TTSService: NSObject, ObservableObject {
     private nonisolated(unsafe) let synthesizer = AVSpeechSynthesizer()
     @Published var isSpeaking = false
 
+    #if os(macOS)
+    // 复用 NSSpeechSynthesizer 实例，避免频繁创建销毁
+    private var nsSpeechSynthesizer: NSSpeechSynthesizer?
+    private let synthesizerLock = NSLock()
+    #endif
+
     override init() {
         super.init()
         synthesizer.delegate = self
@@ -317,7 +323,18 @@ class TTSService: NSObject, ObservableObject {
     /// 注意：NSSpeechSynthesizer 在 macOS 14.0 中已被弃用，但仍然可用
     private func synthesizeWithNSSpeech(text: String, voice: String, speed: Float, outputURL: URL) async throws {
         return try await withCheckedThrowingContinuation { continuation in
-            let speechSynthesizer = NSSpeechSynthesizer()
+            synthesizerLock.lock()
+
+            // 复用或创建 synthesizer
+            if nsSpeechSynthesizer == nil {
+                nsSpeechSynthesizer = NSSpeechSynthesizer()
+            }
+
+            guard let speechSynthesizer = nsSpeechSynthesizer else {
+                synthesizerLock.unlock()
+                continuation.resume(throwing: TTSError.audioProcessingFailed)
+                return
+            }
 
             // 设置音色
             let nsVoice = NSSpeechSynthesizer.VoiceName(rawValue: voice)
@@ -330,10 +347,10 @@ class TTSService: NSObject, ObservableObject {
             // 开始合成到文件
             let success = speechSynthesizer.startSpeaking(text, to: outputURL)
 
+            synthesizerLock.unlock()
+
             if success {
                 // 等待合成完成
-                // NSSpeechSynthesizer 是同步的，但我们需要等待它完成
-                // 使用一个简单的轮询机制
                 DispatchQueue.global().async {
                     while speechSynthesizer.isSpeaking {
                         Thread.sleep(forTimeInterval: 0.1)
