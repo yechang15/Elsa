@@ -10,6 +10,7 @@ class SchedulerService: ObservableObject {
     private var timer: Timer?
     private let checkInterval: TimeInterval = 60 // 每分钟检查一次
     private let lastGenerationKey = "lastAutoGenerationDate"
+    private let topicLastGenerationPrefix = "topicLastGeneration_" // 话题生成时间前缀
 
     private weak var appState: AppState?
     private weak var podcastService: PodcastService?
@@ -70,11 +71,19 @@ class SchedulerService: ObservableObject {
 
         let config = appState.userConfig
 
-        // 检查是否启用自动生成
-        guard config.autoGenerate else {
-            return
+        // 1. 检查用户定时生成
+        if config.autoGenerate {
+            checkUserScheduledGeneration(config: config, modelContext: modelContext, podcastService: podcastService)
         }
 
+        // 2. 检查话题自动生成
+        if config.topicAutoGenerate {
+            checkTopicAutoGeneration(config: config, modelContext: modelContext, podcastService: podcastService)
+        }
+    }
+
+    /// 检查用户定时生成
+    private func checkUserScheduledGeneration(config: UserConfig, modelContext: ModelContext, podcastService: PodcastService) {
         // 检查是否到了生成时间
         guard shouldGenerateNow(config: config) else {
             return
@@ -86,11 +95,67 @@ class SchedulerService: ObservableObject {
             return
         }
 
-        print("🎙️ 触发自动生成播客...")
+        print("🎙️ 触发用户定时生成播客...")
 
         // 异步执行生成任务
         Task {
             await generatePodcast(config: config, modelContext: modelContext, podcastService: podcastService)
+        }
+    }
+
+    /// 检查话题自动生成
+    private func checkTopicAutoGeneration(config: UserConfig, modelContext: ModelContext, podcastService: PodcastService) {
+        Task {
+            do {
+                // 获取所有话题
+                let descriptor = FetchDescriptor<Topic>()
+                let topics = try modelContext.fetch(descriptor)
+
+                guard !topics.isEmpty else {
+                    return
+                }
+
+                let now = Date()
+                let intervalSeconds = TimeInterval(config.topicGenerateInterval * 3600) // 转换为秒
+
+                // 检查每个话题是否需要生成
+                for topic in topics {
+                    let lastGenerationKey = topicLastGenerationPrefix + topic.id.uuidString
+
+                    // 获取上次生成时间
+                    let lastGeneration = UserDefaults.standard.object(forKey: lastGenerationKey) as? Date
+
+                    // 判断是否需要生成
+                    let shouldGenerate: Bool
+                    if let lastGeneration = lastGeneration {
+                        let timeSinceLastGeneration = now.timeIntervalSince(lastGeneration)
+                        shouldGenerate = timeSinceLastGeneration >= intervalSeconds
+                    } else {
+                        // 从未生成过，立即生成
+                        shouldGenerate = true
+                    }
+
+                    if shouldGenerate {
+                        print("🎙️ 触发话题自动生成: \(topic.name)")
+
+                        // 异步生成单个话题的播客
+                        await generateTopicPodcast(
+                            topic: topic,
+                            config: config,
+                            modelContext: modelContext,
+                            podcastService: podcastService
+                        )
+
+                        // 记录生成时间
+                        UserDefaults.standard.set(now, forKey: lastGenerationKey)
+
+                        // 每次只生成一个话题，避免同时生成太多
+                        break
+                    }
+                }
+            } catch {
+                print("❌ 检查话题自动生成失败: \(error)")
+            }
         }
     }
 
@@ -213,18 +278,17 @@ class SchedulerService: ObservableObject {
         }
     }
 
-    /// 执行播客生成
+    /// 执行播客生成（所有话题）
     private func generatePodcast(config: UserConfig, modelContext: ModelContext, podcastService: PodcastService) async {
         do {
-            print("🎙️ 开始自动生成播客...")
+            print("🎙️ 开始自动生成播客（所有话题）...")
 
             // 获取所有主题
             let descriptor = FetchDescriptor<Topic>()
             let topics = try modelContext.fetch(descriptor)
 
             guard !topics.isEmpty else {
-                print("⚠️ 没有启用的主题")
-                await sendNotification(title: "播客生成失败", body: "没有启用的主题")
+                print("⚠️ 没有话题")
                 return
             }
 
@@ -239,7 +303,8 @@ class SchedulerService: ObservableObject {
             let podcast = try await podcastService.generatePodcast(
                 topics: topics,
                 config: config,
-                modelContext: modelContext
+                modelContext: modelContext,
+                category: "系统推荐"
             )
 
             // 记录生成时间
@@ -251,26 +316,38 @@ class SchedulerService: ObservableObject {
             }
 
             print("✅ 自动生成播客成功: \(podcast.title)")
-
-            // 暂时禁用通知功能，避免开发环境下的 bundle 问题
-            // 生成成功的信息会在控制台输出
             print("📬 播客已生成: \(podcast.title)")
-
-            // 如果需要通知，可以在正式发布版本中启用
-            // if config.notifyNewPodcast {
-            //     await sendNotification(
-            //         title: "新播客已生成",
-            //         body: podcast.title
-            //     )
-            // }
 
         } catch {
             print("❌ 自动生成播客失败: \(error)")
-            // 暂时禁用通知功能
-            // await sendNotification(
-            //     title: "播客生成失败",
-            //     body: error.localizedDescription
-            // )
+        }
+    }
+
+    /// 执行单个话题的播客生成
+    private func generateTopicPodcast(topic: Topic, config: UserConfig, modelContext: ModelContext, podcastService: PodcastService) async {
+        do {
+            print("🎙️ 开始生成话题播客: \(topic.name)")
+
+            // 设置LLM服务
+            podcastService.setupLLM(
+                apiKey: config.llmApiKey,
+                provider: LLMProvider(rawValue: config.llmProvider) ?? .openai,
+                model: config.llmModel
+            )
+
+            // 生成单个话题的播客
+            let podcast = try await podcastService.generatePodcast(
+                topics: [topic],
+                config: config,
+                modelContext: modelContext,
+                category: topic.name
+            )
+
+            print("✅ 话题播客生成成功: \(podcast.title)")
+            print("📬 话题播客已生成: \(topic.name) - \(podcast.title)")
+
+        } catch {
+            print("❌ 话题播客生成失败 (\(topic.name)): \(error)")
         }
     }
 

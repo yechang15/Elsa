@@ -66,6 +66,10 @@ struct SettingsView: View {
     @State private var localAutoGenerateTime: String = "08:00"
     @State private var localAutoGenerateFrequency: AutoGenerateFrequency = .daily
 
+    // 话题自动生成配置
+    @State private var localTopicAutoGenerate: Bool = false
+    @State private var localTopicGenerateInterval: Int = 2
+
     // 通知配置
     @State private var localNotifyNewPodcast: Bool = true
     @State private var localNotifyRSSUpdate: Bool = true
@@ -151,6 +155,9 @@ struct SettingsView: View {
                 localAutoGenerate = appState.userConfig.autoGenerate
                 localAutoGenerateTime = appState.userConfig.autoGenerateTime
                 localAutoGenerateFrequency = appState.userConfig.autoGenerateFrequency
+
+                localTopicAutoGenerate = appState.userConfig.topicAutoGenerate
+                localTopicGenerateInterval = appState.userConfig.topicGenerateInterval
 
                 localNotifyNewPodcast = appState.userConfig.notifyNewPodcast
                 localNotifyRSSUpdate = appState.userConfig.notifyRSSUpdate
@@ -1051,6 +1058,57 @@ struct SettingsView: View {
                             }
                         }
                         .padding(.top, 4)
+                    }
+                    .padding(.leading, 20)
+                }
+            }
+
+            // 话题自动生成
+            VStack(alignment: .leading, spacing: 12) {
+                Text("话题自动生成")
+                    .font(.headline)
+                    .padding(.bottom, 4)
+
+                Toggle("启用话题自动生成", isOn: $localTopicAutoGenerate)
+                    .onChange(of: localTopicAutoGenerate) { oldValue, newValue in
+                        guard !isInitializing else { return }
+                        Task { @MainActor in
+                            appState.userConfig.topicAutoGenerate = newValue
+                            appState.saveConfig()
+                            // 重启调度器
+                            restartScheduler()
+                        }
+                    }
+
+                if localTopicAutoGenerate {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("生成间隔")
+                            Spacer()
+                            Picker("", selection: $localTopicGenerateInterval) {
+                                Text("1小时").tag(1)
+                                Text("2小时").tag(2)
+                                Text("3小时").tag(3)
+                                Text("4小时").tag(4)
+                                Text("6小时").tag(6)
+                                Text("12小时").tag(12)
+                                Text("24小时").tag(24)
+                            }
+                            .frame(width: 120)
+                            .onChange(of: localTopicGenerateInterval) { oldValue, newValue in
+                                guard !isInitializing else { return }
+                                Task { @MainActor in
+                                    appState.userConfig.topicGenerateInterval = newValue
+                                    appState.saveConfig()
+                                    // 重启调度器
+                                    restartScheduler()
+                                }
+                            }
+                        }
+
+                        Text("系统会为每个话题单独生成播客，每隔\(localTopicGenerateInterval)小时生成一次")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                     .padding(.leading, 20)
                 }

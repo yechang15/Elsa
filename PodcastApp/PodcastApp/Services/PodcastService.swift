@@ -21,7 +21,8 @@ class PodcastService: ObservableObject {
     func generatePodcast(
         topics: [Topic],
         config: UserConfig,
-        modelContext: ModelContext
+        modelContext: ModelContext,
+        category: String = "系统推荐"
     ) async throws -> Podcast {
         await MainActor.run {
             isGenerating = true
@@ -92,7 +93,8 @@ class PodcastService: ObservableObject {
                 articles: articles,
                 topics: topicNames,
                 config: config,
-                modelContext: modelContext
+                modelContext: modelContext,
+                category: category
             )
         } else {
             // 策略1：一体化引擎 - 不需要LLM生成脚本
@@ -102,7 +104,8 @@ class PodcastService: ObservableObject {
                     articles: articles,
                     topics: topicNames,
                     config: config,
-                    modelContext: modelContext
+                    modelContext: modelContext,
+                    category: category
                 )
             default:
                 throw PodcastError.generationFailed("不支持的一体化引擎: \(config.ttsEngine.rawValue)")
@@ -117,7 +120,8 @@ class PodcastService: ObservableObject {
         articles: [RSSArticle],
         topics: [String],
         config: UserConfig,
-        modelContext: ModelContext
+        modelContext: ModelContext,
+        category: String
     ) async throws -> Podcast {
         // 验证：纯TTS引擎必须配置LLM服务
         guard let llmService = llmService else {
@@ -212,6 +216,7 @@ class PodcastService: ObservableObject {
             length: config.defaultLength,
             contentDepth: config.contentDepth.rawValue,
             hostStyle: config.hostStyle.rawValue,
+            category: category,
             sourceArticles: sourceArticles
         )
 
@@ -233,7 +238,8 @@ class PodcastService: ObservableObject {
         articles: [RSSArticle],
         topics: [String],
         config: UserConfig,
-        modelContext: ModelContext
+        modelContext: ModelContext,
+        category: String
     ) async throws -> Podcast {
         // 验证配置
         guard !config.doubaoPodcastAppId.isEmpty && !config.doubaoPodcastAccessToken.isEmpty else {
@@ -287,6 +293,7 @@ class PodcastService: ObservableObject {
             length: config.defaultLength,
             contentDepth: config.contentDepth.rawValue,
             hostStyle: config.hostStyle.rawValue,
+            category: category,
             sourceArticles: sourceArticles
         )
 

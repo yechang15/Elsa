@@ -46,11 +46,28 @@ struct PodcastListView: View {
                 EmptyStateView()
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(filteredPodcasts) { podcast in
-                            PodcastCard(podcast: podcast, onPlay: {
-                                playPodcast(podcast)
-                            })
+                    LazyVStack(spacing: 20, pinnedViews: [.sectionHeaders]) {
+                        ForEach(groupedPodcasts.keys.sorted(), id: \.self) { category in
+                            Section {
+                                ForEach(groupedPodcasts[category] ?? []) { podcast in
+                                    PodcastCard(podcast: podcast, onPlay: {
+                                        playPodcast(podcast)
+                                    })
+                                }
+                            } header: {
+                                HStack {
+                                    Text(category)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text("\(groupedPodcasts[category]?.count ?? 0) 个播客")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                                .background(Color(NSColor.controlBackgroundColor))
+                            }
                         }
                     }
                     .padding()
@@ -70,6 +87,10 @@ struct PodcastListView: View {
         case .completed:
             return podcasts.filter { $0.playStatus == .completed }
         }
+    }
+
+    private var groupedPodcasts: [String: [Podcast]] {
+        Dictionary(grouping: filteredPodcasts) { $0.displayCategory }
     }
     
     private func playPodcast(_ podcast: Podcast) {
@@ -98,8 +119,21 @@ struct PodcastCard: View {
                 .help("播放播客")
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(podcast.title)
-                        .font(.headline)
+                    HStack {
+                        Text(podcast.title)
+                            .font(.headline)
+
+                        Spacer()
+
+                        // 分组标签
+                        Text(podcast.displayCategory)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.accentColor.opacity(0.1))
+                            .foregroundColor(.accentColor)
+                            .cornerRadius(4)
+                    }
 
                     Text(podcast.topics.joined(separator: " · "))
                         .font(.subheadline)

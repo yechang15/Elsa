@@ -19,10 +19,13 @@ final class Podcast {
     var contentDepth: String
     var hostStyle: String
 
+    // 分组/标签（可选，用于兼容旧数据）
+    var category: String? // 播客分组：如"系统推荐"或话题名称
+
     // RSS 来源信息
     var sourceArticles: [SourceArticle] = [] // 来源文章列表
 
-    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊", sourceArticles: [SourceArticle] = []) {
+    init(title: String, topics: [String], duration: Int, scriptContent: String, length: Int = 15, contentDepth: String = "快速浏览", hostStyle: String = "轻松闲聊", category: String = "系统推荐", sourceArticles: [SourceArticle] = []) {
         self.id = UUID()
         self.title = title
         self.topics = topics
@@ -34,7 +37,13 @@ final class Podcast {
         self.length = length
         self.contentDepth = contentDepth
         self.hostStyle = hostStyle
+        self.category = category
         self.sourceArticles = sourceArticles
+    }
+
+    /// 获取分组名称（兼容旧数据）
+    var displayCategory: String {
+        return category ?? "系统推荐"
     }
 
     /// 格式化时长

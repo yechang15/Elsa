@@ -106,6 +106,17 @@ class AppState: ObservableObject {
                         newConfig.openaiTTSApiKey = openaiTTSApiKey
                     }
 
+                    // 迁移播客生成配置
+                    if let autoGenerate = oldDict["autoGenerate"] as? Bool {
+                        newConfig.autoGenerate = autoGenerate
+                    }
+                    if let autoGenerateTime = oldDict["autoGenerateTime"] as? String {
+                        newConfig.autoGenerateTime = autoGenerateTime
+                    }
+
+                    // 新字段使用默认值（已在 UserConfig 初始化中设置）
+                    print("✅ 新增字段使用默认值: topicAutoGenerate=false, topicGenerateInterval=2")
+
                     print("✅ 已迁移部分配置")
                     self.userConfig = newConfig
                 } else {
@@ -201,6 +212,10 @@ struct UserConfig: Codable, Equatable {
     var autoGenerateTime: String = "08:00"
     var autoGenerateFrequency: AutoGenerateFrequency = .daily // 生成频率
     var autoGenerateTopics: [String] = [] // 自动生成的话题ID列表
+
+    // 话题自动生成配置
+    var topicAutoGenerate: Bool = false // 是否启用话题自动生成
+    var topicGenerateInterval: Int = 2 // 话题生成间隔（小时）
 
     // 通知配置
     var notifyNewPodcast: Bool = true
