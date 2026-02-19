@@ -119,10 +119,17 @@ class AudioPlayer: NSObject, ObservableObject {
     private func setupTimeObserver() {
         let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            self?.currentTime = time.seconds
+            guard let self = self else { return }
 
-            if let duration = self?.player?.currentItem?.duration.seconds, duration.isFinite {
-                self?.duration = duration
+            self.currentTime = time.seconds
+
+            if let duration = self.player?.currentItem?.duration.seconds, duration.isFinite {
+                self.duration = duration
+
+                // 同步更新播客的播放进度
+                if let podcast = self.currentPodcast, duration > 0 {
+                    podcast.playProgress = time.seconds / duration
+                }
             }
         }
     }

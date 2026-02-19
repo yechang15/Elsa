@@ -2,7 +2,7 @@ import SwiftUI
 
 struct Sidebar: View {
     @EnvironmentObject var appState: AppState
-    @State private var localSelection: NavigationItem = .podcastList
+    @State private var localSelection: NavigationItem = .home
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

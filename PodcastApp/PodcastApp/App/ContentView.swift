@@ -72,46 +72,25 @@ struct MainView: View {
     @State private var showingGenerateSheet = false
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                // 主内容区
-                HStack(spacing: 0) {
-                    // 侧边栏
-                    Sidebar()
-                        .frame(width: 200)
-
-                    Divider()
-
-                    // 主内容
-                    mainContent
-                }
+        VStack(spacing: 0) {
+            // 主内容区
+            HStack(spacing: 0) {
+                // 侧边栏
+                Sidebar()
+                    .frame(width: 200)
 
                 Divider()
 
-                // 底部播放控制栏
-                if audioPlayer.currentPodcast != nil {
-                    PlayerControlBar()
-                        .frame(height: 80)
-                }
+                // 主内容
+                mainContent
             }
 
-            // 浮动生成按钮
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: { showingGenerateSheet = true }) {
-                        Label("生成播客", systemImage: "plus.circle.fill")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color.accentColor)
-                            .cornerRadius(25)
-                            .shadow(radius: 4)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(20)
-                }
+            Divider()
+
+            // 底部播放控制栏
+            if audioPlayer.currentPodcast != nil {
+                PlayerControlBar()
+                    .frame(height: 80)
             }
         }
         .sheet(isPresented: $showingGenerateSheet) {
@@ -121,17 +100,23 @@ struct MainView: View {
 
     @ViewBuilder
     private var mainContent: some View {
-        switch appState.selectedNavigation {
-        case .podcastList:
-            PodcastListView()
-        case .topics:
-            TopicsView()
-        case .rss:
-            RSSView()
-        case .history:
-            HistoryView()
-        case .settings:
-            SettingsView()
+        // 如果有选中的播客，显示详情页
+        if let podcast = appState.selectedPodcast {
+            PodcastDetailView(podcast: podcast)
+        } else {
+            // 否则根据导航项显示对应页面
+            switch appState.selectedNavigation {
+            case .home:
+                HomeView()
+            case .topics:
+                TopicsView()
+            case .rss:
+                RSSView()
+            case .history:
+                HistoryView()
+            case .settings:
+                SettingsView()
+            }
         }
     }
 }

@@ -6,7 +6,10 @@ class AppState: ObservableObject {
     @Published var isFirstLaunch: Bool
 
     // 当前选中的导航项
-    @Published var selectedNavigation: NavigationItem = .podcastList
+    @Published var selectedNavigation: NavigationItem = .home
+
+    // 当前选中的播客（用于显示详情页）
+    @Published var selectedPodcast: Podcast?
 
     // 用户配置
     @Published var userConfig: UserConfig
@@ -145,7 +148,7 @@ class AppState: ObservableObject {
 
 /// 导航项
 enum NavigationItem: String, CaseIterable {
-    case podcastList = "播客列表"
+    case home = "首页"
     case topics = "兴趣话题"
     case rss = "RSS订阅"
     case history = "收听历史"
@@ -153,7 +156,7 @@ enum NavigationItem: String, CaseIterable {
 
     var icon: String {
         switch self {
-        case .podcastList: return "headphones"
+        case .home: return "house.fill"
         case .topics: return "target"
         case .rss: return "antenna.radiowaves.left.and.right"
         case .history: return "chart.bar"
