@@ -9,6 +9,9 @@ struct PodcastListView: View {
     @EnvironmentObject var schedulerService: SchedulerService
 
     @State private var selectedFilter: FilterOption = .all
+    @State private var expandedCategories: Set<String> = [] // 记录展开的分类
+
+    private let defaultDisplayCount = 3 // 默认显示的播客数量
 
     var body: some View {
         VStack(spacing: 0) {
@@ -71,24 +74,21 @@ struct PodcastListView: View {
                         // 显示已有的播客分组
                         ForEach(groupedPodcasts.keys.sorted(), id: \.self) { category in
                             Section {
-                                ForEach(groupedPodcasts[category] ?? []) { podcast in
+                                ForEach(displayedPodcasts(for: category)) { podcast in
                                     PodcastCard(podcast: podcast, onPlay: {
                                         playPodcast(podcast)
                                     })
                                 }
                             } header: {
-                                HStack {
-                                    Text(category)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text("\(groupedPodcasts[category]?.count ?? 0) 个播客")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
-                                .background(Color(NSColor.controlBackgroundColor))
+                                CategoryHeader(
+                                    category: category,
+                                    displayedCount: displayedPodcasts(for: category).count,
+                                    totalCount: groupedPodcasts[category]?.count ?? 0,
+                                    isExpanded: expandedCategories.contains(category),
+                                    onToggle: {
+                                        toggleCategory(category)
+                                    }
+                                )
                             }
                         }
                     }
@@ -114,7 +114,29 @@ struct PodcastListView: View {
     private var groupedPodcasts: [String: [Podcast]] {
         Dictionary(grouping: filteredPodcasts) { $0.displayCategory }
     }
-    
+
+    /// 获取指定分类要显示的播客列表
+    private func displayedPodcasts(for category: String) -> [Podcast] {
+        guard let podcasts = groupedPodcasts[category] else { return [] }
+
+        // 如果分类已展开或播客数量不超过默认数量，显示全部
+        if expandedCategories.contains(category) || podcasts.count <= defaultDisplayCount {
+            return podcasts
+        }
+
+        // 否则只显示最新的几个
+        return Array(podcasts.prefix(defaultDisplayCount))
+    }
+
+    /// 切换分类的展开/收起状态
+    private func toggleCategory(_ category: String) {
+        if expandedCategories.contains(category) {
+            expandedCategories.remove(category)
+        } else {
+            expandedCategories.insert(category)
+        }
+    }
+
     private func playPodcast(_ podcast: Podcast) {
         guard let audioPath = podcast.audioFilePath else { return }
         let audioURL = URL(fileURLWithPath: audioPath)
@@ -325,6 +347,56 @@ struct PodcastCard: View {
         case .inProgress: return .blue
         case .completed: return .green
         }
+    }
+}
+
+/// 分类头部组件
+struct CategoryHeader: View {
+    let category: String
+    let displayedCount: Int
+    let totalCount: Int
+    let isExpanded: Bool
+    let onToggle: () -> Void
+
+    var body: some View {
+        Button(action: onToggle) {
+            HStack {
+                Text(category)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                // 显示计数和提示
+                if totalCount > 3 {
+                    if isExpanded {
+                        Text("收起")
+                            .font(.caption)
+                            .foregroundColor(.accentColor)
+                    } else {
+                        Text("显示全部 \(totalCount) 个")
+                            .font(.caption)
+                            .foregroundColor(.accentColor)
+                    }
+                } else if totalCount > 0 {
+                    Text("\(totalCount) 个播客")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                // 展开/收起图标
+                if totalCount > 3 {
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundColor(.accentColor)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(Color(NSColor.controlBackgroundColor))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
