@@ -39,6 +39,15 @@ struct MemoryView: View {
             .pickerStyle(.segmented)
             .padding()
 
+            // 描述信息
+            VStack(alignment: .leading, spacing: 4) {
+                Text(selectedTab.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
             // 内容区域
             ScrollView {
                 if isEditing {
@@ -233,6 +242,19 @@ extension MemoryFileType {
         case .preferences: return "偏好设置"
         case .goals: return "目标"
         case .summary: return "摘要"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .summary:
+            return "📝 压缩摘要（300字内），生成播客时自动注入到 AI prompt，让播客更符合你的偏好"
+        case .preferences:
+            return "🎯 从你的播放行为和订阅话题分析得出，每10次播放自动更新，用于个性化推荐"
+        case .profile:
+            return "👤 从聊天对话中提取的长期特征（职业、性格、沟通风格等），每10条对话自动分析"
+        case .goals:
+            return "🎓 从聊天对话中提取的当前目标（学习、职业、短期需求等），帮助生成对你有用的内容"
         }
     }
 }
