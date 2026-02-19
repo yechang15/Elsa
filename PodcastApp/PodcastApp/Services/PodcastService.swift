@@ -134,6 +134,10 @@ class PodcastService: ObservableObject {
         // 获取主播名称
         let (hostAName, hostBName) = getHostNames(from: config)
 
+        // 确定播客类型和频率
+        let podcastType: PodcastType = (category == "系统推荐") ? .systemRecommended : .topicSpecific
+        let frequency = getFrequencyDescription(category: category, config: config)
+
         let script = try await llmService.generatePodcastScript(
             articles: articles,
             topics: topics,
@@ -141,7 +145,9 @@ class PodcastService: ObservableObject {
             style: config.hostStyle.rawValue,
             depth: config.contentDepth.rawValue,
             hostAName: hostAName,
-            hostBName: hostBName
+            hostBName: hostBName,
+            podcastType: podcastType,
+            frequency: frequency
         ) { progress in
             // 实时显示脚本生成进度
             Task { @MainActor in
@@ -391,6 +397,34 @@ class PodcastService: ObservableObject {
 
         // 如果找不到，返回默认名称
         return "主播"
+    }
+
+    /// 获取频率描述
+    private func getFrequencyDescription(category: String, config: UserConfig) -> String {
+        if category == "系统推荐" {
+            // 系统推荐播客的频率
+            switch config.autoGenerateFrequency {
+            case .daily:
+                return "每天"
+            case .weekdays:
+                return "每个工作日"
+            case .weekends:
+                return "每个周末"
+            case .custom:
+                return "定期"
+            }
+        } else {
+            // 话题专属播客的频率
+            let interval = config.topicGenerateInterval
+            if interval == 1 {
+                return "每小时"
+            } else if interval < 24 {
+                return "每\(interval)小时"
+            } else {
+                let days = interval / 24
+                return "每\(days)天"
+            }
+        }
     }
 
     /// 手动生成播客（基于选定的文章）

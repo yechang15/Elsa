@@ -1,5 +1,11 @@
 import Foundation
 
+/// 播客类型
+enum PodcastType {
+    case systemRecommended  // 系统推荐（综合多个话题）
+    case topicSpecific      // 话题专属（单个话题）
+}
+
 /// LLM服务 - 支持豆包和OpenAI
 class LLMService {
     private let apiKey: String
@@ -33,6 +39,8 @@ class LLMService {
         depth: String,
         hostAName: String = "主播A",
         hostBName: String = "主播B",
+        podcastType: PodcastType = .systemRecommended,
+        frequency: String? = nil,
         progressHandler: ((String) -> Void)? = nil
     ) async throws -> String {
         let prompt = buildPrompt(
@@ -42,7 +50,9 @@ class LLMService {
             style: style,
             depth: depth,
             hostAName: hostAName,
-            hostBName: hostBName
+            hostBName: hostBName,
+            podcastType: podcastType,
+            frequency: frequency
         )
 
         switch provider {
@@ -61,7 +71,9 @@ class LLMService {
         style: String,
         depth: String,
         hostAName: String,
-        hostBName: String
+        hostBName: String,
+        podcastType: PodcastType,
+        frequency: String?
     ) -> String {
         let articlesText = articles.prefix(5).map { article in
             """
@@ -70,9 +82,27 @@ class LLMService {
             """
         }.joined(separator: "\n\n")
 
+        // 根据播客类型生成上下文说明
+        let contextDescription: String
+        switch podcastType {
+        case .systemRecommended:
+            if let freq = frequency {
+                contextDescription = "这是一期综合多个话题的播客节目，\(freq)更新一次。"
+            } else {
+                contextDescription = "这是一期综合多个话题的播客节目。"
+            }
+        case .topicSpecific:
+            if let freq = frequency {
+                contextDescription = "这是一期专注于「\(topics.first ?? "")」话题的播客节目，\(freq)更新一次。"
+            } else {
+                contextDescription = "这是一期专注于「\(topics.first ?? "")」话题的播客节目。"
+            }
+        }
+
         return """
         你是一个播客脚本生成助手。请根据以下RSS文章内容，生成一个\(length)分钟的二人对话式播客脚本。
 
+        播客定位：\(contextDescription)
         话题：\(topics.joined(separator: "、"))
         风格：\(style)
         深度：\(depth)
@@ -87,6 +117,8 @@ class LLMService {
         4. 时长约\(length)分钟（约\(length * 150)字）
         5. 格式：每行一个对话，格式为"\(hostAName)：内容"或"\(hostBName)：内容"
         6. 主播在介绍自己时，直接说"我是\(hostAName)"或"我是\(hostBName)"，不要说"我是主播A"或"我是主播B"
+        7. 开场白要准确反映播客的更新频率和定位，不要说"每周"等不准确的描述
+        8. 如果是话题专属播客，要突出该话题的特色，不要泛泛而谈
 
         请直接输出播客脚本，不要有其他说明文字。
         """
