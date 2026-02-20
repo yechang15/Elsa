@@ -25,8 +25,7 @@ class SkillsEngine: ObservableObject {
 
     /// 根据场景执行匹配的 Skills，返回合并后的情境上下文字符串
     func execute(scene: SkillScene) async -> String {
-        print("🎯 [SkillsEngine] 执行场景: \(scene.rawValue)")
-        print("📋 [SkillsEngine] 已注册工具: \(toolRegistry.keys.sorted())")
+        print("🎯 [SkillsEngine] 执行场景: \(scene.rawValue), 已注册工具: \(toolRegistry.keys.sorted())")
 
         let matchedSkills = skills(for: scene)
         guard !matchedSkills.isEmpty else {
@@ -34,22 +33,20 @@ class SkillsEngine: ObservableObject {
             return ""
         }
 
-        print("✅ [SkillsEngine] 匹配到 \(matchedSkills.count) 个 Skill: \(matchedSkills.map { $0.id })")
-
         var contextParts: [String] = []
 
         for skill in matchedSkills where skill.enabled {
-            print("🔧 [SkillsEngine] 执行 Skill: \(skill.id)")
             let result = await executeSkill(skill)
             if !result.isEmpty {
                 contextParts.append(result)
-                print("✅ [SkillsEngine] Skill \(skill.id) 返回 \(result.count) 字符")
-            } else {
-                print("⚠️ [SkillsEngine] Skill \(skill.id) 返回空结果")
             }
         }
 
-        return contextParts.joined(separator: "\n\n")
+        let finalResult = contextParts.joined(separator: "\n\n")
+        if !finalResult.isEmpty {
+            print("✅ [SkillsEngine] 返回情境上下文: \(finalResult.count) 字符")
+        }
+        return finalResult
     }
 
     // MARK: - 私有方法
@@ -65,31 +62,25 @@ class SkillsEngine: ObservableObject {
         var results: [(tool: String, output: String)] = []
 
         for toolConfig in skill.tools {
-            print("🔍 [SkillsEngine] 查找工具: \(toolConfig.tool)")
             guard let tool = toolRegistry[toolConfig.tool] else {
-                print("❌ [SkillsEngine] 工具 '\(toolConfig.tool)' 未注册 (required: \(toolConfig.required))")
                 if toolConfig.required {
-                    print("⚠️ [SkillsEngine] 必需工具 '\(toolConfig.tool)' 未注册，跳过 Skill: \(skill.id)")
+                    print("❌ [SkillsEngine] 必需工具 '\(toolConfig.tool)' 未注册，跳过 Skill: \(skill.id)")
                     return ""
                 }
                 continue
             }
 
             let params = toolConfig.params.mapValues { $0.value }
-            print("⚙️ [SkillsEngine] 执行工具 '\(toolConfig.tool)' with params: \(params)")
             do {
                 let output = try await tool.execute(params: params)
-                print("✅ [SkillsEngine] 工具 '\(toolConfig.tool)' 成功，输出: \(output.prefix(100))...")
                 results.append((tool: toolConfig.tool, output: output))
             } catch {
-                print("❌ [SkillsEngine] 工具 '\(toolConfig.tool)' 执行失败: \(error)")
+                print("❌ [SkillsEngine] 工具 '\(toolConfig.tool)' 执行失败: \(error.localizedDescription)")
                 if toolConfig.required { return "" }
             }
         }
 
-        let merged = merge(results: results, policy: skill.mergePolicy, skillName: skill.name)
-        print("📦 [SkillsEngine] 合并结果: \(merged.count) 字符")
-        return merged
+        return merge(results: results, policy: skill.mergePolicy, skillName: skill.name)
     }
 
     private func merge(
