@@ -143,6 +143,8 @@ struct MainView: View {
                 HistoryView()
             case .memory:
                 MemoryView()
+            case .toolsAndSkills:
+                ToolsAndSkillsView()
             case .settings:
                 SettingsView()
             }
