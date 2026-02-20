@@ -229,48 +229,6 @@ class SchedulerService: ObservableObject {
                     }
                 }
 
-                // 2. 检查话题分类是否为空（如果启用了话题自动生成）
-                if config.topicAutoGenerate {
-                    let topicDescriptor = FetchDescriptor<Topic>()
-                    let topics = try modelContext.fetch(topicDescriptor)
-
-                    for topic in topics {
-                        let topicName = topic.name
-                        if !existingCategories.contains(topicName) {
-                            // 检查是否正在生成中
-                            let isGenerating = await MainActor.run {
-                                generatingCategories.contains(topicName)
-                            }
-
-                            if isGenerating {
-                                continue // 跳过正在生成的话题
-                            }
-
-                            print("🎙️ 检测到\(topicName)分类为空，立即生成...")
-                            await MainActor.run {
-                                _ = generatingCategories.insert(topicName)
-                            }
-
-                            await generateTopicPodcast(
-                                topic: topic,
-                                config: config,
-                                modelContext: modelContext,
-                                podcastService: podcastService
-                            )
-
-                            // 记录生成时间
-                            let lastGenerationKey = topicLastGenerationPrefix + topic.id.uuidString
-                            UserDefaults.standard.set(Date(), forKey: lastGenerationKey)
-
-                            await MainActor.run {
-                                _ = generatingCategories.remove(topicName)
-                            }
-
-                            // 每次只生成一个，避免同时生成太多
-                            break
-                        }
-                    }
-                }
             } catch {
                 print("❌ 检查空分类失败: \(error)")
             }
@@ -408,6 +366,18 @@ class SchedulerService: ObservableObject {
             guard !topics.isEmpty else {
                 print("⚠️ 没有话题")
                 return
+            }
+
+            // 创建生成中卡片并显示
+            let generatingPodcast = GeneratingPodcast(topicName: "系统推荐", topics: topics, config: config)
+            await MainActor.run {
+                appState?.generatingPodcasts.insert(generatingPodcast, at: 0)
+            }
+
+            defer {
+                Task { @MainActor in
+                    appState?.generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                }
             }
 
             // 设置LLM服务

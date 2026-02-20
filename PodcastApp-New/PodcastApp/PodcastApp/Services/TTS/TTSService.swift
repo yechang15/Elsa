@@ -26,10 +26,10 @@ class TTSService: NSObject, ObservableObject {
         // 解析脚本
         let dialogues = parseScript(script)
 
-        // 创建临时音频文件
-        let tempDir = FileManager.default.temporaryDirectory
+        // 创建音频文件（保存到 Documents，沙盒可访问）
+        let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let audioFileName = "podcast_\(UUID().uuidString).m4a"
-        let audioURL = tempDir.appendingPathComponent(audioFileName)
+        let audioURL = documentsDir.appendingPathComponent(audioFileName)
 
         // 根据引擎选择合成方式
         switch engine {

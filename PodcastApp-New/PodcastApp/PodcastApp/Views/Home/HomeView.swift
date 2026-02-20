@@ -104,23 +104,28 @@ struct HomeView: View {
     // 根据选中的话题筛选播客
     private var filteredPodcasts: [Podcast] {
         if selectedTopic == "推荐" {
-            // 推荐：每个用户选择的话题下，只有单个话题的播客中的最新一条
+            // 推荐：显示系统推荐分类的播客 + 每个话题最新一条单话题播客
             var recommendedPodcasts: [Podcast] = []
 
+            // 1. 系统推荐分类的播客
+            let systemPodcasts = podcasts.filter { $0.displayCategory == "系统推荐" }
+            recommendedPodcasts.append(contentsOf: systemPodcasts)
+
+            // 2. 每个话题下最新一条单话题播客
             for topic in topics {
-                // 找到该话题的单话题播客（topics数组只有这一个话题）
                 let topicPodcasts = podcasts.filter {
                     $0.topics.count == 1 && $0.topics.first == topic.name
                 }
-
-                // 取最新的一条
                 if let latestPodcast = topicPodcasts.first {
                     recommendedPodcasts.append(latestPodcast)
                 }
             }
 
-            // 按创建时间排序（最新的在前）
-            return recommendedPodcasts.sorted { $0.createdAt > $1.createdAt }
+            // 去重并按创建时间排序
+            let unique = Array(Set(recommendedPodcasts.map { $0.id })).compactMap { id in
+                recommendedPodcasts.first { $0.id == id }
+            }
+            return unique.sorted { $0.createdAt > $1.createdAt }
         } else if selectedTopic == "全部" {
             return podcasts
         } else {
@@ -238,11 +243,6 @@ struct HomeView: View {
                 generatingPodcast.stepProgress = 1.0
                 generatingPodcast.generatedPodcast = podcast
                 generatingPodcast.isCompleted = true
-
-                // 如果是从推荐页面生成的多话题播客，自动切换到全部标签
-                if fromTopic == "推荐" && podcast.topics.count > 1 {
-                    selectedTopic = "全部"
-                }
 
                 // 自动播放生成的播客
                 if let audioPath = podcast.audioFilePath {
