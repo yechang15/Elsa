@@ -1,20 +1,20 @@
 import SwiftUI
 
-struct SkillEditorSheet: View {
+struct SkillEditorView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var skill: SkillDisplayInfo
-    let onSave: (SkillDisplayInfo) -> Void
+    let skill: SkillDisplayInfo
+    let viewModel: SkillsViewModel
 
     @State private var editedName: String
     @State private var editedDescription: String
     @State private var editedEnabled: Bool
 
-    init(skill: Binding<SkillDisplayInfo>, onSave: @escaping (SkillDisplayInfo) -> Void) {
-        self._skill = skill
-        self.onSave = onSave
-        self._editedName = State(initialValue: skill.wrappedValue.name)
-        self._editedDescription = State(initialValue: skill.wrappedValue.description)
-        self._editedEnabled = State(initialValue: skill.wrappedValue.enabled)
+    init(skill: SkillDisplayInfo, viewModel: SkillsViewModel) {
+        self.skill = skill
+        self.viewModel = viewModel
+        self._editedName = State(initialValue: skill.name)
+        self._editedDescription = State(initialValue: skill.description)
+        self._editedEnabled = State(initialValue: skill.enabled)
     }
 
     var body: some View {
@@ -89,22 +89,7 @@ struct SkillEditorSheet: View {
         updated.name = editedName
         updated.description = editedDescription
         updated.enabled = editedEnabled
-        onSave(updated)
+        viewModel.updateSkill(updated)
         dismiss()
     }
-}
-
-#Preview {
-    SkillEditorSheet(
-        skill: .constant(SkillDisplayInfo(
-            id: "test",
-            name: "测试技能",
-            description: "这是一个测试技能",
-            triggersDescription: "manual",
-            tools: ["calendar", "weather"],
-            outputDescription: "podcast",
-            enabled: true
-        )),
-        onSave: { _ in }
-    )
 }
