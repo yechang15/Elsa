@@ -102,9 +102,19 @@ struct ToolCard: View {
                         }
                     }
 
+                    // 位置权限特殊处理：提供请求按钮
+                    if tool.id == "weather",
+                       let locationPerm = tool.permissions.first(where: { $0.name == "定位权限" }),
+                       locationPerm.status == .notDetermined {
+                        RequestLocationPermissionButton {
+                            viewModel.refreshPermissions()
+                        }
+                        .padding(.top, 4)
+                    }
+
                     // 开发环境提示
                     if tool.permissions.contains(where: { $0.status != .authorized }) {
-                        Text("💡 提示：在 Xcode 开发环境下，请手动前往系统设置授权")
+                        Text("💡 提示：在 Xcode 开发环境下，权限可能挂在 Xcode 名下")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .italic()
