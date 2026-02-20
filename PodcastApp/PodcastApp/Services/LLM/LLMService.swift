@@ -57,6 +57,8 @@ class LLMService {
             userMemory: userMemory
         )
 
+        print("\n========== [LLM Prompt] ==========\n\(prompt)\n==================================\n")
+
         switch provider {
         case .doubao:
             return try await callDoubaoAPIStreaming(prompt: prompt, progressHandler: progressHandler)

@@ -10,7 +10,6 @@ struct HomeView: View {
     @EnvironmentObject var podcastService: PodcastService
 
     @State private var selectedTopic: String = "推荐"
-    @State private var generatingPodcasts: [GeneratingPodcast] = []
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -55,13 +54,13 @@ struct HomeView: View {
                 .padding(.vertical, 12)
 
                 // 播客网格
-                if filteredPodcasts.isEmpty && generatingPodcasts.isEmpty {
+                if filteredPodcasts.isEmpty && appState.generatingPodcasts.isEmpty {
                     EmptyStateView()
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 20) {
                             // 正在生成的播客卡片
-                            ForEach(generatingPodcasts) { generatingPodcast in
+                            ForEach(appState.generatingPodcasts) { generatingPodcast in
                                 GeneratingPodcastCard(
                                     generatingPodcast: generatingPodcast,
                                     onCancel: {
@@ -145,7 +144,7 @@ struct HomeView: View {
         )
 
         // 添加到列表
-        generatingPodcasts.insert(generatingPodcast, at: 0)
+        appState.generatingPodcasts.insert(generatingPodcast, at: 0)
 
         // 在后台执行生成任务
         let task = Task {
@@ -172,7 +171,7 @@ struct HomeView: View {
             // 检查是否已取消
             guard !generatingPodcast.isCancelled else {
                 await MainActor.run {
-                    generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                    appState.generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
                 }
                 return
             }
@@ -229,7 +228,7 @@ struct HomeView: View {
             // 再次检查是否已取消
             guard !generatingPodcast.isCancelled else {
                 await MainActor.run {
-                    generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                    appState.generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
                 }
                 return
             }
@@ -257,7 +256,7 @@ struct HomeView: View {
 
             // 从生成列表中移除
             await MainActor.run {
-                generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+                appState.generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
             }
         } catch {
             await MainActor.run {
@@ -270,7 +269,7 @@ struct HomeView: View {
     // 取消生成
     private func cancelGeneration(_ generatingPodcast: GeneratingPodcast) {
         generatingPodcast.cancel()
-        generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
+        appState.generatingPodcasts.removeAll { $0.id == generatingPodcast.id }
     }
 }
 

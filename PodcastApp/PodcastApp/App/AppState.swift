@@ -11,6 +11,9 @@ class AppState: ObservableObject {
     // 当前选中的播客（用于显示详情页）
     @Published var selectedPodcast: Podcast?
 
+    // 正在生成的播客列表（跨页面保持状态）
+    @Published var generatingPodcasts: [GeneratingPodcast] = []
+
     // 用户配置
     @Published var userConfig: UserConfig
 
