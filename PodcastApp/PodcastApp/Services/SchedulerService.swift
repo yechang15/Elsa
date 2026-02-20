@@ -411,11 +411,13 @@ class SchedulerService: ObservableObject {
             }
 
             // 设置LLM服务
-            podcastService.setupLLM(
-                apiKey: config.llmApiKey,
-                provider: LLMProvider(rawValue: config.llmProvider) ?? .openai,
-                model: config.llmModel
-            )
+            await MainActor.run {
+                podcastService.setupLLM(
+                    apiKey: config.llmApiKey,
+                    provider: LLMProvider(rawValue: config.llmProvider) ?? .openai,
+                    model: config.llmModel
+                )
+            }
 
             // 生成播客
             let podcast = try await podcastService.generatePodcast(
@@ -447,11 +449,13 @@ class SchedulerService: ObservableObject {
             print("🎙️ 开始生成话题播客: \(topic.name)")
 
             // 设置LLM服务
-            podcastService.setupLLM(
-                apiKey: config.llmApiKey,
-                provider: LLMProvider(rawValue: config.llmProvider) ?? .openai,
-                model: config.llmModel
-            )
+            await MainActor.run {
+                podcastService.setupLLM(
+                    apiKey: config.llmApiKey,
+                    provider: LLMProvider(rawValue: config.llmProvider) ?? .openai,
+                    model: config.llmModel
+                )
+            }
 
             // 生成单个话题的播客
             let podcast = try await podcastService.generatePodcast(

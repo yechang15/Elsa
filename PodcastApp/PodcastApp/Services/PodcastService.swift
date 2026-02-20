@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 /// 播客生成服务
+@MainActor
 class PodcastService: ObservableObject {
     @Published var isGenerating = false
     @Published var generationProgress: Double = 0
@@ -12,11 +13,25 @@ class PodcastService: ObservableObject {
     private var llmService: LLMService?
     private let ttsService = TTSService()
 
+    // Skills 编排引擎
+    private let skillsEngine = SkillsEngine()
+
     // 行为追踪器（可选）
     var behaviorTracker: BehaviorTracker?
 
     // 记忆管理器（可选）
     var memoryManager: MemoryManager?
+
+    init() {
+        // 注册工具
+        Task { @MainActor in
+            let rssTool = RSSTool(rssService: rssService)
+            skillsEngine.register(tool: rssTool)
+
+            let podcastTool = PodcastTool(podcastService: self)
+            skillsEngine.register(tool: podcastTool)
+        }
+    }
 
     /// 初始化LLM服务
     func setupLLM(apiKey: String, provider: LLMProvider, model: String) {
@@ -47,15 +62,16 @@ class PodcastService: ObservableObject {
             }
         }
 
-        // 1. 获取RSS内容 (30%)
-        await MainActor.run {
-            generationProgress = 0.1
-            currentStatus = "正在获取RSS内容..."
-        }
+        // 0. 准备 RSS 源 URL，注入到 RSSTool（供 Skills 使用）
         let rssFeeds = topics.flatMap { $0.rssFeeds }
-
-        // 去重：使用 Set 来确保每个 URL 只获取一次
         let uniqueURLs = Array(Set(rssFeeds.map { $0.url }))
+        if let rssTool = skillsEngine.toolRegistry["rss"] as? RSSTool {
+            rssTool.feedURLs = uniqueURLs
+        }
+
+        // 1. 获取RSS内容 (30%)
+        generationProgress = 0.1
+        currentStatus = "正在获取RSS内容..."
 
         print("📊 总共 \(rssFeeds.count) 个RSS源，去重后 \(uniqueURLs.count) 个")
 
@@ -150,9 +166,10 @@ class PodcastService: ObservableObject {
         let frequency = getFrequencyDescription(category: category, config: config)
 
         // 获取用户记忆（如果可用）
-        let userMemory = await MainActor.run {
-            memoryManager?.loadSummary()
-        }
+        let userMemory = memoryManager?.loadSummary()
+
+        // 通过 Skills 获取情境上下文
+        let contextFromSkills = await skillsEngine.execute(scene: .podcastGenerate)
 
         let script = try await llmService.generatePodcastScript(
             articles: articles,
@@ -164,7 +181,8 @@ class PodcastService: ObservableObject {
             hostBName: hostBName,
             podcastType: podcastType,
             frequency: frequency,
-            userMemory: userMemory
+            userMemory: userMemory,
+            contextFromSkills: contextFromSkills.isEmpty ? nil : contextFromSkills
         ) { progress in
             // 实时显示脚本生成进度
             Task { @MainActor in

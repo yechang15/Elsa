@@ -42,6 +42,7 @@ class LLMService {
         podcastType: PodcastType = .systemRecommended,
         frequency: String? = nil,
         userMemory: String? = nil,
+        contextFromSkills: String? = nil,
         progressHandler: ((String) -> Void)? = nil
     ) async throws -> String {
         let prompt = buildPrompt(
@@ -54,7 +55,8 @@ class LLMService {
             hostBName: hostBName,
             podcastType: podcastType,
             frequency: frequency,
-            userMemory: userMemory
+            userMemory: userMemory,
+            contextFromSkills: contextFromSkills
         )
 
         print("\n========== [LLM Prompt] ==========\n\(prompt)\n==================================\n")
@@ -88,7 +90,8 @@ class LLMService {
         hostBName: String,
         podcastType: PodcastType,
         frequency: String?,
-        userMemory: String?
+        userMemory: String?,
+        contextFromSkills: String?
     ) -> String {
         let articlesText = articles.prefix(5).map { article in
             """
@@ -128,13 +131,27 @@ class LLMService {
             memorySection = ""
         }
 
+        // 构建情境上下文部分（来自 Skills）
+        let contextSection: String
+        if let context = contextFromSkills, !context.isEmpty {
+            contextSection = """
+
+            【情境上下文】
+            \(context)
+
+            以上是通过工具获取的实时情境信息，可作为播客内容的补充素材或开场参考。
+            """
+        } else {
+            contextSection = ""
+        }
+
         return """
         你是一个播客脚本生成助手。请根据以下RSS文章内容，生成一个\(length)分钟的二人对话式播客脚本。
 
         播客定位：\(contextDescription)
         话题：\(topics.joined(separator: "、"))
         风格：\(style)
-        深度：\(depth)\(memorySection)
+        深度：\(depth)\(memorySection)\(contextSection)
 
         RSS文章内容：
         \(articlesText)
