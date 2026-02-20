@@ -14,6 +14,11 @@ struct ToolsManagementView: View {
                     .fontWeight(.bold)
                 Spacer()
                 Button(action: {
+                    viewModel.refreshPermissions()
+                }) {
+                    Label("刷新", systemImage: "arrow.clockwise")
+                }
+                Button(action: {
                     // TODO: 添加工具
                 }) {
                     Label("添加工具", systemImage: "plus")
