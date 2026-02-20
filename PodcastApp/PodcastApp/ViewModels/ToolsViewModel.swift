@@ -93,7 +93,17 @@ class ToolsViewModel: ObservableObject {
     private let locationManager = CLLocationManager()
     private let eventStore = EKEventStore()
 
+    // 工具实例（用于测试）
+    private var weatherTool: WeatherTool?
+    private var calendarTool: AppleCalendarTool?
+    private var rssTool: RSSTool?
+
     init() {
+        // 初始化工具实例
+        weatherTool = WeatherTool()
+        calendarTool = AppleCalendarTool()
+        rssTool = RSSTool(rssService: RSSService())
+
         loadTools()
     }
 
@@ -211,6 +221,38 @@ class ToolsViewModel: ObservableObject {
 
     // MARK: - Actions
 
+    func testTool(id: String) async throws -> String {
+        switch id {
+        case "weather":
+            guard let tool = weatherTool else {
+                throw ToolError.notInitialized
+            }
+            return try await tool.execute(params: ["range": "today"])
+
+        case "calendar":
+            guard let tool = calendarTool else {
+                throw ToolError.notInitialized
+            }
+            return try await tool.execute(params: ["range": "today"])
+
+        case "rss":
+            guard let tool = rssTool else {
+                throw ToolError.notInitialized
+            }
+            // 使用示例 RSS 源测试
+            return try await tool.execute(params: [
+                "feed_urls": ["https://hnrss.org/frontpage"],
+                "limit": 5
+            ])
+
+        case "podcast":
+            return "播客工具状态：就绪\n当前无需测试"
+
+        default:
+            throw ToolError.unknownTool
+        }
+    }
+
     func openSystemSettings(for permission: String) {
         #if os(macOS)
         if permission == "定位权限" {
@@ -227,5 +269,19 @@ class ToolsViewModel: ObservableObject {
             UIApplication.shared.open(url)
         }
         #endif
+    }
+}
+
+// MARK: - Errors
+
+enum ToolError: LocalizedError {
+    case notInitialized
+    case unknownTool
+
+    var errorDescription: String? {
+        switch self {
+        case .notInitialized: return "工具未初始化"
+        case .unknownTool: return "未知工具"
+        }
     }
 }

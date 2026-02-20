@@ -53,6 +53,7 @@ struct ToolCard: View {
     @ObservedObject var viewModel: ToolsViewModel
     @State private var showingTestSheet = false
     @State private var testResult: String = ""
+    @State private var isTesting = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -105,6 +106,12 @@ struct ToolCard: View {
                     testTool()
                 }
                 .buttonStyle(.bordered)
+                .disabled(isTesting)
+
+                if isTesting {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
 
                 Button("配置") {
                     // TODO: 配置工具
@@ -117,18 +124,23 @@ struct ToolCard: View {
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(8)
         .sheet(isPresented: $showingTestSheet) {
-            TestResultSheet(toolName: tool.name, result: testResult)
+            TestResultSheet(toolName: tool.name, result: testResult, isTesting: isTesting)
         }
     }
 
     private func testTool() {
-        testResult = "正在测试 \(tool.name)..."
+        isTesting = true
+        testResult = "正在测试 \(tool.name)...\n"
         showingTestSheet = true
 
         Task {
-            // TODO: 实际调用工具的 execute() 方法
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            testResult = "工具 \(tool.name) 测试成功\n\n返回示例数据..."
+            do {
+                let result = try await viewModel.testTool(id: tool.id)
+                testResult = "✅ 工具 \(tool.name) 测试成功\n\n" + result
+            } catch {
+                testResult = "❌ 工具 \(tool.name) 测试失败\n\n错误：\(error.localizedDescription)"
+            }
+            isTesting = false
         }
     }
 }
@@ -138,6 +150,7 @@ struct ToolCard: View {
 struct TestResultSheet: View {
     let toolName: String
     let result: String
+    let isTesting: Bool
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -146,6 +159,10 @@ struct TestResultSheet: View {
                 Text("测试结果：\(toolName)")
                     .font(.headline)
                 Spacer()
+                if isTesting {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                }
                 Button("关闭") {
                     dismiss()
                 }
@@ -157,10 +174,11 @@ struct TestResultSheet: View {
                 Text(result)
                     .font(.system(.body, design: .monospaced))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
             }
         }
         .padding()
-        .frame(width: 500, height: 400)
+        .frame(width: 600, height: 500)
     }
 }
 
