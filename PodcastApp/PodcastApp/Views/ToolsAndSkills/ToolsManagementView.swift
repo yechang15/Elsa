@@ -96,6 +96,14 @@ struct ToolCard: View {
                             }
                         }
                     }
+
+                    // 开发环境提示
+                    if tool.permissions.contains(where: { $0.status != .authorized }) {
+                        Text("💡 提示：在 Xcode 开发环境下，请手动前往系统设置授权")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .italic()
+                    }
                 }
                 .padding(.top, 4)
             }
