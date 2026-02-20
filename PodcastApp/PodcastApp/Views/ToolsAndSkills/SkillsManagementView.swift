@@ -40,6 +40,8 @@ struct SkillsManagementView: View {
 struct SkillCard: View {
     let skill: SkillDisplayInfo
     @ObservedObject var viewModel: SkillsViewModel
+    @State private var showingEditor = false
+    @State private var editingSkill: SkillDisplayInfo?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -59,6 +61,13 @@ struct SkillCard: View {
                     set: { viewModel.toggleSkill(id: skill.id, enabled: $0) }
                 ))
                 .labelsHidden()
+            }
+
+            // 描述
+            if !skill.description.isEmpty {
+                Text(skill.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             // 触发场景
@@ -96,10 +105,10 @@ struct SkillCard: View {
             // 操作按钮
             HStack {
                 Button("编辑") {
-                    // TODO: 编辑 Skill
+                    editingSkill = skill
+                    showingEditor = true
                 }
                 .buttonStyle(.bordered)
-                .disabled(true)  // P2 暂不支持编辑
 
                 Button("▶ 测试运行") {
                     // TODO: 测试运行 Skill
@@ -112,6 +121,19 @@ struct SkillCard: View {
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(8)
         .opacity(skill.enabled ? 1.0 : 0.6)
+        .sheet(isPresented: $showingEditor) {
+            if let editingSkill = editingSkill {
+                SkillEditorSheet(
+                    skill: Binding(
+                        get: { editingSkill },
+                        set: { self.editingSkill = $0 }
+                    ),
+                    onSave: { updated in
+                        viewModel.updateSkill(updated)
+                    }
+                )
+            }
+        }
     }
 }
 

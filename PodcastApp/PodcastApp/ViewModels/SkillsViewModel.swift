@@ -5,8 +5,8 @@ import Foundation
 /// Skill 显示信息
 struct SkillDisplayInfo: Identifiable {
     let id: String
-    let name: String
-    let description: String
+    var name: String
+    var description: String
     let triggersDescription: String
     let tools: [String]
     let outputDescription: String
@@ -52,6 +52,14 @@ class SkillsViewModel: ObservableObject {
             skills[index].enabled = enabled
             // TODO: 持久化到 SkillsEngine
             print("✏️ Skill '\(id)' enabled: \(enabled)")
+        }
+    }
+
+    func updateSkill(_ updated: SkillDisplayInfo) {
+        if let index = skills.firstIndex(where: { $0.id == updated.id }) {
+            skills[index] = updated
+            // TODO: 持久化到 SkillsEngine
+            print("✏️ Skill '\(updated.id)' updated: \(updated.name)")
         }
     }
 }
