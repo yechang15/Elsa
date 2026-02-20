@@ -62,25 +62,48 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
         // 如果未决定，根据是否首次请求决定行为
         if status == .notDetermined {
             if !hasRequestedPermission {
-                // 首次请求：等待用户响应
+                // 首次请求：等待用户响应（开发环境 10 秒超时，避免 continuation 泄漏）
                 print("🔐 [WeatherTool] 首次请求位置权限，等待用户响应...")
                 hasRequestedPermission = true
-                let newStatus = await withCheckedContinuation { continuation in
-                    self.authContinuation = continuation
-                    #if os(macOS)
-                    locationManager.requestAlwaysAuthorization()
-                    #else
-                    locationManager.requestWhenInUseAuthorization()
-                    #endif
+
+                let newStatus = await withTaskGroup(of: CLAuthorizationStatus?.self) { group in
+                    // 任务 1：等待权限回调
+                    group.addTask {
+                        await withCheckedContinuation { continuation in
+                            self.authContinuation = continuation
+                            #if os(macOS)
+                            self.locationManager.requestAlwaysAuthorization()
+                            #else
+                            self.locationManager.requestWhenInUseAuthorization()
+                            #endif
+                        }
+                    }
+
+                    // 任务 2：10 秒超时（开发环境保护）
+                    group.addTask {
+                        try? await Task.sleep(nanoseconds: 10_000_000_000)
+                        print("⏱️ [WeatherTool] 权限请求超时（可能是开发环境 Info.plist 未加载）")
+                        return nil
+                    }
+
+                    // 返回第一个完成的结果
+                    let result = await group.next() ?? nil
+                    group.cancelAll()
+                    return result
                 }
 
                 // 检查授权结果
+                guard let finalStatus = newStatus else {
+                    // 超时，视为未授权
+                    throw WeatherError.locationPermissionDenied
+                }
+
                 #if os(macOS)
-                guard newStatus == .authorizedAlways else {
+                guard finalStatus == .authorizedAlways else {
                     throw WeatherError.locationPermissionDenied
                 }
                 #else
-                guard newStatus == .authorizedAlways || newStatus == .authorizedWhenInUse else {
+                guard finalStatus == .authorizedAlways || finalStatus == .authorizedWhenInUse else {
                     throw WeatherError.locationPermissionDenied
                 }
                 #endif
