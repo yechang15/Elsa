@@ -25,7 +25,10 @@ let package = Package(
                 "FeedKit",
                 .product(name: "OpenAI", package: "OpenAI"),
             ],
-            path: "PodcastApp"
+            path: "PodcastApp",
+            resources: [
+                .process("Resources/Info.plist")
+            ]
         )
     ]
 )

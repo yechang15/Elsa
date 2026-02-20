@@ -1,0 +1,477 @@
+import SwiftUI
+import SwiftData
+
+struct ContentView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var audioPlayer: AudioPlayer
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var hasCleanedFailedRSS = false
+
+    var body: some View {
+        Group {
+            if appState.isFirstLaunch {
+                // 首次启动显示话题选择界面
+                OnboardingView()
+            } else {
+                // 主界面
+                MainView()
+            }
+        }
+        .onAppear {
+            cleanFailedRSSFeeds()
+        }
+    }
+
+    /// 清理失效的RSS源
+    private func cleanFailedRSSFeeds() {
+        guard !hasCleanedFailedRSS else { return }
+        hasCleanedFailedRSS = true
+
+        let failedURLs = [
+            "https://hbr.org/feed",
+            "https://openai.com/blog/rss/",
+            "https://www.anthropic.com/rss.xml",
+            "https://cloud.google.com/blog/rss",
+            "https://www.mckinsey.com/featured-insights/rss",
+            "https://www.economist.com/rss",
+            "https://www.wsj.com/xml/rss/3_7085.xml",
+            "https://www.bloomberg.com/feed/podcast/money-stuff.xml",
+            "https://ai.googleblog.com/feeds/posts/default",
+            "https://www.geekpark.net/rss"
+        ]
+
+        do {
+            let descriptor = FetchDescriptor<RSSFeed>()
+            let allFeeds = try modelContext.fetch(descriptor)
+
+            var deletedCount = 0
+            for feed in allFeeds {
+                if failedURLs.contains(feed.url) {
+                    modelContext.delete(feed)
+                    deletedCount += 1
+                    print("🗑️ 删除失效RSS源: \(feed.url)")
+                }
+            }
+
+            if deletedCount > 0 {
+                try modelContext.save()
+                print("✅ 已清理 \(deletedCount) 个失效的RSS源")
+            }
+        } catch {
+            print("❌ 清理失效RSS源失败: \(error)")
+        }
+    }
+}
+
+struct MainView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var audioPlayer: AudioPlayer
+    @EnvironmentObject var podcastService: PodcastService
+
+    @State private var showingGenerateSheet = false
+    @State private var isShowingChat = false
+
+    var body: some View {
+        ZStack {
+            HStack(spacing: 0) {
+                // 左侧主内容区
+                VStack(spacing: 0) {
+                    // 主内容区
+                    HStack(spacing: 0) {
+                        // 侧边栏
+                        Sidebar()
+                            .frame(width: 200)
+
+                        Divider()
+
+                        // 主内容
+                        mainContent
+                    }
+
+                    Divider()
+
+                    // 底部播放控制栏
+                    if audioPlayer.currentPodcast != nil {
+                        PlayerControlBar()
+                            .frame(height: 80)
+                    }
+                }
+
+                // 右侧对话面板
+                if isShowingChat {
+                    Divider()
+                    ChatView(isShowingChat: $isShowingChat)
+                        .frame(width: 400)
+                        .transition(.move(edge: .trailing))
+                }
+            }
+
+            // 全局浮动对话按钮（只在对话面板关闭时显示）
+            if !isShowingChat {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ChatFloatingButton(isShowingChat: $isShowingChat)
+                            .padding(20)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingGenerateSheet) {
+            GeneratePodcastSheet()
+        }
+        .animation(.easeInOut(duration: 0.3), value: isShowingChat)
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        // 如果有选中的播客，显示详情页
+        if let podcast = appState.selectedPodcast {
+            PodcastDetailView(podcast: podcast)
+        } else {
+            // 否则根据导航项显示对应页面
+            switch appState.selectedNavigation {
+            case .home:
+                HomeView()
+            case .topics:
+                TopicsView()
+            case .rss:
+                RSSView()
+            case .history:
+                HistoryView()
+            case .memory:
+                MemoryView()
+            case .toolsAndSkills:
+                ToolsAndSkillsView()
+            case .settings:
+                SettingsView()
+            }
+        }
+    }
+}
+
+struct GeneratePodcastSheet: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var podcastService: PodcastService
+    @EnvironmentObject var audioPlayer: AudioPlayer
+
+    @Query(sort: \Topic.priority, order: .reverse) private var topics: [Topic]
+
+    @State private var isGenerating = false
+    @State private var errorMessage: String?
+    @State private var currentStep: GenerationStep = .idle
+    @State private var stepProgress: Double = 0.0
+
+    var body: some View {
+        VStack(spacing: 20) {
+            // 标题
+            HStack {
+                Text("生成播客")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Spacer()
+
+                Button("取消") {
+                    dismiss()
+                }
+            }
+            .padding()
+
+            Divider()
+
+            if topics.isEmpty {
+                VStack(spacing: 20) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 60))
+                        .foregroundColor(.orange)
+
+                    Text("还没有话题")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+
+                    Text("请先在「兴趣话题」页面添加话题")
+                        .foregroundColor(.secondary)
+
+                    Button("去添加话题") {
+                        dismiss()
+                        appState.selectedNavigation = .topics
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if isGenerating {
+                // 生成进度显示
+                VStack(spacing: 24) {
+                    Spacer()
+
+                    // 进度环
+                    ZStack {
+                        Circle()
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 8)
+                            .frame(width: 100, height: 100)
+
+                        Circle()
+                            .trim(from: 0, to: stepProgress)
+                            .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                            .frame(width: 100, height: 100)
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear, value: stepProgress)
+
+                        Text("\(Int(stepProgress * 100))%")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+
+                    // 当前步骤
+                    VStack(spacing: 8) {
+                        Text(currentStep.title)
+                            .font(.headline)
+
+                        // 显示详细状态
+                        if !podcastService.currentStatus.isEmpty {
+                            Text(podcastService.currentStatus)
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text(currentStep.description)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+
+                    // 步骤列表
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(GenerationStep.allSteps, id: \.self) { step in
+                            HStack(spacing: 12) {
+                                Image(systemName: stepIcon(for: step))
+                                    .foregroundColor(stepColor(for: step))
+                                    .frame(width: 20)
+
+                                Text(step.title)
+                                    .font(.caption)
+                                    .foregroundColor(stepColor(for: step))
+
+                                Spacer()
+
+                                if step == currentStep {
+                                    ProgressView()
+                                        .scaleEffect(0.7)
+                                } else if step.rawValue < currentStep.rawValue {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+
+                    Spacer()
+                }
+                .padding()
+            } else {
+                VStack(spacing: 20) {
+                    // 话题列表
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("将基于以下话题生成播客:")
+                            .font(.headline)
+
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(topics) { topic in
+                                    HStack {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                        Text(topic.name)
+                                    }
+                                }
+                            }
+                        }
+                        .frame(maxHeight: 150)
+                    }
+                    .padding()
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+
+                    // 配置信息
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("播客配置:")
+                            .font(.headline)
+
+                        HStack {
+                            Label("时长", systemImage: "clock")
+                            Text("\(appState.userConfig.defaultLength) 分钟")
+                            Spacer()
+                        }
+
+                        HStack {
+                            Label("深度", systemImage: "chart.bar")
+                            Text(appState.userConfig.contentDepth.rawValue)
+                            Spacer()
+                        }
+
+                        HStack {
+                            Label("风格", systemImage: "theatermasks")
+                            Text(appState.userConfig.hostStyle.rawValue)
+                            Spacer()
+                        }
+                    }
+                    .padding()
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+
+                    if let error = errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+
+                    Spacer()
+
+                    // 生成按钮
+                    Button(action: generatePodcast) {
+                        if isGenerating {
+                            HStack {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                Text("生成中...")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                        } else {
+                            Text("开始生成")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 44)
+                                .background(Color.accentColor)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .disabled(isGenerating)
+                    .buttonStyle(.plain)
+                }
+                .padding()
+            }
+        }
+        .frame(width: 500, height: 600)
+    }
+
+    private func generatePodcast() {
+        isGenerating = true
+        errorMessage = nil
+        currentStep = .fetchingRSS
+        stepProgress = 0.0
+
+        Task {
+            do {
+                // 设置LLM服务
+                let provider = LLMProvider(rawValue: appState.userConfig.llmProvider) ?? .doubao
+                podcastService.setupLLM(
+                    apiKey: appState.userConfig.llmApiKey,
+                    provider: provider,
+                    model: appState.userConfig.llmModel
+                )
+
+                // 监听进度变化
+                let progressTask = Task {
+                    while !Task.isCancelled {
+                        await MainActor.run {
+                            let progress = podcastService.generationProgress
+
+                            // 根据进度更新步骤
+                            if progress < 0.3 {
+                                currentStep = .fetchingRSS
+                                stepProgress = progress / 0.3 * 0.25
+                            } else if progress < 0.6 {
+                                currentStep = .generatingScript
+                                stepProgress = 0.25 + (progress - 0.3) / 0.3 * 0.5
+                            } else if progress < 0.9 {
+                                currentStep = .generatingAudio
+                                stepProgress = 0.75 + (progress - 0.6) / 0.3 * 0.2
+                            } else {
+                                currentStep = .saving
+                                stepProgress = 0.95 + (progress - 0.9) / 0.1 * 0.05
+                            }
+                        }
+                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+                    }
+                }
+
+                // 生成播客
+                let podcast = try await podcastService.generatePodcast(
+                    topics: topics,
+                    config: appState.userConfig,
+                    modelContext: modelContext
+                )
+
+                progressTask.cancel()
+
+                await MainActor.run {
+                    currentStep = .completed
+                    stepProgress = 1.0
+                    print("播客生成成功: \(podcast.title)")
+                    print("音频文件路径: \(podcast.audioFilePath ?? "无")")
+
+                    // 自动播放生成的播客
+                    if let audioPath = podcast.audioFilePath {
+                        let audioURL = URL(fileURLWithPath: audioPath)
+                        audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
+                        print("自动开始播放播客")
+                    }
+                }
+
+                // 延迟一下让用户看到完成状态
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+
+                await MainActor.run {
+                    isGenerating = false
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    isGenerating = false
+                    currentStep = .idle
+                    errorMessage = error.localizedDescription
+                    print("生成失败: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    private func stepIcon(for step: GenerationStep) -> String {
+        if step.rawValue < currentStep.rawValue {
+            return "checkmark.circle.fill"
+        } else if step == currentStep {
+            return "circle.fill"
+        } else {
+            return "circle"
+        }
+    }
+
+    private func stepColor(for step: GenerationStep) -> Color {
+        if step.rawValue < currentStep.rawValue {
+            return .green
+        } else if step == currentStep {
+            return .accentColor
+        } else {
+            return .secondary
+        }
+    }
+}
+
+
+#Preview {
+    ContentView()
+        .environmentObject(AppState())
+        .environmentObject(RSSService())
+        .environmentObject(PodcastService())
+        .environmentObject(AudioPlayer())
+}
