@@ -185,6 +185,44 @@ struct SettingsView: View {
     private var settingsForm: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+
+            // 个性化
+            VStack(alignment: .leading, spacing: 4) {
+                Text("个性化")
+                    .font(.headline)
+                    .padding(.bottom, 4)
+
+                NavigationLink(destination: MemoryView()) {
+                    HStack {
+                        Label("用户记忆", systemImage: "brain.head.profile")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink(destination: ToolsAndSkillsView()) {
+                    HStack {
+                        Label("工具与技能", systemImage: "wrench.and.screwdriver")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Divider()
+
             // LLM 配置
             VStack(alignment: .leading, spacing: 12) {
                 Text("LLM 配置")

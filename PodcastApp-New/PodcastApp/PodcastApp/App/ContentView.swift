@@ -64,29 +64,35 @@ struct ContentView: View {
     }
 }
 
+enum AppRoute: Hashable {
+    case settings
+}
+
 struct MainView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var audioPlayer: AudioPlayer
     @EnvironmentObject var podcastService: PodcastService
 
-    @State private var showingGenerateSheet = false
     @State private var isShowingChat = false
 
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
-                // 左侧主内容区
                 VStack(spacing: 0) {
-                    // 主内容区
-                    HStack(spacing: 0) {
-                        // 侧边栏
-                        Sidebar()
-                            .frame(width: 200)
-
-                        Divider()
-
-                        // 主内容
-                        mainContent
+                    NavigationStack {
+                        Group {
+                            if let podcast = appState.selectedPodcast {
+                                PodcastDetailView(podcast: podcast)
+                            } else {
+                                HomeView()
+                            }
+                        }
+                        .navigationDestination(for: AppRoute.self) { route in
+                            switch route {
+                            case .settings:
+                                SettingsView()
+                            }
+                        }
                     }
 
                     Divider()
@@ -107,7 +113,7 @@ struct MainView: View {
                 }
             }
 
-            // 全局浮动对话按钮（只在对话面板关闭时显示）
+            // 全局浮动对话按钮
             if !isShowingChat {
                 VStack {
                     Spacer()
@@ -119,36 +125,7 @@ struct MainView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingGenerateSheet) {
-            GeneratePodcastSheet()
-        }
         .animation(.easeInOut(duration: 0.3), value: isShowingChat)
-    }
-
-    @ViewBuilder
-    private var mainContent: some View {
-        // 如果有选中的播客，显示详情页
-        if let podcast = appState.selectedPodcast {
-            PodcastDetailView(podcast: podcast)
-        } else {
-            // 否则根据导航项显示对应页面
-            switch appState.selectedNavigation {
-            case .home:
-                HomeView()
-            case .topics:
-                TopicsView()
-            case .rss:
-                RSSView()
-            case .history:
-                HistoryView()
-            case .memory:
-                MemoryView()
-            case .toolsAndSkills:
-                ToolsAndSkillsView()
-            case .settings:
-                SettingsView()
-            }
-        }
     }
 }
 

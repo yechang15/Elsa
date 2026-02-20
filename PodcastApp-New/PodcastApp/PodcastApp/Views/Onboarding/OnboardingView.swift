@@ -8,10 +8,8 @@ struct OnboardingView: View {
     @State private var selectedTopics: Set<String> = []
 
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-
-            // 标题
+        VStack(spacing: 0) {
+            // 标题（固定）
             VStack(spacing: 16) {
                 Text("欢迎使用对话式播客应用")
                     .font(.largeTitle)
@@ -21,37 +19,42 @@ struct OnboardingView: View {
                     .font(.title3)
                     .foregroundColor(.secondary)
             }
+            .padding(.top, 40)
+            .padding(.bottom, 24)
 
-            // 话题选择网格
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                ForEach(Topic.presetTopics, id: \.self) { topic in
-                    TopicCard(
-                        topic: topic,
-                        isSelected: selectedTopics.contains(topic)
-                    ) {
-                        toggleTopic(topic)
+            // 话题选择网格（可滚动）
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                    ForEach(Topic.presetTopics, id: \.self) { topic in
+                        TopicCard(
+                            topic: topic,
+                            isSelected: selectedTopics.contains(topic)
+                        ) {
+                            toggleTopic(topic)
+                        }
                     }
                 }
+                .padding(.horizontal, 40)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal, 40)
 
-            // 已选择提示
-            Text("已选择 \(selectedTopics.count) 个话题（至少选择 1 个）")
-                .font(.callout)
-                .foregroundColor(.secondary)
+            // 底部按钮（固定）
+            VStack(spacing: 16) {
+                Text("已选择 \(selectedTopics.count) 个话题（至少选择 1 个）")
+                    .font(.callout)
+                    .foregroundColor(.secondary)
 
-            // 开始使用按钮
-            Button(action: completeOnboarding) {
-                Text("开始使用")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(width: 200, height: 44)
-                    .background(selectedTopics.isEmpty ? Color.gray : Color.accentColor)
-                    .cornerRadius(8)
+                Button(action: completeOnboarding) {
+                    Text("开始使用")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 200, height: 44)
+                        .background(selectedTopics.isEmpty ? Color.gray : Color.accentColor)
+                        .cornerRadius(8)
+                }
+                .disabled(selectedTopics.isEmpty)
             }
-            .disabled(selectedTopics.isEmpty)
-
-            Spacer()
+            .padding(.vertical, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))

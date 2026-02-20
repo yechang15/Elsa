@@ -10,20 +10,32 @@ struct HomeView: View {
     @EnvironmentObject var podcastService: PodcastService
 
     @State private var selectedTopic: String = "推荐"
+    @State private var showingPreferences = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
     ]
 
     var body: some View {
         VStack(spacing: 0) {
-            // 话题标签栏
-            TopicTabBar(
-                topics: allTopics,
-                selectedTopic: $selectedTopic
-            )
+            // 话题标签栏 + 设置按钮
+            HStack(spacing: 0) {
+                TopicTabBar(
+                    topics: allTopics,
+                    selectedTopic: $selectedTopic
+                )
+
+                NavigationLink(value: AppRoute.settings) {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 12)
+                }
+                .buttonStyle(.plain)
+            }
             .padding(.horizontal)
             .padding(.vertical, 12)
 
@@ -31,7 +43,7 @@ struct HomeView: View {
 
             // 内容区域
             VStack(spacing: 0) {
-                // 生成播客按钮
+                // 生成播客按钮 + 偏好设置
                 HStack {
                     Button(action: startGeneratingPodcast) {
                         HStack(spacing: 6) {
@@ -49,18 +61,32 @@ struct HomeView: View {
                     .buttonStyle(.plain)
 
                     Spacer()
+
+                    Button(action: { showingPreferences = true }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "slider.horizontal.3")
+                            Text("偏好设置")
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color(NSColor.controlBackgroundColor))
+                        .cornerRadius(20)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
 
                 // 播客网格
-                if filteredPodcasts.isEmpty && appState.generatingPodcasts.isEmpty {
+                if filteredPodcasts.isEmpty && filteredGeneratingPodcasts.isEmpty {
                     EmptyStateView()
                 } else {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 20) {
                             // 正在生成的播客卡片
-                            ForEach(appState.generatingPodcasts) { generatingPodcast in
+                            ForEach(filteredGeneratingPodcasts) { generatingPodcast in
                                 GeneratingPodcastCard(
                                     generatingPodcast: generatingPodcast,
                                     onCancel: {
@@ -83,6 +109,9 @@ struct HomeView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingPreferences) {
+            PreferencesView()
+        }
     }
 
     // 所有话题列表（推荐、全部、各个话题）
@@ -98,6 +127,15 @@ struct HomeView: View {
             return "为您生成个性化播客"
         } else {
             return "为「\(selectedTopic)」生成播客"
+        }
+    }
+
+    // 根据选中的话题筛选正在生成的播客
+    private var filteredGeneratingPodcasts: [GeneratingPodcast] {
+        if selectedTopic == "全部" {
+            return appState.generatingPodcasts
+        } else {
+            return appState.generatingPodcasts.filter { $0.topicName == selectedTopic }
         }
     }
 

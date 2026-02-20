@@ -249,7 +249,7 @@ class PodcastService: ObservableObject {
         await MainActor.run { generationProgress = 0.9 }
 
         // 4. 创建播客对象
-        let title = generateTitle(from: articles, topics: topics)
+        let title = await generateTitle(from: articles, topics: topics)
         let duration = config.defaultLength * 60
 
         // 转换 RSS 文章为 SourceArticle
@@ -341,7 +341,7 @@ class PodcastService: ObservableObject {
         await MainActor.run { generationProgress = 0.9 }
 
         // 4. 创建播客对象
-        let title = generateTitle(from: articles, topics: topics)
+        let title = await generateTitle(from: articles, topics: topics)
         let duration = config.defaultLength * 60
 
         // 转换 RSS 文章为 SourceArticle
@@ -414,16 +414,17 @@ class PodcastService: ObservableObject {
     }
 
     /// 生成播客标题
-    private func generateTitle(from articles: [RSSArticle], topics: [String]) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: Date())
-
-        if topics.count == 1 {
-            return "\(topics[0]) - \(dateString)"
-        } else {
-            return "\(topics.joined(separator: " · ")) - \(dateString)"
+    private func generateTitle(from articles: [RSSArticle], topics: [String]) async -> String {
+        if let llmService = llmService, !articles.isEmpty {
+            let articleTitles = articles.prefix(10).map { "- \($0.title)" }.joined(separator: "\n")
+            let topicsStr = topics.joined(separator: "、")
+            let prompt = "从以下新闻标题中，选出最重要或最有价值的一条，直接输出该标题（可适当精简，保持原意，不超过20字，不要加引号）：\n\n\(articleTitles)\n\n只输出标题，不要其他内容。"
+            if let title = try? await llmService.generateText(prompt: prompt),
+               !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return title.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
         }
+        return topics.count == 1 ? topics[0] : topics.joined(separator: " · ")
     }
 
     /// 从配置中获取主播名称
@@ -541,7 +542,7 @@ class PodcastService: ObservableObject {
         )
 
         // 创建播客
-        let title = generateTitle(from: articles, topics: topics)
+        let title = await generateTitle(from: articles, topics: topics)
         let duration = config.defaultLength * 60
 
         let podcast = Podcast(
