@@ -16,6 +16,9 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
     private var authContinuation: CheckedContinuation<CLAuthorizationStatus, Never>?
 
+    // 记录是否已经请求过权限（首次请求时等待，后续直接跳过）
+    private var hasRequestedPermission = false
+
     override init() {
         super.init()
         locationManager.delegate = self
@@ -54,31 +57,45 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
     // MARK: - Private Methods
 
     private func requestLocation() async throws -> CLLocation {
-        var status = locationManager.authorizationStatus
+        let status = locationManager.authorizationStatus
 
-        // 如果未决定，请求权限并等待用户响应（不设超时）
+        // 如果未决定，根据是否首次请求决定行为
         if status == .notDetermined {
-            status = await withCheckedContinuation { continuation in
-                self.authContinuation = continuation
+            if !hasRequestedPermission {
+                // 首次请求：等待用户响应
+                print("🔐 [WeatherTool] 首次请求位置权限，等待用户响应...")
+                hasRequestedPermission = true
+                let newStatus = await withCheckedContinuation { continuation in
+                    self.authContinuation = continuation
+                    #if os(macOS)
+                    locationManager.requestAlwaysAuthorization()
+                    #else
+                    locationManager.requestWhenInUseAuthorization()
+                    #endif
+                }
+
+                // 检查授权结果
                 #if os(macOS)
-                locationManager.requestAlwaysAuthorization()
+                guard newStatus == .authorizedAlways else {
+                    throw WeatherError.locationPermissionDenied
+                }
                 #else
-                locationManager.requestWhenInUseAuthorization()
+                guard newStatus == .authorizedAlways || newStatus == .authorizedWhenInUse else {
+                    throw WeatherError.locationPermissionDenied
+                }
                 #endif
+            } else {
+                // 非首次请求：用户之前没授权，直接跳过
+                print("⏭️ [WeatherTool] 位置权限未授权，跳过天气工具")
+                throw WeatherError.locationPermissionDenied
             }
-        }
-
-        #if os(macOS)
-        guard status == .authorizedAlways else {
+        } else if status == .denied || status == .restricted {
+            // 已拒绝或受限：直接跳过
+            print("⏭️ [WeatherTool] 位置权限被拒绝，跳过天气工具")
             throw WeatherError.locationPermissionDenied
         }
-        #else
-        guard status == .authorizedAlways || status == .authorizedWhenInUse else {
-            throw WeatherError.locationPermissionDenied
-        }
-        #endif
 
-        // 请求位置
+        // 权限已授权，请求位置
         return try await withCheckedThrowingContinuation { continuation in
             self.locationContinuation = continuation
             locationManager.requestLocation()

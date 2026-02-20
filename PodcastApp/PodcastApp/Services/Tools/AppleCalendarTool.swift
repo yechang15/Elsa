@@ -13,6 +13,9 @@ final class AppleCalendarTool: AgentTool, @unchecked Sendable {
 
     private let eventStore = EKEventStore()
 
+    // 记录是否已经请求过权限（首次请求时等待，后续直接跳过）
+    private var hasRequestedPermission = false
+
     func execute(params: [String: Any]) async throws -> String {
         let range = params["range"] as? String ?? "today"
 
@@ -35,15 +38,36 @@ final class AppleCalendarTool: AgentTool, @unchecked Sendable {
     // MARK: - Private Methods
 
     private func requestAccess() async throws -> Bool {
-        #if os(macOS)
-        return try await eventStore.requestAccess(to: .event)
-        #else
-        if #available(iOS 17.0, *) {
-            return try await eventStore.requestFullAccessToEvents()
+        let currentStatus = EKEventStore.authorizationStatus(for: .event)
+
+        // 如果未决定，根据是否首次请求决定行为
+        if currentStatus == .notDetermined {
+            if !hasRequestedPermission {
+                // 首次请求：等待用户响应
+                print("🔐 [CalendarTool] 首次请求日历权限，等待用户响应...")
+                hasRequestedPermission = true
+                #if os(macOS)
+                return try await eventStore.requestAccess(to: .event)
+                #else
+                if #available(iOS 17.0, *) {
+                    return try await eventStore.requestFullAccessToEvents()
+                } else {
+                    return try await eventStore.requestAccess(to: .event)
+                }
+                #endif
+            } else {
+                // 非首次请求：用户之前没授权，直接跳过
+                print("⏭️ [CalendarTool] 日历权限未授权，跳过日历工具")
+                return false
+            }
+        } else if currentStatus == .denied || currentStatus == .restricted {
+            // 已拒绝或受限：直接跳过
+            print("⏭️ [CalendarTool] 日历权限被拒绝，跳过日历工具")
+            return false
         } else {
-            return try await eventStore.requestAccess(to: .event)
+            // 已授权
+            return true
         }
-        #endif
     }
 
     private func fetchEvents(range: String) async throws -> [EKEvent] {
