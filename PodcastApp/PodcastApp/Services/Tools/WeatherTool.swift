@@ -14,6 +14,7 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
+    private var authContinuation: CheckedContinuation<CLAuthorizationStatus, Never>?
 
     override init() {
         super.init()
@@ -53,14 +54,18 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
     // MARK: - Private Methods
 
     private func requestLocation() async throws -> CLLocation {
-        // 检查权限
-        let status = locationManager.authorizationStatus
+        var status = locationManager.authorizationStatus
+
+        // 如果未决定，请求权限并等待用户响应（不设超时）
         if status == .notDetermined {
-            #if os(macOS)
-            locationManager.requestAlwaysAuthorization()
-            #else
-            locationManager.requestWhenInUseAuthorization()
-            #endif
+            status = await withCheckedContinuation { continuation in
+                self.authContinuation = continuation
+                #if os(macOS)
+                locationManager.requestAlwaysAuthorization()
+                #else
+                locationManager.requestWhenInUseAuthorization()
+                #endif
+            }
         }
 
         #if os(macOS)
@@ -182,6 +187,13 @@ extension WeatherTool: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         locationContinuation?.resume(throwing: WeatherError.locationFailed(error.localizedDescription))
         locationContinuation = nil
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        // 只在等待授权结果时才 resume
+        guard let continuation = authContinuation else { return }
+        authContinuation = nil
+        continuation.resume(returning: manager.authorizationStatus)
     }
 }
 
