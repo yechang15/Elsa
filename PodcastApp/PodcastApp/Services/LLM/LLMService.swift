@@ -136,10 +136,8 @@ class LLMService {
         if let context = contextFromSkills, !context.isEmpty {
             contextSection = """
 
-            【情境上下文】
+            【今日情境（必须在开场中自然融入）】
             \(context)
-
-            以上是通过工具获取的实时情境信息，可作为播客内容的补充素材或开场参考。
             """
         } else {
             contextSection = ""
@@ -165,6 +163,7 @@ class LLMService {
         6. 主播在介绍自己时，直接说"我是\(hostAName)"或"我是\(hostBName)"，不要说"我是主播A"或"我是主播B"
         7. 开场白要准确反映播客的更新频率和定位，不要说"每周"等不准确的描述
         8. 如果是话题专属播客，要突出该话题的特色，不要泛泛而谈
+        9. 如果提供了【今日情境】，必须在开场白中自然地提及（如今天的天气、日程安排等），让播客更有生活感
 
         请直接输出播客脚本，不要有其他说明文字。
         """

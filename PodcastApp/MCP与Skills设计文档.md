@@ -389,6 +389,7 @@ output_to: [ recommend_list ]
 |---|------|------|
 | 8 | 工具管理页 | 工具列表、状态、配置、测试（见第十二节） |
 | 9 | Skills 管理页 | 技能列表、启用/禁用、编辑（见第十二节） |
+| 10 | 权限管理（集成在工具管理页） | 在工具卡片中展示权限状态，提供跳转系统设置的入口（见 12.5 节） |
 
 ### P3 — 扩展工具与更多 Skills
 
@@ -512,6 +513,52 @@ output_to: [ recommend_list ]
 - Skills 配置以 JSON 文件存储在 App 沙盒 `skills/` 目录，支持导入/导出
 - 管理页与现有 `SettingsView` 并列，作为独立导航项，不耦合设置逻辑
 - 「测试」功能直接调用工具的 `execute()` 方法，结果展示在 Sheet 中
+
+### 12.5 权限管理（集成在工具管理页）
+
+权限状态作为工具卡片的一部分展示，不单独做页面。每个需要系统权限的工具在卡片中显示当前授权状态，并提供操作入口。
+
+**权限状态展示：**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  🟢 天气 (weather)                            In-App    │
+│  当前及短期天气，支持自动定位                              │
+│  📍 定位权限：已授权                  [测试] [配置]       │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  🟡 苹果日历 (calendar)                       In-App    │
+│  读取 EventKit 日历事件                                   │
+│  📅 日历权限：未授权  [前往系统设置]  [测试] [配置]       │
+└─────────────────────────────────────────────────────────┘
+```
+
+**权限状态说明：**
+
+| 状态 | 含义 | 操作 |
+|------|------|------|
+| 已授权 ✅ | 权限已获得，工具可正常使用 | 无需操作 |
+| 未授权 ⚠️ | 用户尚未授权或已拒绝 | 显示「前往系统设置」按钮 |
+| 不需要权限 | 工具不依赖系统权限（如 RSS） | 不显示权限行 |
+
+**「前往系统设置」行为：**
+- macOS：调用 `NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!)`
+- iOS：调用 `UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)`
+
+**各工具对应的权限：**
+
+| 工具 | 所需权限 | 系统设置路径 |
+|------|---------|------------|
+| `weather` | 定位服务 | 隐私与安全性 → 定位服务 |
+| `calendar` | 日历 | 隐私与安全性 → 日历 |
+| `email`（P3） | 邮件 | 隐私与安全性 → 邮件 |
+| `rss`、`podcast` | 无 | — |
+
+**实现要点：**
+- 权限状态实时查询（每次进入工具管理页时刷新），不缓存
+- 使用 `CLLocationManager.authorizationStatus` 和 `EKEventStore.authorizationStatus(for:)` 查询
+- 权限变更后（用户从系统设置返回 App），自动刷新状态（监听 `UIApplication.didBecomeActiveNotification` / `NSApplication.didBecomeActiveNotification`）
 
 ---
 

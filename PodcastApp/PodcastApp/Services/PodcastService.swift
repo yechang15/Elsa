@@ -175,7 +175,12 @@ class PodcastService: ObservableObject {
         let userMemory = memoryManager?.loadSummary()
 
         // 通过 Skills 获取情境上下文
+        print("🔍 [PodcastService] 开始调用 SkillsEngine...")
         let contextFromSkills = await skillsEngine.execute(scene: .podcastGenerate)
+        print("📦 [PodcastService] SkillsEngine 返回: \(contextFromSkills.isEmpty ? "空" : "\(contextFromSkills.count) 字符")")
+        if !contextFromSkills.isEmpty {
+            print("📝 [PodcastService] 情境上下文内容:\n\(contextFromSkills)")
+        }
 
         let script = try await llmService.generatePodcastScript(
             articles: articles,
