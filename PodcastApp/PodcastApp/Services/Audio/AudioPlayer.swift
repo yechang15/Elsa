@@ -110,7 +110,7 @@ class AudioPlayer: NSObject, ObservableObject {
     /// 停止
     func stop() {
         // 结束播放会话（中途退出）
-        if let podcast = currentPodcast {
+        if currentPodcast != nil {
             Task { @MainActor in
                 behaviorTracker?.endPlaybackSession(finalPosition: currentTime)
             }

@@ -86,6 +86,7 @@ struct PodcastApp: App {
                     )
 
                     // 监听重启调度器的通知
+                    let mainContext = modelContainer.mainContext
                     NotificationCenter.default.addObserver(
                         forName: .restartScheduler,
                         object: nil,
@@ -94,7 +95,7 @@ struct PodcastApp: App {
                         schedulerService.start(
                             appState: appState,
                             podcastService: podcastService,
-                            modelContext: modelContainer.mainContext
+                            modelContext: mainContext
                         )
                     }
                 }

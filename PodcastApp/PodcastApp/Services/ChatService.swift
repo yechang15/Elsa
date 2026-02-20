@@ -217,13 +217,15 @@ class ChatService {
         playbackTime: Double?,
         context: ChatContext
     ) async {
+        let podcastId = podcast?.id
+        let podcastTitle = podcast?.title
         await MainActor.run {
             // 保存用户消息
             let userMsg = ChatMessage(
                 content: userMessage,
                 role: "user",
-                podcastId: podcast?.id,
-                podcastTitle: podcast?.title,
+                podcastId: podcastId,
+                podcastTitle: podcastTitle,
                 playbackTime: playbackTime,
                 contextSegments: context.contextSegments
             )
@@ -233,8 +235,8 @@ class ChatService {
             let assistantMsg = ChatMessage(
                 content: assistantMessage,
                 role: "assistant",
-                podcastId: podcast?.id,
-                podcastTitle: podcast?.title,
+                podcastId: podcastId,
+                podcastTitle: podcastTitle,
                 playbackTime: playbackTime
             )
             modelContext.insert(assistantMsg)

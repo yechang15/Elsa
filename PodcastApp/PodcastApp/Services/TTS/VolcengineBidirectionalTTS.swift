@@ -392,11 +392,9 @@ class VolcengineBidirectionalTTS: NSObject {
             let sizeBytes = data[8..<12]
             let payloadSize = sizeBytes.withUnsafeBytes { $0.load(as: UInt32.self).bigEndian }
 
-            var payload: [String: Any] = [:]
             if payloadSize > 0 && data.count >= 12 + Int(payloadSize) {
                 let payloadData = data[12..<(12 + Int(payloadSize))]
                 if let json = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] {
-                    payload = json
                     print("   错误信息: \(json)")
                     if let errorMsg = json["error"] as? String {
                         throw TTSError.apiError(errorMsg)

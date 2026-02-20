@@ -21,7 +21,7 @@ class BehaviorTracker: ObservableObject {
     /// 开始播放会话
     func startPlaybackSession(podcast: Podcast, startPosition: Double = 0.0) {
         // 结束之前的会话（如果有）
-        if let session = currentPlaybackSession {
+        if currentPlaybackSession != nil {
             endPlaybackSession(finalPosition: startPosition)
         }
 

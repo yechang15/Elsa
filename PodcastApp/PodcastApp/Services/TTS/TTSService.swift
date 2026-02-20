@@ -11,7 +11,7 @@ class TTSService: NSObject, ObservableObject {
 
     #if os(macOS)
     // 复用 NSSpeechSynthesizer 实例，避免频繁创建销毁
-    private var nsSpeechSynthesizer: NSSpeechSynthesizer?
+    private nonisolated(unsafe) var nsSpeechSynthesizer: NSSpeechSynthesizer?
     private let synthesizerLock = NSLock()
     #endif
 
@@ -353,8 +353,9 @@ class TTSService: NSObject, ObservableObject {
 
             if success {
                 // 等待合成完成
+                let synthRef = UnsafeSendableRef(speechSynthesizer)
                 DispatchQueue.global().async {
-                    while speechSynthesizer.isSpeaking {
+                    while synthRef.value.isSpeaking {
                         Thread.sleep(forTimeInterval: 0.1)
                     }
 
@@ -622,4 +623,11 @@ extension TTSService {
     static var defaultVoiceB: String {
         "com.apple.voice.compact.zh-CN.Sinji"
     }
+}
+
+/// Wraps a non-Sendable reference so it can be safely captured in @Sendable closures.
+/// The caller is responsible for ensuring thread safety.
+private final class UnsafeSendableRef<T>: @unchecked Sendable {
+    let value: T
+    init(_ value: T) { self.value = value }
 }

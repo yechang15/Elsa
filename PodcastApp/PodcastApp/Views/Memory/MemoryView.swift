@@ -149,7 +149,7 @@ struct MemoryView: View {
         Task {
             do {
                 let content = try await memoryManager.generatePreferencesFromBehavior()
-                try await memoryManager.updatePreferences(content)
+                try memoryManager.updatePreferences(content)
 
                 await MainActor.run {
                     isGenerating = false
@@ -190,7 +190,7 @@ struct MemoryView: View {
                 print("✅ 摘要生成完成，长度: \(content.count) 字符")
                 print("📝 摘要内容预览: \(content.prefix(200))...")
 
-                try await memoryManager.updateSummary(content)
+                try memoryManager.updateSummary(content)
                 print("💾 摘要已保存")
 
                 await MainActor.run {
@@ -235,7 +235,7 @@ struct MemoryView: View {
     private func saveEditedContent() {
         Task {
             do {
-                try await memoryManager.saveMemory(selectedTab, content: editingContent)
+                try memoryManager.saveMemory(selectedTab, content: editingContent)
                 await MainActor.run {
                     isEditing = false
                     alertMessage = "\(selectedTab.displayName)已保存"
