@@ -23,20 +23,20 @@ class PodcastService: ObservableObject {
     var memoryManager: MemoryManager?
 
     init() {
-        // 注册工具
-        Task { @MainActor in
-            let rssTool = RSSTool(rssService: rssService)
-            skillsEngine.register(tool: rssTool)
+        // 注册工具（同步执行，确保在使用前完成）
+        let rssTool = RSSTool(rssService: rssService)
+        skillsEngine.register(tool: rssTool)
 
-            let podcastTool = PodcastTool(podcastService: self)
-            skillsEngine.register(tool: podcastTool)
+        let podcastTool = PodcastTool(podcastService: self)
+        skillsEngine.register(tool: podcastTool)
 
-            let weatherTool = WeatherTool()
-            skillsEngine.register(tool: weatherTool)
+        let weatherTool = WeatherTool()
+        skillsEngine.register(tool: weatherTool)
 
-            let calendarTool = AppleCalendarTool()
-            skillsEngine.register(tool: calendarTool)
-        }
+        let calendarTool = AppleCalendarTool()
+        skillsEngine.register(tool: calendarTool)
+
+        print("✅ [PodcastService] 已注册 \(skillsEngine.toolRegistry.count) 个工具")
     }
 
     /// 初始化LLM服务
