@@ -30,6 +30,12 @@ class PodcastService: ObservableObject {
 
             let podcastTool = PodcastTool(podcastService: self)
             skillsEngine.register(tool: podcastTool)
+
+            let weatherTool = WeatherTool()
+            skillsEngine.register(tool: weatherTool)
+
+            let calendarTool = AppleCalendarTool()
+            skillsEngine.register(tool: calendarTool)
         }
     }
 

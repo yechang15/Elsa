@@ -102,12 +102,23 @@ class SkillsEngine: ObservableObject {
 
     private static func loadBuiltinSkills() -> [SkillConfig] {
         return [
+            // P0: 生成时情境上下文（仅 RSS）
             SkillConfig(
                 id: "context_for_generation",
                 name: "生成时情境上下文",
-                description: "在用户请求生成播客时，拉取 RSS 内容供生成脚本参考",
+                description: "在用户请求生成播客时，拉取日历、天气、RSS 内容供生成脚本参考",
                 triggers: [.podcastGenerate, .podcastRecommend],
                 tools: [
+                    SkillToolConfig(
+                        tool: "calendar",
+                        params: ["range": AnyCodable("today")],
+                        required: false
+                    ),
+                    SkillToolConfig(
+                        tool: "weather",
+                        params: ["range": AnyCodable("today")],
+                        required: false
+                    ),
                     SkillToolConfig(
                         tool: "rss",
                         params: ["range": AnyCodable("latest"), "limit": AnyCodable(10)],
@@ -116,6 +127,34 @@ class SkillsEngine: ObservableObject {
                 ],
                 mergePolicy: .concatSummary,
                 outputTo: [.promptContext],
+                enabled: true
+            ),
+
+            // P1: 晨间简报
+            SkillConfig(
+                id: "morning_briefing",
+                name: "晨间简报",
+                description: "早晨定时生成包含天气、日程、新闻的播客简报",
+                triggers: [.scheduled, .manual],
+                tools: [
+                    SkillToolConfig(
+                        tool: "weather",
+                        params: ["range": AnyCodable("today")],
+                        required: false
+                    ),
+                    SkillToolConfig(
+                        tool: "calendar",
+                        params: ["range": AnyCodable("today")],
+                        required: false
+                    ),
+                    SkillToolConfig(
+                        tool: "rss",
+                        params: ["range": AnyCodable("latest"), "limit": AnyCodable(5)],
+                        required: true
+                    )
+                ],
+                mergePolicy: .structuredBriefing,
+                outputTo: [.podcastGenerate],
                 enabled: true
             )
         ]
