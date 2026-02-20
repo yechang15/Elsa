@@ -62,12 +62,11 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
         // 如果未决定，根据是否首次请求决定行为
         if status == .notDetermined {
             if !hasRequestedPermission {
-                // 首次请求：等待用户响应
+                // 首次请求：等待用户响应（10 秒超时保护）
                 print("🔐 [WeatherTool] 首次请求位置权限，等待用户响应...")
                 hasRequestedPermission = true
 
-                #if DEBUG
-                // 开发环境：10 秒超时，避免 continuation 泄漏
+                // 使用超时保护，避免 Swift Package 项目中 Info.plist 未加载导致的卡死
                 let newStatus = await withTaskGroup(of: CLAuthorizationStatus?.self) { group in
                     // 任务 1：等待权限回调
                     group.addTask {
@@ -84,7 +83,7 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
                     // 任务 2：10 秒超时
                     group.addTask {
                         try? await Task.sleep(nanoseconds: 10_000_000_000)
-                        print("⏱️ [WeatherTool] 权限请求超时（开发环境 Info.plist 未加载）")
+                        print("⏱️ [WeatherTool] 权限请求超时，请在工具管理页手动授权")
                         return nil
                     }
 
@@ -99,17 +98,6 @@ final class WeatherTool: NSObject, AgentTool, @unchecked Sendable {
                     // 超时，视为未授权
                     throw WeatherError.locationPermissionDenied
                 }
-                #else
-                // 生产环境：无超时，等待用户决定
-                let finalStatus = await withCheckedContinuation { continuation in
-                    self.authContinuation = continuation
-                    #if os(macOS)
-                    self.locationManager.requestAlwaysAuthorization()
-                    #else
-                    self.locationManager.requestWhenInUseAuthorization()
-                    #endif
-                }
-                #endif
 
                 #if os(macOS)
                 guard finalStatus == .authorizedAlways else {
