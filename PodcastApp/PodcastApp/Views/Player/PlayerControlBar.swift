@@ -1,8 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct PlayerControlBar: View {
     @EnvironmentObject var audioPlayer: AudioPlayer
-    
+    @Query(sort: \Podcast.createdAt, order: .reverse) private var allPodcasts: [Podcast]
+
     var body: some View {
         HStack(spacing: 20) {
             // 播放/暂停按钮
@@ -11,22 +13,22 @@ struct PlayerControlBar: View {
                     .font(.title2)
             }
             .buttonStyle(.plain)
-            
+
             // 播客标题
             if let podcast = audioPlayer.currentPodcast {
                 Text(podcast.title)
                     .font(.body)
                     .lineLimit(1)
             }
-            
+
             Spacer()
-            
+
             // 进度条
             HStack(spacing: 8) {
                 Text(formatTime(audioPlayer.currentTime))
                     .font(.caption)
                     .monospacedDigit()
-                
+
                 Slider(
                     value: Binding(
                         get: { audioPlayer.currentTime },
@@ -35,18 +37,33 @@ struct PlayerControlBar: View {
                     in: 0...max(audioPlayer.duration, 1)
                 )
                 .frame(width: 200)
-                
+
                 Text(formatTime(audioPlayer.duration))
                     .font(.caption)
                     .monospacedDigit()
             }
-            
+
             Spacer()
-            
+
             // 音量控制
             Image(systemName: "speaker.wave.2.fill")
                 .font(.body)
-            
+
+            // 播放完成策略
+            Menu {
+                ForEach(PlaybackMode.allCases, id: \.self) { mode in
+                    Button {
+                        audioPlayer.playbackMode = mode
+                    } label: {
+                        Label(mode.rawValue, systemImage: mode.icon)
+                    }
+                }
+            } label: {
+                Image(systemName: audioPlayer.playbackMode.icon)
+                    .font(.body)
+                    .foregroundStyle(audioPlayer.playbackMode == .none ? .secondary : .primary)
+            }
+
             // 倍速控制
             Menu {
                 ForEach(AudioPlayer.playbackRates, id: \.self) { rate in
@@ -61,8 +78,14 @@ struct PlayerControlBar: View {
         }
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
+        .onAppear {
+            audioPlayer.currentPlaylist = allPodcasts
+        }
+        .onChange(of: allPodcasts) { _, newValue in
+            audioPlayer.currentPlaylist = newValue
+        }
     }
-    
+
     private func togglePlayPause() {
         if audioPlayer.isPlaying {
             audioPlayer.pause()
@@ -70,7 +93,7 @@ struct PlayerControlBar: View {
             audioPlayer.play()
         }
     }
-    
+
     private func formatTime(_ seconds: Double) -> String {
         let minutes = Int(seconds) / 60
         let secs = Int(seconds) % 60

@@ -18,6 +18,10 @@ class AudioPlayer: NSObject, ObservableObject {
     @Published var currentTime: Double = 0
     @Published var duration: Double = 0
     @Published var playbackRate: Float = 1.0
+    @Published var playbackMode: PlaybackMode = .sequential
+
+    /// 当前播放列表（由视图层注入，用于自动播放下一条）
+    var currentPlaylist: [Podcast] = []
 
     override init() {
         super.init()
@@ -209,6 +213,31 @@ class AudioPlayer: NSObject, ObservableObject {
                 behaviorTracker?.endPlaybackSession(finalPosition: Double(podcast.duration))
             }
         }
+
+        // 根据播放模式自动播放下一条
+        guard playbackMode != .none, !currentPlaylist.isEmpty else { return }
+
+        let finishedId = currentPodcast?.id
+        Task { @MainActor in
+            let next: Podcast?
+            switch self.playbackMode {
+            case .sequential:
+                if let idx = self.currentPlaylist.firstIndex(where: { $0.id == finishedId }) {
+                    next = self.currentPlaylist[(idx + 1) % self.currentPlaylist.count]
+                } else {
+                    next = self.currentPlaylist.first
+                }
+            case .shuffle:
+                let others = self.currentPlaylist.filter { $0.id != finishedId }
+                next = others.randomElement() ?? self.currentPlaylist.randomElement()
+            case .none:
+                next = nil
+            }
+
+            if let podcast = next, let audioPath = podcast.audioFilePath {
+                self.loadAndPlay(podcast: podcast, audioURL: URL(fileURLWithPath: audioPath))
+            }
+        }
     }
 
     /// 监听播放器状态变化
@@ -253,5 +282,20 @@ extension AudioPlayer {
 
     func playbackRateText(_ rate: Float) -> String {
         "\(rate)x"
+    }
+}
+
+/// 播放完成后的策略
+enum PlaybackMode: String, CaseIterable {
+    case sequential = "顺序播放"
+    case shuffle    = "随机播放"
+    case none       = "播完即止"
+
+    var icon: String {
+        switch self {
+        case .sequential: return "arrow.right.circle"
+        case .shuffle:    return "shuffle"
+        case .none:       return "stop.circle"
+        }
     }
 }
