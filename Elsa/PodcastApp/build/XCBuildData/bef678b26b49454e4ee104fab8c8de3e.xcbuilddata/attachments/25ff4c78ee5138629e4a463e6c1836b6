@@ -1,0 +1,731 @@
+{
+  "" : {
+    "const-values" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary.swiftconstvalues",
+    "dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary.d",
+    "diagnostics" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary.dia",
+    "emit-module-dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary-emit-module.dia",
+    "pch" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI-primary.swiftdeps"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/OpenAI+OpenAIAsync.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAIAsync.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAIAsync.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAIAsync.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/OpenAI+OpenAICombine.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAICombine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAICombine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+OpenAICombine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/OpenAI.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/AssistantsRequest.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsRequest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsRequest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsRequest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/CancellablesFactory.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellablesFactory.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellablesFactory.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellablesFactory.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Client/AsyncClient.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AsyncClient.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AsyncClient.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AsyncClient.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Client/Client.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Client.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Client.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Client.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Client/CombineClient.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CombineClient.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CombineClient.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CombineClient.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Client/StreamingClient.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingClient.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingClient.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingClient.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/CodingUserInfoKey+ParsingOptions.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodingUserInfoKey+ParsingOptions.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodingUserInfoKey+ParsingOptions.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodingUserInfoKey+ParsingOptions.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/DataTaskFactory.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskFactory.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskFactory.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskFactory.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/DescribedError.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DescribedError.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DescribedError.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DescribedError.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/DispatchQueue+Static.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DispatchQueue+Static.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DispatchQueue+Static.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DispatchQueue+Static.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/ExecutionSerializer.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ExecutionSerializer.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ExecutionSerializer.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ExecutionSerializer.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Extensions for generated code/Schemas+Description.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Schemas+Description.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Schemas+Description.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Schemas+Description.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/JSONRequest.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONRequest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONRequest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONRequest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/JSONResponseDecoder.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseDecoder.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseDecoder.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseDecoder.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/JSONResponseErrorDecoder.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseErrorDecoder.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseErrorDecoder.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONResponseErrorDecoder.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/KeyedDecodingContainer+ParsingOptions.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/KeyedDecodingContainer+ParsingOptions.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/KeyedDecodingContainer+ParsingOptions.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/KeyedDecodingContainer+ParsingOptions.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/MultipartFormDataBodyBuilder.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyBuilder.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyBuilder.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyBuilder.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/MultipartFormDataBodyEncodable.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyEncodable.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyEncodable.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataBodyEncodable.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/MultipartFormDataEntry.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataEntry.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataEntry.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataEntry.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/MultipartFormDataRequest.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataRequest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataRequest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MultipartFormDataRequest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/OpenAI+MakeRequest.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+MakeRequest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+MakeRequest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAI+MakeRequest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/PropertyValue.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PropertyValue.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PropertyValue.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PropertyValue.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/SSLDelegateProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SSLDelegateProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SSLDelegateProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SSLDelegateProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/SendablePassthroughSubject.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SendablePassthroughSubject.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SendablePassthroughSubject.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SendablePassthroughSubject.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/StreamableQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamableQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamableQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamableQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/AudioSpeechStreamInterpreter.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechStreamInterpreter.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechStreamInterpreter.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechStreamInterpreter.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/CodableResultStreamInterpreter.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodableResultStreamInterpreter.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodableResultStreamInterpreter.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CodableResultStreamInterpreter.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/DataTaskPerformingURLSession.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskPerformingURLSession.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskPerformingURLSession.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DataTaskPerformingURLSession.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/InvalidatableSession.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InvalidatableSession.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InvalidatableSession.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InvalidatableSession.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/ModelResponseEventsStreamInterpreter.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseEventsStreamInterpreter.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseEventsStreamInterpreter.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseEventsStreamInterpreter.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/ModelResponseStreamEventType.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseStreamEventType.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseStreamEventType.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResponseStreamEventType.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/PerformableSession.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PerformableSession.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PerformableSession.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/PerformableSession.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/ServerSentEventsStreamInterpreter.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamInterpreter.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamInterpreter.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamInterpreter.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/ServerSentEventsStreamParser.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamParser.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamParser.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamParser.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/ServerSentEventsStreamingSessionFactory.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamingSessionFactory.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamingSessionFactory.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServerSentEventsStreamingSessionFactory.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/SessionInvalidator.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SessionInvalidator.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SessionInvalidator.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/SessionInvalidator.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/StreamingError.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingError.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingError.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingError.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/Streaming/StreamingSession.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingSession.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingSession.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/StreamingSession.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLBuilder.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLBuilder.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLBuilder.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLBuilder.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLComponents+.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLComponents+.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLComponents+.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLComponents+.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLRequestBuildable.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLRequestBuildable.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLRequestBuildable.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLRequestBuildable.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLResponseHandler.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLResponseHandler.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLResponseHandler.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLResponseHandler.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionCombine.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionCombine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionCombine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionCombine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionDataDelegateForwarder.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataDelegateForwarder.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataDelegateForwarder.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataDelegateForwarder.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionDataTaskProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionDataTaskPublisherProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskPublisherProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskPublisherProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskPublisherProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionDataTaskStore.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskStore.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskStore.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDataTaskStore.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionDelegateProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDelegateProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDelegateProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionDelegateProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionFactory.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionFactory.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionFactory.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionFactory.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionProtocol+MakeDataTask.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol+MakeDataTask.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol+MakeDataTask.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol+MakeDataTask.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Private/URLSessionTaskCanceller.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionTaskCanceller.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionTaskCanceller.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/URLSessionTaskCanceller.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Errors/APIError.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/APIError.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/APIError.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/APIError.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Errors/GeminiAPIError.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GeminiAPIError.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GeminiAPIError.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GeminiAPIError.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchema/AnyJSONDocument.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AnyJSONDocument.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AnyJSONDocument.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AnyJSONDocument.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchema/JSONDocument.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONDocument.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONDocument.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONDocument.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchema/JSONSchema.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchema.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchema.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchema.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchema/JSONSchemaField.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaField.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaField.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaField.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchema/JSONSchemaInstanceType.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaInstanceType.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaInstanceType.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaInstanceType.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchemaConvertible/JSONSchemaConvertationError.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertationError.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertationError.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertationError.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchemaConvertible/JSONSchemaConvertible.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertible.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertible.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaConvertible.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/JSONSchemaConvertible/JSONSchemaEnumConvertible.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaEnumConvertible.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaEnumConvertible.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaEnumConvertible.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AssistantResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AssistantsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AssistantsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AssistantsTool.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsTool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsTool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AssistantsTool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioSpeechQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioSpeechResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioSpeechResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranscriptionQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranscriptionResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranscriptionStreamResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionStreamResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionStreamResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionStreamResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranscriptionVerboseResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionVerboseResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionVerboseResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranscriptionVerboseResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranslationQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/AudioTranslationResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/AudioTranslationResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ChatQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ChatResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ChatStreamResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatStreamResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatStreamResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatStreamResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/EmbeddingsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/EmbeddingsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EmbeddingsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/FilesQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/FilesResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FilesResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/FunctionDeclaration.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionDeclaration.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionDeclaration.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionDeclaration.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ImageEditsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageEditsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageEditsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageEditsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ImageVariationsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageVariationsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageVariationsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImageVariationsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ImagesQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ImagesResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ImagesResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/MessageQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MessageQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MessageQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/MessageQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Models/ModelQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Models/ModelResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Models/Models.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Models.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Models.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Models.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Models/ModelsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModelsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ModerationsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ModerationsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ModerationsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/CreateModelResponseQuery+TextResponseConfigurationOptions.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery+TextResponseConfigurationOptions.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery+TextResponseConfigurationOptions.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery+TextResponseConfigurationOptions.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/CreateModelResponseQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/CreateModelResponseQueryInput.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQueryInput.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQueryInput.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CreateModelResponseQueryInput.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/DeleteModelResponseQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/DeleteModelResponseResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/DeleteModelResponseResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/GetModelResponseQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GetModelResponseQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GetModelResponseQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/GetModelResponseQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/ResponseEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Responses API/ResponseObject.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseObject.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseObject.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseObject.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/RunResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/RunRetrieveQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/RunRetrieveStepsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveStepsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveStepsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunRetrieveStepsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/RunToolOutputsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunToolOutputsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunToolOutputsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunToolOutputsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/RunsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/RunsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ThreadAddMessagesResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadAddMessagesResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadAddMessagesResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadAddMessagesResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ThreadRunQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadRunQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadRunQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadRunQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ThreadsMessagesResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsMessagesResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsMessagesResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsMessagesResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ThreadsQuery.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsQuery.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsQuery.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsQuery.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/ThreadsResult.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsResult.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsResult.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ThreadsResult.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Types/ChatQueryWebSearchOptions.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQueryWebSearchOptions.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQueryWebSearchOptions.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ChatQueryWebSearchOptions.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Types/JSONSchemaDefinition.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaDefinition.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaDefinition.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/JSONSchemaDefinition.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Models/Types/ServiceTier.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServiceTier.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServiceTier.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ServiceTier.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/CancellableRequest.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellableRequest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellableRequest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/CancellableRequest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/OpenAIAsync.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIAsync.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIAsync.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIAsync.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/OpenAICombine.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAICombine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAICombine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAICombine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/OpenAIMiddleware.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIMiddleware.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIMiddleware.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIMiddleware.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/OpenAIProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OpenAIProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/ResponsesEndpointAsync.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointAsync.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointAsync.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointAsync.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/ResponsesEndpointCombine.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointCombine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointCombine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointCombine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/ResponsesEndpointModern.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointModern.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointModern.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointModern.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Protocols/ResponsesEndpointProtocol.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointProtocol.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointProtocol.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpointProtocol.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/EasyInputMessage.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EasyInputMessage.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EasyInputMessage.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/EasyInputMessage.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/FunctionTool.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionTool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionTool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/FunctionTool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/InputContent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputContent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputContent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputContent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/InputImage.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputImage.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputImage.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputImage.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/InputItem.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputItem.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputItem.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/InputItem.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/ResponseMCPCallArgumentsDeltaEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDeltaEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDeltaEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDeltaEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/ResponseMCPCallArgumentsDoneEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDoneEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDoneEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseMCPCallArgumentsDoneEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/ResponseOutputItemAddedEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemAddedEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemAddedEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemAddedEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/ResponseOutputItemDoneEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemDoneEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemDoneEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseOutputItemDoneEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Edited/Tool.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Tool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Tool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Tool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Facade/OutputItem.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OutputItem.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OutputItem.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/OutputItem.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Facade/ResponseStreamEvent.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseStreamEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseStreamEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponseStreamEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Schemas/Generated/Components.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Components.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Components.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Components.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Utilities/ParsingOptions.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ParsingOptions.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ParsingOptions.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ParsingOptions.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/Public/Utilities/Utilities.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Utilities.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Utilities.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/Utilities.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/ResponsesEndpoint+Async.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Async.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Async.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Async.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/ResponsesEndpoint+Combine.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Combine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Combine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint+Combine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/Sources/OpenAI/ResponsesEndpoint.swift" : {
+    "index-unit-output-path" : "/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/OpenAI/build/OpenAI.build/Release/OpenAI.build/Objects-normal/arm64/ResponsesEndpoint.o"
+  }
+}

@@ -1,0 +1,4 @@
+module HTTPTypesFoundation {
+header "HTTPTypesFoundation-Swift.h"
+export *
+}

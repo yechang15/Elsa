@@ -1,0 +1,4 @@
+module OpenAI {
+header "OpenAI-Swift.h"
+export *
+}

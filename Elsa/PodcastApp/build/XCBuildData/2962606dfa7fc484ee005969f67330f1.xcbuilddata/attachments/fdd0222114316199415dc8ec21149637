@@ -1,0 +1,36 @@
+{
+  "" : {
+    "const-values" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary.swiftconstvalues",
+    "dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary.d",
+    "diagnostics" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary.dia",
+    "emit-module-dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary-emit-module.dia",
+    "pch" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation-primary.swiftdeps"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/Sources/HTTPTypesFoundation/HTTPTypes+ISOLatin1.swift" : {
+    "index-unit-output-path" : "/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypes+ISOLatin1.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypes+ISOLatin1.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypes+ISOLatin1.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/Sources/HTTPTypesFoundation/HTTPTypesFoundation.swift" : {
+    "index-unit-output-path" : "/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/HTTPTypesFoundation.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/Sources/HTTPTypesFoundation/URLRequest+HTTPTypes.swift" : {
+    "index-unit-output-path" : "/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLRequest+HTTPTypes.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLRequest+HTTPTypes.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLRequest+HTTPTypes.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/Sources/HTTPTypesFoundation/URLResponse+HTTPTypes.swift" : {
+    "index-unit-output-path" : "/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLResponse+HTTPTypes.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLResponse+HTTPTypes.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLResponse+HTTPTypes.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/Sources/HTTPTypesFoundation/URLSession+HTTPTypes.swift" : {
+    "index-unit-output-path" : "/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLSession+HTTPTypes.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLSession+HTTPTypes.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp/.build/checkouts/swift-http-types/build/swift-http-types.build/Release/HTTPTypesFoundation.build/Objects-normal/x86_64/URLSession+HTTPTypes.o"
+  }
+}

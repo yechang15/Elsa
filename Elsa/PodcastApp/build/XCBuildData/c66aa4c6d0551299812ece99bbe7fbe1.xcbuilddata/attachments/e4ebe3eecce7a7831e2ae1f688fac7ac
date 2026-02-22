@@ -1,0 +1,301 @@
+{
+  "" : {
+    "const-values" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary.swiftconstvalues",
+    "dependencies" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary.d",
+    "diagnostics" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary.dia",
+    "emit-module-dependencies" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary-emit-module.dia",
+    "pch" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp-primary.swiftdeps"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/App/AppState.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppState.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppState.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppState.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/App/ContentView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/App/PodcastApp.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastApp.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/ChatMessage.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatMessage.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatMessage.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatMessage.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/ContentInteraction.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentInteraction.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentInteraction.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ContentInteraction.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/GeneratingPodcast.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcast.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcast.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcast.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/GenerationStep.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GenerationStep.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GenerationStep.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GenerationStep.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/ListeningHistory.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ListeningHistory.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ListeningHistory.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ListeningHistory.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/PlaybackSession.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlaybackSession.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlaybackSession.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlaybackSession.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/Podcast.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Podcast.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Podcast.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Podcast.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/RSSFeed.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSFeed.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSFeed.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSFeed.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/ScriptSegment.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ScriptSegment.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ScriptSegment.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ScriptSegment.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/Topic.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Topic.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Topic.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Topic.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/TopicPreference.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicPreference.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicPreference.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicPreference.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/UserBehaviorEvent.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/UserBehaviorEvent.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/UserBehaviorEvent.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/UserBehaviorEvent.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Models/VolcengineVoices.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineVoices.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineVoices.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineVoices.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Audio/AudioPlayer.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AudioPlayer.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AudioPlayer.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AudioPlayer.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/BehaviorTracker.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BehaviorTracker.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BehaviorTracker.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BehaviorTracker.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/ChatService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/DoubaoPodcast/DoubaoPodcastService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DoubaoPodcastService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DoubaoPodcastService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DoubaoPodcastService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/LLM/LLMService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LLMService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LLMService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LLMService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/MemoryManager.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryManager.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryManager.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryManager.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/PodcastService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/RSS/RSSService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/SchedulerService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SchedulerService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SchedulerService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SchedulerService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/TTS/TTSService.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TTSService.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TTSService.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TTSService.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/TTS/VolcengineBidirectionalTTS.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineBidirectionalTTS.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineBidirectionalTTS.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineBidirectionalTTS.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/TTS/VolcengineTTSTest.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineTTSTest.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineTTSTest.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/VolcengineTTSTest.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Tools/AgentTool.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AgentTool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AgentTool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AgentTool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Tools/AppleCalendarTool.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppleCalendarTool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppleCalendarTool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/AppleCalendarTool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Tools/BuiltinTools.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BuiltinTools.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BuiltinTools.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/BuiltinTools.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Tools/SkillsEngine.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsEngine.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsEngine.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsEngine.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Services/Tools/WeatherTool.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/WeatherTool.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/WeatherTool.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/WeatherTool.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/ViewModels/SkillsViewModel.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsViewModel.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsViewModel.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsViewModel.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/ViewModels/ToolsViewModel.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsViewModel.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsViewModel.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsViewModel.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Chat/ChatFloatingButton.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatFloatingButton.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatFloatingButton.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatFloatingButton.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Chat/ChatView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ChatView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/History/HistoryView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HistoryView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HistoryView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HistoryView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/DetailTabViews.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DetailTabViews.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DetailTabViews.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/DetailTabViews.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/GeneratePodcastSheetForTopic.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratePodcastSheetForTopic.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratePodcastSheetForTopic.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratePodcastSheetForTopic.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/GeneratingPodcastCard.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcastCard.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcastCard.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratingPodcastCard.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/HomeView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HomeView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HomeView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/HomeView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/PodcastDetailView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastDetailView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastDetailView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastDetailView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Home/PodcastGridCard.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastGridCard.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastGridCard.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastGridCard.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Memory/MemoryView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/MemoryView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Onboarding/OnboardingView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/OnboardingView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/OnboardingView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/OnboardingView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Player/PlayerControlBar.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlayerControlBar.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlayerControlBar.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PlayerControlBar.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/PodcastList/PodcastListView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastListView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastListView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/PodcastListView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/RSS/RSSView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/RSSView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Settings/SettingsView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SettingsView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SettingsView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SettingsView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Sidebar.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Sidebar.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Sidebar.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/Sidebar.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/ToolsAndSkills/LocationPermissionHelper.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LocationPermissionHelper.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LocationPermissionHelper.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/LocationPermissionHelper.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/ToolsAndSkills/SkillEditorView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillEditorView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillEditorView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillEditorView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/ToolsAndSkills/SkillsManagementView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsManagementView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsManagementView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/SkillsManagementView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/ToolsAndSkills/ToolsAndSkillsView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsAndSkillsView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsAndSkillsView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsAndSkillsView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/ToolsAndSkills/ToolsManagementView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsManagementView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsManagementView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/ToolsManagementView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/PodcastApp/Views/Topics/TopicsView.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicsView.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicsView.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/TopicsView.o"
+  },
+  "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/yechang/个人/CODING/PodcastApp-New/PodcastApp/build/PodcastApp.build/Release/PodcastApp.build/Objects-normal/x86_64/GeneratedAssetSymbols.o"
+  }
+}
