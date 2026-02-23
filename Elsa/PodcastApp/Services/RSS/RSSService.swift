@@ -39,19 +39,11 @@ class RSSService: ObservableObject {
         return try await withThrowingTaskGroup(of: [RSSArticle].self) { group in
             // 添加获取任务
             group.addTask {
-                try await withCheckedThrowingContinuation { continuation in
-                    let parser = FeedParser(URL: url)
-
-                    parser.parseAsync { result in
-                        switch result {
-                        case .success(let feed):
-                            let articles = self.extractArticles(from: feed)
-                            continuation.resume(returning: articles)
-
-                        case .failure(let error):
-                            continuation.resume(throwing: RSSError.parseFailed(error.localizedDescription))
-                        }
-                    }
+                do {
+                    let feed = try await Feed(url: url)
+                    return self.extractArticles(from: feed)
+                } catch {
+                    throw RSSError.parseFailed(error.localizedDescription)
                 }
             }
 
@@ -77,7 +69,7 @@ class RSSService: ObservableObject {
 
         switch feed {
         case .rss(let rssFeed):
-            articles = rssFeed.items?.compactMap { item -> RSSArticle? in
+            articles = rssFeed.channel?.items?.compactMap { item -> RSSArticle? in
                 guard let title = item.title,
                       let link = item.link,
                       let pubDate = item.pubDate else {
@@ -89,7 +81,7 @@ class RSSService: ObservableObject {
                     link: link,
                     description: item.description ?? "",
                     pubDate: pubDate,
-                    content: item.content?.contentEncoded ?? item.description ?? ""
+                    content: item.description ?? ""
                 )
             } ?? []
 
@@ -104,9 +96,9 @@ class RSSService: ObservableObject {
                 return RSSArticle(
                     title: title,
                     link: link,
-                    description: entry.summary?.value ?? "",
+                    description: "",
                     pubDate: updated,
-                    content: entry.content?.value ?? entry.summary?.value ?? ""
+                    content: ""
                 )
             } ?? []
 

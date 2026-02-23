@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		888D3B942F489FFC006658FF /* PodcastApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PodcastApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		888D3B942F489FFC006658FF /* PodcastApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = PodcastApp.app; path = Elsa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,10 +42,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		885F959D2F4C2A3B00D53FEF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		888D3B8B2F489FFC006658FF = {
 			isa = PBXGroup;
 			children = (
 				888D3B962F489FFC006658FF /* PodcastApp */,
+				885F959D2F4C2A3B00D53FEF /* Frameworks */,
 				888D3B952F489FFC006658FF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,8 +121,8 @@
 			mainGroup = 888D3B8B2F489FFC006658FF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				888D3CBC2F48A807006658FF /* XCLocalSwiftPackageReference "../../PodcastApp/.build/checkouts/FeedKit" */,
-				888D3CBF2F48A83C006658FF /* XCLocalSwiftPackageReference "../../PodcastApp/.build/checkouts/OpenAI" */,
+				888D3FFF2F48FEED006658FF /* XCRemoteSwiftPackageReference "FeedKit" */,
+				888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 888D3B952F489FFC006658FF /* Products */;
@@ -374,36 +382,49 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		888D3CBC2F48A807006658FF /* XCLocalSwiftPackageReference "../../PodcastApp/.build/checkouts/FeedKit" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../PodcastApp/.build/checkouts/FeedKit;
+/* Begin XCRemoteSwiftPackageReference section */
+		888D3FFF2F48FEED006658FF /* XCRemoteSwiftPackageReference "FeedKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nmdias/FeedKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
 		};
-		888D3CBF2F48A83C006658FF /* XCLocalSwiftPackageReference "../../PodcastApp/.build/checkouts/OpenAI" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../PodcastApp/.build/checkouts/OpenAI;
+		888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MacPaw/OpenAI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		888D3CBD2F48A807006658FF /* FeedKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 888D3FFF2F48FEED006658FF /* XCRemoteSwiftPackageReference "FeedKit" */;
 			productName = FeedKit;
 		};
 		888D3CC02F48A83C006658FF /* OpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */;
 			productName = OpenAI;
 		};
 		888D3CC32F48ACE5006658FF /* OpenAPIRuntime */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */;
 			productName = OpenAPIRuntime;
 		};
 		888D3CC62F48ACFD006658FF /* HTTPTypes */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */;
 			productName = HTTPTypes;
 		};
 		888D3CC82F48ACFD006658FF /* HTTPTypesFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 888D40002F48FEED006658FF /* XCRemoteSwiftPackageReference "OpenAI" */;
 			productName = HTTPTypesFoundation;
 		};
 /* End XCSwiftPackageProductDependency section */
