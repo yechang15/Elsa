@@ -41,8 +41,8 @@
 ### 1. 克隆仓库并打开项目
 
 ```bash
-git clone https://github.com/yechang15/myapp.git
-cd myapp
+git clone https://github.com/yechang15/Elsa.git
+cd Elsa
 open Elsa/PodcastApp.xcodeproj
 ```
 
