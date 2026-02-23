@@ -2,6 +2,16 @@
 
 > 你的兴趣，AI 为你播报。
 
+## 截图
+
+| 主页 | 详情页 |
+|------|--------|
+| ![主页](assets/screenshot-home.png) | ![详情页](assets/screenshot-detail.png) |
+
+| 工具与技能 | 记忆管理 |
+|-----------|---------|
+| ![工具与技能](assets/screenshot-tools.png) | ![记忆管理](assets/screenshot-memory.png) |
+
 一款 macOS 原生 AI 个人助理，以个性化播客为核心交互形式。基于你的兴趣话题自动订阅 RSS 信息源，通过 LLM 生成二人对话式播客脚本，再经 TTS 合成语音播放。内置可扩展的 **Skills & Tools** 系统，支持调用日历、天气、邮件等三方工具，配合长期记忆持久化，让 AI 真正了解你、持续服务你。
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-blue)
