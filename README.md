@@ -41,8 +41,8 @@
 ### 1. 克隆仓库并打开项目
 
 ```bash
-git clone https://github.com/your-username/Elsa.git
-cd Elsa
+git clone https://github.com/yechang15/myapp.git
+cd myapp
 open PodcastApp/PodcastApp.xcodeproj
 ```
 
@@ -84,7 +84,6 @@ open PodcastApp/PodcastApp.xcodeproj
 ## 项目结构
 
 ```
-Elsa/
 ├── PodcastApp/
 │   └── PodcastApp/
 │       ├── App/              # 应用入口与全局状态
@@ -97,7 +96,9 @@ Elsa/
 │       │   └── Tools/        # Skills & Tools 系统
 │       ├── Views/            # SwiftUI 视图
 │       └── ViewModels/       # 视图模型
-└── docs/                     # 设计文档
+├── docs/                     # 设计文档
+├── README.md
+└── LICENSE
 ```
 
 ---
