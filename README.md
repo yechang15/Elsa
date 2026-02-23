@@ -43,7 +43,7 @@
 ```bash
 git clone https://github.com/yechang15/myapp.git
 cd myapp
-open PodcastApp/PodcastApp.xcodeproj
+open Elsa/PodcastApp.xcodeproj
 ```
 
 ### 2. 配置 API Key
@@ -84,7 +84,8 @@ open PodcastApp/PodcastApp.xcodeproj
 ## 项目结构
 
 ```
-├── PodcastApp/
+├── Elsa/
+│   ├── PodcastApp.xcodeproj
 │   └── PodcastApp/
 │       ├── App/              # 应用入口与全局状态
 │       ├── Models/           # SwiftData 数据模型
