@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Build
+build/
+*.o
+*.d
+
+# Swift Package Manager
+.build/
+.swiftpm/xcode/
+
+# Secrets / Config (never commit these)
+Secrets.swift
+Config.swift
+*.env
+secrets.json

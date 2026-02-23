@@ -16,9 +16,10 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
     private var connectionOpened = false
     private var connectionContinuation: CheckedContinuation<Void, Error>?
 
-    init(appId: String, accessToken: String) {
+    init(appId: String, accessToken: String, appKey: String = "") {
         self.appId = appId
         self.accessToken = accessToken
+        self.appKey = appKey
         super.init()
     }
 
