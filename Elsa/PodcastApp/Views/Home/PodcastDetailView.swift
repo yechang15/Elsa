@@ -41,6 +41,12 @@ struct PodcastDetailView: View {
         .onAppear {
             // 记录播客查看行为
             behaviorTracker.recordPodcastView(podcast: podcast, sourceScreen: "detail")
+            // 切换到新播客时自动播放
+            if audioPlayer.currentPodcast?.id != podcast.id {
+                guard let audioPath = podcast.audioFilePath else { return }
+                let audioURL = URL(fileURLWithPath: audioPath)
+                audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
+            }
         }
     }
 
@@ -71,22 +77,6 @@ struct PodcastDetailView: View {
             }
             .padding()
 
-            // 封面图
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    LinearGradient(
-                        colors: [coverColor.opacity(0.6), coverColor],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 200, height: 200)
-                .overlay(
-                    Image(systemName: "waveform")
-                        .font(.system(size: 60))
-                        .foregroundColor(.white.opacity(0.3))
-                )
-
             // 标题和信息
             VStack(spacing: 8) {
                 Text(podcast.title)
@@ -113,66 +103,8 @@ struct PodcastDetailView: View {
                 }
             }
             .padding(.horizontal)
-
-            // 播放控制
-            HStack(spacing: 20) {
-                Button(action: playPodcast) {
-                    Label(isCurrentlyPlaying ? "暂停" : "播放", systemImage: isCurrentlyPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.title3)
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button(action: {}) {
-                    Label("收藏", systemImage: "heart")
-                        .font(.body)
-                }
-                .buttonStyle(.bordered)
-
-                Button(action: {}) {
-                    Label("分享", systemImage: "square.and.arrow.up")
-                        .font(.body)
-                }
-                .buttonStyle(.bordered)
-            }
-
-            // 播放进度
-            VStack(spacing: 4) {
-                ProgressView(value: podcast.playProgress)
-                    .tint(.accentColor)
-
-                HStack {
-                    Text("播放进度 \(Int(podcast.playProgress * 100))%")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Text(podcast.playStatus.displayText)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.horizontal)
         }
         .padding(.bottom)
         .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
-    }
-
-    private var coverColor: Color {
-        .blue
-    }
-
-    private var isCurrentlyPlaying: Bool {
-        audioPlayer.currentPodcast?.id == podcast.id && audioPlayer.isPlaying
-    }
-
-    private func playPodcast() {
-        if isCurrentlyPlaying {
-            audioPlayer.pause()
-        } else {
-            guard let audioPath = podcast.audioFilePath else { return }
-            let audioURL = URL(fileURLWithPath: audioPath)
-            audioPlayer.loadAndPlay(podcast: podcast, audioURL: audioURL)
-        }
     }
 }
