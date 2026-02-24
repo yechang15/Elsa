@@ -22,6 +22,10 @@ class PodcastService: ObservableObject {
     // 记忆管理器（可选）
     var memoryManager: MemoryManager?
 
+    // 速率控制：记录上次请求时间
+    private var lastRequestTime: Date?
+    private let minRequestInterval: TimeInterval = 2.0 // 最小间隔 2 秒
+
     init() {
         // 注册工具（同步执行，确保在使用前完成）
         let rssTool = RSSTool(rssService: rssService)
@@ -49,6 +53,19 @@ class PodcastService: ObservableObject {
         }
     }
 
+    /// 速率控制：确保请求间隔
+    private func throttleRequest() async {
+        if let lastTime = lastRequestTime {
+            let elapsed = Date().timeIntervalSince(lastTime)
+            if elapsed < minRequestInterval {
+                let waitTime = minRequestInterval - elapsed
+                print("⏳ 速率控制：等待 \(String(format: "%.1f", waitTime)) 秒...")
+                try? await Task.sleep(nanoseconds: UInt64(waitTime * 1_000_000_000))
+            }
+        }
+        lastRequestTime = Date()
+    }
+
     /// 生成播客
     func generatePodcast(
         topics: [Topic],
@@ -56,6 +73,9 @@ class PodcastService: ObservableObject {
         modelContext: ModelContext,
         category: String = "系统推荐"
     ) async throws -> Podcast {
+        // 速率控制：确保请求间隔
+        await throttleRequest()
+
         await MainActor.run {
             isGenerating = true
             generationProgress = 0

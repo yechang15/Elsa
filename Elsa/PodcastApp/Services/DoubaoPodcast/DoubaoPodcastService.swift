@@ -31,31 +31,89 @@ class DoubaoPodcastService: NSObject, URLSessionWebSocketDelegate {
         outputURL: URL,
         progressHandler: @escaping (String) -> Void
     ) async throws {
-        self.progressHandler = progressHandler
-        self.audioData = Data()
-        self.isFinished = false
-
-        // 1. 建立WebSocket连接
-        try await connect()
-
-        // 2. 发送StartSession请求
-        let sessionId = UUID().uuidString
-        try await sendStartSession(
-            sessionId: sessionId,
+        // 使用重试机制
+        try await generatePodcastWithRetry(
             inputText: inputText,
             voiceA: voiceA,
-            voiceB: voiceB
+            voiceB: voiceB,
+            outputURL: outputURL,
+            progressHandler: progressHandler,
+            maxRetries: 3
         )
+    }
 
-        // 3. 接收音频数据
-        try await receiveMessages()
+    /// 带重试的播客生成（内部方法）
+    private func generatePodcastWithRetry(
+        inputText: String,
+        voiceA: String,
+        voiceB: String,
+        outputURL: URL,
+        progressHandler: @escaping (String) -> Void,
+        maxRetries: Int
+    ) async throws {
+        var lastError: Error?
 
-        // 4. 保存音频文件
-        try audioData.write(to: outputURL)
-        progressHandler("✅ 音频已保存到: \(outputURL.lastPathComponent)")
+        for attempt in 0..<maxRetries {
+            do {
+                self.progressHandler = progressHandler
+                self.audioData = Data()
+                self.isFinished = false
 
-        // 5. 关闭连接
-        await disconnect()
+                if attempt > 0 {
+                    let delay = pow(2.0, Double(attempt)) + Double.random(in: 0...1)
+                    progressHandler("⏳ 第 \(attempt + 1) 次重试，等待 \(Int(delay)) 秒...")
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                }
+
+                // 1. 建立WebSocket连接
+                try await connect()
+
+                // 2. 发送StartSession请求
+                let sessionId = UUID().uuidString
+                try await sendStartSession(
+                    sessionId: sessionId,
+                    inputText: inputText,
+                    voiceA: voiceA,
+                    voiceB: voiceB
+                )
+
+                // 3. 接收音频数据
+                try await receiveMessages()
+
+                // 4. 保存音频文件
+                try audioData.write(to: outputURL)
+                progressHandler("✅ 音频已保存到: \(outputURL.lastPathComponent)")
+
+                // 5. 关闭连接
+                await disconnect()
+
+                // 成功则返回
+                return
+
+            } catch {
+                lastError = error
+                await disconnect()
+
+                // 检查是否是限流错误
+                let errorMessage = error.localizedDescription
+                let isRateLimitError = errorMessage.contains("429") ||
+                                      errorMessage.contains("频率") ||
+                                      errorMessage.contains("rate limit")
+
+                if isRateLimitError && attempt < maxRetries - 1 {
+                    progressHandler("⚠️ API 请求频率超限，准备重试...")
+                    continue
+                } else if attempt == maxRetries - 1 {
+                    progressHandler("❌ 重试 \(maxRetries) 次后仍然失败")
+                    throw error
+                } else {
+                    // 非限流错误，直接抛出
+                    throw error
+                }
+            }
+        }
+
+        throw lastError ?? NSError(domain: "DoubaoPodcastService", code: -1, userInfo: [NSLocalizedDescriptionKey: "生成失败"])
     }
 
     // MARK: - WebSocket连接管理
