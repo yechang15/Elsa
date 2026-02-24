@@ -22,7 +22,7 @@ struct PodcastGridCard: View {
                 Button(action: togglePlayPause) {
                     Image(systemName: isCurrentlyPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 26))
-                        .foregroundColor(coverColor)
+                        .foregroundColor(.blue)
                 }
                 .buttonStyle(.plain)
             }
@@ -37,14 +37,25 @@ struct PodcastGridCard: View {
 
             Spacer(minLength: 8)
 
-            // 话题 + 时长
-            HStack(spacing: 4) {
-                if let topic = podcast.topics.first {
-                    Text(topic)
-                        .font(.caption2)
-                        .foregroundColor(coverColor)
-                        .lineLimit(1)
+            // 话题标签
+            if !podcast.topics.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        ForEach(podcast.topics, id: \.self) { topic in
+                            Text(topic)
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
+                    }
                 }
+                .padding(.bottom, 4)
+            }
+
+            // 时间 + 时长
+            HStack(spacing: 4) {
+                Text(podcast.createdAt, format: .dateTime.year().month().day().hour().minute())
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
                 Spacer()
                 Image(systemName: "clock")
                     .font(.caption2)
@@ -105,7 +116,41 @@ struct PodcastGridCard: View {
     }
 
     private var coverColor: Color {
-        .blue
+        let colorMap: [String: Color] = [
+            "Swift 开发":    .orange,
+            "前端开发":      .cyan,
+            "后端架构":      .indigo,
+            "移动开发":      .blue,
+            "AI 技术":       .purple,
+            "数据科学":      .teal,
+            "DevOps":        Color(red: 0.2, green: 0.6, blue: 0.3),
+            "开源项目":      Color(red: 0.8, green: 0.5, blue: 0.1),
+            "Web3 & 区块链": Color(red: 0.4, green: 0.2, blue: 0.9),
+            "云计算":        Color(red: 0.1, green: 0.6, blue: 0.8),
+            "产品设计":      .pink,
+            "UX 研究":       Color(red: 0.9, green: 0.4, blue: 0.6),
+            "UI 设计":       Color(red: 0.95, green: 0.3, blue: 0.5),
+            "交互设计":      Color(red: 0.7, green: 0.2, blue: 0.7),
+            "创业":          .yellow,
+            "科技新闻":      Color(red: 0.3, green: 0.5, blue: 0.9),
+            "商业分析":      Color(red: 0.1, green: 0.5, blue: 0.4),
+            "投资理财":      Color(red: 0.2, green: 0.7, blue: 0.3),
+            "营销增长":      Color(red: 0.9, green: 0.5, blue: 0.1),
+            "健康养生":      .green,
+            "心理学":        Color(red: 0.5, green: 0.3, blue: 0.8),
+            "个人成长":      Color(red: 0.2, green: 0.7, blue: 0.6),
+            "阅读写作":      Color(red: 0.6, green: 0.4, blue: 0.2),
+            "播客推荐":      Color(red: 0.8, green: 0.3, blue: 0.7),
+            "电影评论":      Color(red: 0.7, green: 0.1, blue: 0.2),
+            "音乐推荐":      Color(red: 0.9, green: 0.2, blue: 0.5),
+            "游戏资讯":      Color(red: 0.3, green: 0.7, blue: 0.2),
+            "动漫二次元":    Color(red: 0.95, green: 0.4, blue: 0.7),
+            "天文物理":      Color(red: 0.1, green: 0.2, blue: 0.7),
+            "生物医学":      Color(red: 0.8, green: 0.2, blue: 0.3),
+            "环境科学":      Color(red: 0.2, green: 0.6, blue: 0.2),
+            "科普知识":      Color(red: 0.1, green: 0.5, blue: 0.6),
+        ]
+        return colorMap[podcast.topics.first ?? ""] ?? .blue
     }
 
     private var progressColor: Color {

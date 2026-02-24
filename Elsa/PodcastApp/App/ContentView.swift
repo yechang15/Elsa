@@ -72,8 +72,12 @@ struct MainView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var audioPlayer: AudioPlayer
     @EnvironmentObject var podcastService: PodcastService
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Podcast.createdAt, order: .reverse) private var podcasts: [Podcast]
+    @Query(sort: \Topic.priority, order: .reverse) private var topics: [Topic]
 
     @State private var isShowingChat = false
+    @State private var hasAutoPlayed = false
 
     var body: some View {
         ZStack {
@@ -97,11 +101,9 @@ struct MainView: View {
 
                     Divider()
 
-                    // 底部播放控制栏
-                    if audioPlayer.currentPodcast != nil {
-                        PlayerControlBar()
-                            .frame(height: 80)
-                    }
+                    // 底部播放控制栏（常驻）
+                    PlayerControlBar()
+                        .frame(height: 80)
                 }
 
                 // 右侧对话面板
@@ -126,6 +128,36 @@ struct MainView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: isShowingChat)
+        .onAppear {
+            autoPlayFirstPodcast()
+        }
+        .onChange(of: podcasts) { _, _ in
+            autoPlayFirstPodcast()
+        }
+    }
+
+    private func autoPlayFirstPodcast() {
+        guard !hasAutoPlayed, audioPlayer.currentPodcast == nil else { return }
+
+        // 推荐逻辑：系统推荐 + 每个话题最新一条
+        var recommended: [Podcast] = []
+        let systemPodcasts = podcasts.filter { $0.displayCategory == "系统推荐" }
+        recommended.append(contentsOf: systemPodcasts)
+        for topic in topics {
+            if let p = podcasts.first(where: { $0.topics.count == 1 && $0.topics.first == topic.name }) {
+                recommended.append(p)
+            }
+        }
+        let sorted = recommended
+            .filter { $0.audioFilePath != nil }
+            .sorted { $0.createdAt > $1.createdAt }
+
+        guard let first = sorted.first ?? podcasts.first(where: { $0.audioFilePath != nil }),
+              let audioPath = first.audioFilePath else { return }
+
+        hasAutoPlayed = true
+        let audioURL = URL(fileURLWithPath: audioPath)
+        audioPlayer.loadAndPlay(podcast: first, audioURL: audioURL)
     }
 }
 
